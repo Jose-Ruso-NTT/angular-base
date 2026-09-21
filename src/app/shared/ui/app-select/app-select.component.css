@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+label {
+  color: #172033;
+  font-weight: 650;
+}
+select {
+  background: white;
+  border: 1px solid #8994a8;
+  border-radius: 0.45rem;
+  color: #172033;
+  font: inherit;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+}
+select:focus-visible {
+  border-color: #005fcc;
+  box-shadow: 0 0 0 3px #cfe4ff;
+  outline: 0;
+}
+select[aria-invalid='true'] {
+  border-color: #b42318;
+}
+.support {
+  min-block-size: 2.5rem;
+}
+.error {
+  color: #b42318;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin: 0;
+}

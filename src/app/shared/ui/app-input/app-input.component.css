@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+label {
+  color: #172033;
+  font-weight: 650;
+}
+input {
+  border: 1px solid #8994a8;
+  border-radius: 0.45rem;
+  box-sizing: border-box;
+  color: #172033;
+  font: inherit;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+}
+input:focus-visible {
+  border-color: #005fcc;
+  box-shadow: 0 0 0 3px #cfe4ff;
+  outline: 0;
+}
+input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+.support {
+  min-block-size: 2.5rem;
+}
+.hint,
+.error {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin: 0;
+}
+.hint {
+  color: #526176;
+}
+.error {
+  color: #b42318;
+}
