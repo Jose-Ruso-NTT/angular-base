@@ -54,6 +54,20 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Git hooks (Husky)
+
+Husky está situado en `.husky/` porque es configuración del frontend: ejecuta `lint-staged` antes de confirmar y valida el mensaje mediante `commitlint`.
+
+En este repositorio didáctico, el frontend está en `angular-base/` y el backend es su carpeta hermana (`../backend`). Para no aplicar las comprobaciones frontend a commits que modifican únicamente el backend, los hooks se ejecutan solo si hay archivos preparados bajo `angular-base/`.
+
+Tras clonar esta estructura conjunta, actívalos una vez desde la raíz del repositorio:
+
+```bash
+git config core.hooksPath angular-base/.husky/_
+```
+
+En el uso habitual, cuando este frontend vive solo en su propio repositorio, no hace falta esa configuración especial: `.husky/` está en la raíz Git y Husky usa el valor estándar `.husky/_`. Basta con instalar las dependencias en esta carpeta (`npm install`); el script `prepare` configura los hooks.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

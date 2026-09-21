@@ -1,1 +1,10 @@
-npx lint-staged
+#!/usr/bin/env sh
+
+# En este repositorio didáctico frontend y backend son proyectos hermanos.
+# Evita cargar las validaciones de frontend en commits exclusivos del backend.
+if ! git diff --cached --name-only | grep -q '^angular-base/'; then
+  exit 0
+fi
+
+cd "$(git rev-parse --show-toplevel)/angular-base" || exit 1
+npx --no-install lint-staged
