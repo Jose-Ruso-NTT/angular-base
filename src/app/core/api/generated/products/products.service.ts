@@ -5,38 +5,54 @@
  * API de ejemplo para integrar el frontend Angular. Los datos se mantienen en memoria y se reinician al parar el servidor.
  * OpenAPI spec version: 1.0.0
  */
-import { HttpClient, HttpHeaders, httpResource } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  httpResource
+} from '@angular/common/http';
 import type {
   HttpContext,
   HttpEvent,
   HttpParams,
   HttpResourceOptions,
   HttpResourceRef,
-  HttpResourceRequest,
+  HttpResourceRequest
 } from '@angular/common/http';
 
-import { Injectable, inject } from '@angular/core';
-import type { ResourceStatus, Signal } from '@angular/core';
+import {
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
 
-import type { Observable } from 'rxjs';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
+import type {
+  ResourceStatus,
+  Signal
+} from '@angular/core';
 
-import { Product, ProductPage } from '../schemas';
+import type {
+  Observable
+} from 'rxjs';
+
+import {
+  Product,
+  ProductPage
+} from '../schemas';
 import type {
   ListProductsParams,
   ProductInput,
   ProductOutput,
-  ProductPageOutput,
+  ProductPageOutput
 } from '../schemas';
 
-import { map } from 'rxjs';
+import {
+  map
+} from 'rxjs';
 
-import { ANGULAR_BASE_BASE_URL } from '../client.base-url';
 
-import { HttpResponse as AngularHttpResponse } from '@angular/common/http';
 
-/**
- *
- */
 export interface OrvalHttpResourceRequestExtension {
   /** Extra headers merged over generated headers. Pass a function to read signals reactively. */
   headers?: HttpResourceRequest['headers'] | (() => HttpResourceRequest['headers']);
@@ -46,16 +62,10 @@ export interface OrvalHttpResourceRequestExtension {
   request?: (request: HttpResourceRequest) => HttpResourceRequest;
 }
 
-/**
- *
- */
-export type OrvalHttpResourceOptions<
-  TValue,
-  TRaw = unknown,
-  TOmitParse extends boolean = true,
-> = (TOmitParse extends true
-  ? Omit<HttpResourceOptions<TValue, TRaw>, 'parse'>
-  : HttpResourceOptions<TValue, TRaw>) &
+export type OrvalHttpResourceOptions<TValue, TRaw = unknown, TOmitParse extends boolean = true> =
+  (TOmitParse extends true
+    ? Omit<HttpResourceOptions<TValue, TRaw>, 'parse'>
+    : HttpResourceOptions<TValue, TRaw>) &
   OrvalHttpResourceRequestExtension;
 
 function mergeOrvalResourceHeaders(
@@ -64,7 +74,9 @@ function mergeOrvalResourceHeaders(
 ): NonNullable<HttpResourceRequest['headers']> {
   if (!base) return extra;
   if (base instanceof HttpHeaders || extra instanceof HttpHeaders) {
-    const toHeaderValue = (value: string | readonly string[]): string | string[] =>
+    const toHeaderValue = (
+      value: string | readonly string[],
+    ): string | string[] =>
       Array.isArray(value) ? Array.from(value, String) : String(value);
     let merged =
       base instanceof HttpHeaders
@@ -89,9 +101,6 @@ function mergeOrvalResourceHeaders(
   return { ...base, ...extra };
 }
 
-/**
- *
- */
 export function applyOrvalRequestExtension(
   request: string | HttpResourceRequest,
   options?: OrvalHttpResourceRequestExtension,
@@ -106,18 +115,20 @@ export function applyOrvalRequestExtension(
     return base;
   }
   let next: HttpResourceRequest = { ...base };
-  const extraHeaders = typeof options.headers === 'function' ? options.headers() : options.headers;
+  const extraHeaders =
+    typeof options.headers === 'function' ? options.headers() : options.headers;
   if (extraHeaders) {
     next = { ...next, headers: mergeOrvalResourceHeaders(next.headers, extraHeaders) };
   }
-  const context = typeof options.context === 'function' ? options.context() : options.context;
+  const context =
+    typeof options.context === 'function' ? options.context() : options.context;
   if (context !== undefined) {
     next = { ...next, context };
   }
   return options.request ? options.request(next) : next;
 }
 
-type AngularHttpParamValue = string | number | boolean | (string | number | boolean)[];
+type AngularHttpParamValue = string | number | boolean | Array<string | number | boolean>;
 type AngularHttpParamValueWithNullable = AngularHttpParamValue | null;
 
 function filterParams(
@@ -162,9 +173,9 @@ function filterParams(
               typeof item === 'boolean' ||
               (item instanceof Date && !Number.isNaN(item.getTime()))),
         )
-        .map((item) => (item instanceof Date ? item.toISOString() : item)) as (
-        string | number | boolean
-      )[];
+        .map((item) =>
+          item instanceof Date ? item.toISOString() : item,
+        ) as Array<string | number | boolean>;
       if (filtered.length) {
         filteredParams[key] = filtered;
       }
@@ -180,7 +191,9 @@ function filterParams(
       filteredParams[key] = value.toISOString();
     } else if (
       value != null &&
-      (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
     ) {
       filteredParams[key] = value;
     }
@@ -190,70 +203,47 @@ function filterParams(
 /**
  * @remarks httpResource is available in Angular 19.2 and later.
  */
-export function listProductsResource(
-  params: Signal<ListProductsParams> | undefined,
-  options: OrvalHttpResourceOptions<ProductPageOutput> & {
-    defaultValue: NoInfer<ProductPageOutput>;
-  },
-): HttpResourceRef<ProductPageOutput>;
-export function listProductsResource(
-  params?: Signal<ListProductsParams>,
-  options?: OrvalHttpResourceOptions<ProductPageOutput>,
-): HttpResourceRef<ProductPageOutput | undefined>;
-export function listProductsResource(
-  params?: Signal<ListProductsParams>,
-  options?: OrvalHttpResourceOptions<ProductPageOutput>,
-): HttpResourceRef<ProductPageOutput | undefined> {
-  const baseUrl = options?.injector
-    ? options.injector.get(ANGULAR_BASE_BASE_URL)
-    : inject(ANGULAR_BASE_BASE_URL);
-  return httpResource<ProductPageOutput>(
-    () => {
-      const request = {
-        url: `${baseUrl}/api/v1/products`,
-        params: filterParams(params?.() ?? {}, new Set<string>([])),
-      };
-      return applyOrvalRequestExtension(request, options);
-    },
-    {
-      ...(options ?? {}),
-      parse: ProductPage.parse,
-    },
-  );
+export function listProductsResource(params: Signal<ListProductsParams> | undefined,
+  options: OrvalHttpResourceOptions<ProductPageOutput, unknown, true> & { defaultValue: NoInfer<ProductPageOutput> }): HttpResourceRef<ProductPageOutput>;
+export function listProductsResource(params?: Signal<ListProductsParams>,
+  options?: OrvalHttpResourceOptions<ProductPageOutput, unknown, true>): HttpResourceRef<ProductPageOutput | undefined>;
+export function listProductsResource(params?: Signal<ListProductsParams>,
+  options?: OrvalHttpResourceOptions<ProductPageOutput, unknown, true>): HttpResourceRef<ProductPageOutput | undefined> {
+  return httpResource<ProductPageOutput>(() => {
+
+    const request = ({
+      url: `/api/v1/products`,
+      params: filterParams(params?.() ?? {}, new Set<string>([]))
+    });
+    return applyOrvalRequestExtension(request, options);
+  }, {
+    ...(options ?? {}),
+    parse: ProductPage.parse
+  });
 }
 
 /**
  * @remarks httpResource is available in Angular 19.2 and later.
  */
-export function getProductResource(
-  productId: Signal<string>,
-  options: OrvalHttpResourceOptions<ProductOutput> & { defaultValue: NoInfer<ProductOutput> },
-): HttpResourceRef<ProductOutput>;
-export function getProductResource(
-  productId: Signal<string>,
-  options?: OrvalHttpResourceOptions<ProductOutput>,
-): HttpResourceRef<ProductOutput | undefined>;
-export function getProductResource(
-  productId: Signal<string>,
-  options?: OrvalHttpResourceOptions<ProductOutput>,
-): HttpResourceRef<ProductOutput | undefined> {
-  const baseUrl = options?.injector
-    ? options.injector.get(ANGULAR_BASE_BASE_URL)
-    : inject(ANGULAR_BASE_BASE_URL);
-  return httpResource<ProductOutput>(
-    () => applyOrvalRequestExtension(`${baseUrl}/api/v1/products/${productId()}`, options),
-    {
-      ...(options ?? {}),
-      parse: Product.parse,
-    },
-  );
+export function getProductResource(productId: Signal<string>,
+  options: OrvalHttpResourceOptions<ProductOutput, unknown, true> & { defaultValue: NoInfer<ProductOutput> }): HttpResourceRef<ProductOutput>;
+export function getProductResource(productId: Signal<string>,
+  options?: OrvalHttpResourceOptions<ProductOutput, unknown, true>): HttpResourceRef<ProductOutput | undefined>;
+export function getProductResource(productId: Signal<string>,
+  options?: OrvalHttpResourceOptions<ProductOutput, unknown, true>): HttpResourceRef<ProductOutput | undefined> {
+  return httpResource<ProductOutput>(() => applyOrvalRequestExtension(`/api/v1/products/${productId()}`, options), {
+    ...(options ?? {}),
+    parse: Product.parse
+  });
 }
+
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-    HttpParams | Record<string, string | number | boolean | (string | number | boolean)[]>;
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -265,7 +255,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: { includeHeaders?: string[] } | boolean;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
   readonly timeout?: number;
 }
 
@@ -285,156 +275,126 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
+
+
+
+
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = inject(ANGULAR_BASE_BASE_URL);
 
+ createProduct(productInput: ProductInput, options?: HttpClientBodyOptions): Observable<ProductOutput>;
+ createProduct(productInput: ProductInput, options?: HttpClientEventOptions): Observable<HttpEvent<ProductOutput>>;
+ createProduct(productInput: ProductInput, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<ProductOutput>>;
   createProduct(
-    productInput: ProductInput,
-    options?: HttpClientBodyOptions,
-  ): Observable<ProductOutput>;
-  createProduct(
-    productInput: ProductInput,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<ProductOutput>>;
-  createProduct(
-    productInput: ProductInput,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<ProductOutput>>;
-  createProduct(
-    productInput: ProductInput,
-    options?: HttpClientObserveOptions,
-  ): Observable<ProductOutput | HttpEvent<ProductOutput> | AngularHttpResponse<ProductOutput>> {
+    productInput: ProductInput, options?: HttpClientObserveOptions): Observable<ProductOutput | HttpEvent<ProductOutput> | AngularHttpResponse<ProductOutput>> {
     if (options?.observe === 'events') {
-      return this.http
-        .post<ProductOutput>(`${this.baseUrl}/api/v1/products`, productInput, {
-          ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-          observe: 'events',
-        })
-        .pipe(
-          map((event) =>
-            event instanceof AngularHttpResponse
-              ? event.clone({ body: Product.parse(event.body) })
-              : event,
-          ),
-        );
-    }
-
-    if (options?.observe === 'response') {
-      return this.http
-        .post<ProductOutput>(`${this.baseUrl}/api/v1/products`, productInput, {
-          ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-          observe: 'response',
-        })
-        .pipe(map((response) => response.clone({ body: Product.parse(response.body) })));
-    }
-
-    return this.http
-      .post<ProductOutput>(`${this.baseUrl}/api/v1/products`, productInput, {
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      })
-      .pipe(map((data) => Product.parse(data)));
-  }
-
-  replaceProduct(
-    productId: string,
-    productInput: ProductInput,
-    options?: HttpClientBodyOptions,
-  ): Observable<ProductOutput>;
-  replaceProduct(
-    productId: string,
-    productInput: ProductInput,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<ProductOutput>>;
-  replaceProduct(
-    productId: string,
-    productInput: ProductInput,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<ProductOutput>>;
-  replaceProduct(
-    productId: string,
-    productInput: ProductInput,
-    options?: HttpClientObserveOptions,
-  ): Observable<ProductOutput | HttpEvent<ProductOutput> | AngularHttpResponse<ProductOutput>> {
-    if (options?.observe === 'events') {
-      return this.http
-        .put<ProductOutput>(`${this.baseUrl}/api/v1/products/${productId}`, productInput, {
-          ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-          observe: 'events',
-        })
-        .pipe(
-          map((event) =>
-            event instanceof AngularHttpResponse
-              ? event.clone({ body: Product.parse(event.body) })
-              : event,
-          ),
-        );
-    }
-
-    if (options?.observe === 'response') {
-      return this.http
-        .put<ProductOutput>(`${this.baseUrl}/api/v1/products/${productId}`, productInput, {
-          ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-          observe: 'response',
-        })
-        .pipe(map((response) => response.clone({ body: Product.parse(response.body) })));
-    }
-
-    return this.http
-      .put<ProductOutput>(`${this.baseUrl}/api/v1/products/${productId}`, productInput, {
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      })
-      .pipe(map((data) => Product.parse(data)));
-  }
-
-  deleteProduct<TData = void>(
-    productId: string,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  deleteProduct<TData = void>(
-    productId: string,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  deleteProduct<TData = void>(
-    productId: string,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  deleteProduct<TData = void>(
-    productId: string,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
-    if (options?.observe === 'events') {
-      return this.http.delete<TData>(`${this.baseUrl}/api/v1/products/${productId}`, {
+      return this.http.post<ProductOutput>(
+      `/api/v1/products`,
+      productInput,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    ).pipe(map(event => event instanceof AngularHttpResponse ? event.clone({ body: Product.parse(event.body) }) : event));
     }
 
     if (options?.observe === 'response') {
-      return this.http.delete<TData>(`${this.baseUrl}/api/v1/products/${productId}`, {
+      return this.http.post<ProductOutput>(
+      `/api/v1/products`,
+      productInput,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    ).pipe(map(response => response.clone({ body: Product.parse(response.body) })));
     }
 
-    return this.http.delete<TData>(`${this.baseUrl}/api/v1/products/${productId}`, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+    return this.http.post<ProductOutput>(
+      `/api/v1/products`,
+      productInput,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    ).pipe(map(data => Product.parse(data)));
   }
-}
 
-/**
- *
- */
-export type ListProductsResourceResult = NonNullable<ProductPageOutput>;
-/**
- *
- */
-export type GetProductResourceResult = NonNullable<ProductOutput>;
+ replaceProduct(productId: string,
+    productInput: ProductInput, options?: HttpClientBodyOptions): Observable<ProductOutput>;
+ replaceProduct(productId: string,
+    productInput: ProductInput, options?: HttpClientEventOptions): Observable<HttpEvent<ProductOutput>>;
+ replaceProduct(productId: string,
+    productInput: ProductInput, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<ProductOutput>>;
+  replaceProduct(
+    productId: string,
+    productInput: ProductInput, options?: HttpClientObserveOptions): Observable<ProductOutput | HttpEvent<ProductOutput> | AngularHttpResponse<ProductOutput>> {
+    if (options?.observe === 'events') {
+      return this.http.put<ProductOutput>(
+      `/api/v1/products/${productId}`,
+      productInput,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    ).pipe(map(event => event instanceof AngularHttpResponse ? event.clone({ body: Product.parse(event.body) }) : event));
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<ProductOutput>(
+      `/api/v1/products/${productId}`,
+      productInput,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    ).pipe(map(response => response.clone({ body: Product.parse(response.body) })));
+    }
+
+    return this.http.put<ProductOutput>(
+      `/api/v1/products/${productId}`,
+      productInput,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    ).pipe(map(data => Product.parse(data)));
+  }
+
+ deleteProduct<TData = void>(productId: string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteProduct<TData = void>(productId: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteProduct<TData = void>(productId: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  deleteProduct<TData = void>(
+    productId: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.delete<TData>(
+      `/api/v1/products/${productId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.delete<TData>(
+      `/api/v1/products/${productId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.delete<TData>(
+      `/api/v1/products/${productId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+
+};
+
+export type ListProductsResourceResult = NonNullable<ProductPageOutput>
+export type GetProductResourceResult = NonNullable<ProductOutput>
+
+
+
+
+
 
 /**
  * Utility type for httpResource results with status tracking.
@@ -452,9 +412,6 @@ export interface ResourceState<T> {
   readonly reload: () => boolean;
 }
 
-/**
- *
- */
 export interface ResolvedResourceState<T> extends ResourceState<T> {
   readonly value: Signal<Exclude<T, undefined>>;
 }

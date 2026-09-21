@@ -15,9 +15,6 @@ export default defineConfig({
       },
       override: {
         angular: {
-          baseUrl: {
-            apiId: 'angularBase',
-          },
           retrievalClient: 'httpResource',
           runtimeValidation: true,
         },
