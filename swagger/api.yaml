@@ -1,0 +1,376 @@
+{
+  'openapi': '3.0.3',
+  'info':
+    {
+      'title': 'Angular Base API',
+      'version': '1.0.0',
+      'description': 'API de ejemplo para integrar el frontend Angular. Los datos se mantienen en memoria y se reinician al parar el servidor.',
+    },
+  'servers': [{ 'url': 'http://localhost:3000', 'description': 'Desarrollo local' }],
+  'tags': [{ 'name': 'Products', 'description': 'Catálogo de productos.' }],
+  'paths':
+    {
+      '/api/v1/products':
+        {
+          'get':
+            {
+              'tags': ['Products'],
+              'summary': 'Lista productos con filtros, ordenación y paginación',
+              'operationId': 'listProducts',
+              'parameters':
+                [
+                  {
+                    'name': 'page',
+                    'in': 'query',
+                    'description': 'Página a partir de 1.',
+                    'required': false,
+                    'schema': { 'type': 'integer', 'format': 'int32', 'minimum': 1, 'default': 1 },
+                  },
+                  {
+                    'name': 'pageSize',
+                    'in': 'query',
+                    'description': 'Elementos por página.',
+                    'required': false,
+                    'schema':
+                      {
+                        'type': 'integer',
+                        'format': 'int32',
+                        'minimum': 1,
+                        'maximum': 100,
+                        'default': 10,
+                      },
+                  },
+                  {
+                    'name': 'sortBy',
+                    'in': 'query',
+                    'description': 'Campo de ordenación.',
+                    'required': false,
+                    'schema':
+                      {
+                        'type': 'string',
+                        'enum': ['name', 'price', 'stock', 'status', 'createdAt'],
+                        'default': 'createdAt',
+                      },
+                  },
+                  {
+                    'name': 'sortDirection',
+                    'in': 'query',
+                    'description': 'Sentido de ordenación.',
+                    'required': false,
+                    'schema': { 'type': 'string', 'enum': ['asc', 'desc'], 'default': 'desc' },
+                  },
+                  {
+                    'name': 'search',
+                    'in': 'query',
+                    'description': 'Busca por nombre, SKU o descripción.',
+                    'required': false,
+                    'schema': { 'type': 'string', 'minLength': 1, 'maxLength': 120 },
+                  },
+                  {
+                    'name': 'status',
+                    'in': 'query',
+                    'description': 'Filtra por estado.',
+                    'required': false,
+                    'schema': { 'type': 'string', 'enum': ['ACTIVE', 'INACTIVE', 'DISCONTINUED'] },
+                  },
+                  {
+                    'name': 'minPrice',
+                    'in': 'query',
+                    'description': 'Precio mínimo inclusivo.',
+                    'required': false,
+                    'schema': { 'type': 'number', 'format': 'double', 'minimum': 0 },
+                  },
+                  {
+                    'name': 'maxPrice',
+                    'in': 'query',
+                    'description': 'Precio máximo inclusivo.',
+                    'required': false,
+                    'schema': { 'type': 'number', 'format': 'double', 'minimum': 0 },
+                  },
+                  {
+                    'name': 'inStock',
+                    'in': 'query',
+                    'description': 'true incluye existencias; false solo productos agotados.',
+                    'required': false,
+                    'schema': { 'type': 'boolean' },
+                  },
+                ],
+              'responses':
+                {
+                  '200':
+                    {
+                      'description': 'Página de productos.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/ProductPage' } },
+                        },
+                    },
+                  '400':
+                    {
+                      'description': 'Consulta no válida.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Error' } },
+                        },
+                    },
+                },
+            },
+          'post':
+            {
+              'tags': ['Products'],
+              'summary': 'Crea un producto',
+              'operationId': 'createProduct',
+              'requestBody':
+                {
+                  'required': true,
+                  'content':
+                    {
+                      'application/json':
+                        { 'schema': { '$ref': '#/components/schemas/ProductInput' } },
+                    },
+                },
+              'responses':
+                {
+                  '201':
+                    {
+                      'description': 'Producto creado.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Product' } },
+                        },
+                    },
+                  '400':
+                    {
+                      'description': 'Cuerpo no válido.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Error' } },
+                        },
+                    },
+                },
+            },
+        },
+      '/api/v1/products/{productId}':
+        {
+          'parameters':
+            [
+              {
+                'name': 'productId',
+                'in': 'path',
+                'description': 'Identificador del producto.',
+                'required': true,
+                'schema': { 'type': 'string', 'format': 'uuid' },
+              },
+            ],
+          'get':
+            {
+              'tags': ['Products'],
+              'summary': 'Obtiene un producto',
+              'operationId': 'getProduct',
+              'responses':
+                {
+                  '200':
+                    {
+                      'description': 'Producto encontrado.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Product' } },
+                        },
+                    },
+                  '404':
+                    {
+                      'description': 'No existe.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Error' } },
+                        },
+                    },
+                },
+            },
+          'put':
+            {
+              'tags': ['Products'],
+              'summary': 'Sustituye un producto',
+              'operationId': 'replaceProduct',
+              'requestBody':
+                {
+                  'required': true,
+                  'content':
+                    {
+                      'application/json':
+                        { 'schema': { '$ref': '#/components/schemas/ProductInput' } },
+                    },
+                },
+              'responses':
+                {
+                  '200':
+                    {
+                      'description': 'Producto actualizado.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Product' } },
+                        },
+                    },
+                  '400':
+                    {
+                      'description': 'Cuerpo no válido.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Error' } },
+                        },
+                    },
+                  '404':
+                    {
+                      'description': 'No existe.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Error' } },
+                        },
+                    },
+                },
+            },
+          'delete':
+            {
+              'tags': ['Products'],
+              'summary': 'Elimina un producto',
+              'operationId': 'deleteProduct',
+              'responses':
+                {
+                  '204': { 'description': 'Producto eliminado.' },
+                  '404':
+                    {
+                      'description': 'No existe.',
+                      'content':
+                        {
+                          'application/json':
+                            { 'schema': { '$ref': '#/components/schemas/Error' } },
+                        },
+                    },
+                },
+            },
+        },
+    },
+  'components':
+    {
+      'schemas':
+        {
+          'ProductInput':
+            {
+              'type': 'object',
+              'additionalProperties': false,
+              'required': ['name', 'description', 'sku', 'price', 'stock', 'status'],
+              'properties':
+                {
+                  'name':
+                    {
+                      'type': 'string',
+                      'minLength': 2,
+                      'maxLength': 120,
+                      'example': 'Teclado mecánico',
+                    },
+                  'description':
+                    {
+                      'type': 'string',
+                      'nullable': true,
+                      'maxLength': 1000,
+                      'example': 'Interruptores táctiles y distribución ISO.',
+                    },
+                  'sku': { 'type': 'string', 'pattern': '^[A-Z0-9-]{3,32}$', 'example': 'KEY-001' },
+                  'price': { 'type': 'number', 'format': 'double', 'minimum': 0, 'example': 89.95 },
+                  'stock':
+                    {
+                      'type': 'integer',
+                      'format': 'int32',
+                      'minimum': 0,
+                      'maximum': 2147483647,
+                      'example': 24,
+                    },
+                  'status':
+                    {
+                      'type': 'string',
+                      'enum': ['ACTIVE', 'INACTIVE', 'DISCONTINUED'],
+                      'example': 'ACTIVE',
+                    },
+                },
+            },
+          'Product':
+            {
+              'type': 'object',
+              'additionalProperties': false,
+              'required':
+                [
+                  'id',
+                  'name',
+                  'description',
+                  'sku',
+                  'price',
+                  'stock',
+                  'status',
+                  'createdAt',
+                  'updatedAt',
+                ],
+              'properties':
+                {
+                  'id': { 'type': 'string', 'format': 'uuid', 'readOnly': true },
+                  'name': { 'type': 'string', 'minLength': 2, 'maxLength': 120 },
+                  'description': { 'type': 'string', 'nullable': true, 'maxLength': 1000 },
+                  'sku': { 'type': 'string', 'pattern': '^[A-Z0-9-]{3,32}$' },
+                  'price': { 'type': 'number', 'format': 'double', 'minimum': 0 },
+                  'stock':
+                    { 'type': 'integer', 'format': 'int32', 'minimum': 0, 'maximum': 2147483647 },
+                  'status': { 'type': 'string', 'enum': ['ACTIVE', 'INACTIVE', 'DISCONTINUED'] },
+                  'createdAt': { 'type': 'string', 'format': 'date-time', 'readOnly': true },
+                  'updatedAt': { 'type': 'string', 'format': 'date-time', 'readOnly': true },
+                },
+            },
+          'Pagination':
+            {
+              'type': 'object',
+              'required':
+                ['page', 'pageSize', 'totalItems', 'totalPages', 'hasNextPage', 'hasPreviousPage'],
+              'properties':
+                {
+                  'page': { 'type': 'integer', 'format': 'int32', 'minimum': 1 },
+                  'pageSize':
+                    { 'type': 'integer', 'format': 'int32', 'minimum': 1, 'maximum': 100 },
+                  'totalItems': { 'type': 'integer', 'format': 'int32', 'minimum': 0 },
+                  'totalPages': { 'type': 'integer', 'format': 'int32', 'minimum': 0 },
+                  'hasNextPage': { 'type': 'boolean' },
+                  'hasPreviousPage': { 'type': 'boolean' },
+                },
+            },
+          'ProductPage':
+            {
+              'type': 'object',
+              'required': ['data', 'pagination'],
+              'properties':
+                {
+                  'data': { 'type': 'array', 'items': { '$ref': '#/components/schemas/Product' } },
+                  'pagination': { '$ref': '#/components/schemas/Pagination' },
+                },
+            },
+          'Error':
+            {
+              'type': 'object',
+              'required': ['status', 'code', 'message'],
+              'properties':
+                {
+                  'status':
+                    { 'type': 'integer', 'format': 'int32', 'minimum': 400, 'maximum': 599 },
+                  'code': { 'type': 'string', 'example': 'VALIDATION_ERROR' },
+                  'message': { 'type': 'string' },
+                  'details': { 'type': 'object', 'nullable': true, 'additionalProperties': true },
+                },
+            },
+        },
+    },
+}

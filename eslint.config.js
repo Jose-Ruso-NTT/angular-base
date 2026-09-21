@@ -1,12 +1,14 @@
 // @ts-check
 const eslint = require('@eslint/js');
-const { defineConfig } = require('eslint/config');
+const { defineConfig, globalIgnores } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 const prettier = require('eslint-config-prettier');
 const jsdoc = require('eslint-plugin-jsdoc');
 
 module.exports = defineConfig([
+  // Orval recreates these files from the OpenAPI contract; lint only code we own.
+  globalIgnores(['src/app/core/api/generated/**']),
   {
     files: ['**/*.ts'],
     // Enable typed linting via the typescript-eslint Project Service.
