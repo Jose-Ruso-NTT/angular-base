@@ -1,22 +1,77 @@
 :host {
   display: block;
 }
-select {
+.multiselect-trigger {
+  align-items: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border-default);
   border-radius: 0.45rem;
   box-sizing: border-box;
   color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
   font: inherit;
-  min-block-size: 7rem;
-  padding: 0.4rem;
+  justify-content: space-between;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
   width: 100%;
 }
-select:focus-visible {
+.multiselect-trigger:focus-visible {
   border-color: var(--color-focus);
   box-shadow: 0 0 0 3px var(--color-focus-ring);
   outline: 0;
 }
-select[aria-invalid='true'] {
+.multiselect-trigger[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.6;
+}
+.multiselect-trigger[aria-invalid='true'] {
   border-color: var(--color-action-danger);
+}
+.multiselect-arrow {
+  transition: transform 150ms ease-in-out;
+}
+.multiselect-trigger[aria-expanded='true'] .multiselect-arrow {
+  transform: rotate(180deg);
+}
+.multiselect-popup {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 0.45rem;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+  margin-top: 0.25rem;
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.25rem;
+}
+[ngListbox] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  outline: 0;
+}
+[ngOption] {
+  align-items: center;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+}
+[ngOption]:hover,
+[ngOption][data-active='true'] {
+  background: var(--color-surface-raised, var(--color-surface));
+}
+[ngOption][data-active='true'] {
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+[ngOption][aria-selected='true'] {
+  background: var(--color-focus-ring);
+}
+.multiselect-check {
+  visibility: hidden;
+}
+[ngOption][aria-selected='true'] .multiselect-check {
+  visibility: visible;
 }

@@ -40,7 +40,8 @@ import { AppTime } from './app-time/app-time';
       label="Multi"
       controlId="multi"
       [(value)]="multi"
-      [options]="options"
+      [options]="multiOptions"
+      [optionLabel]="optionLabel"
       testId="multi"
     />
     <app-checkbox label="Enabled" controlId="enabled" [(checked)]="enabled" testId="enabled" />
@@ -60,13 +61,18 @@ class FormControlsHost {
   readonly time = signal('09:30');
   readonly notes = signal('note');
   readonly select = signal('one');
-  readonly multi = signal(['one']);
+  readonly multiOptions = [
+    { id: 'one', label: 'One' },
+    { id: 'two', label: 'Two' },
+  ];
+  readonly multi = signal([this.multiOptions[0]]);
   readonly enabled = signal(false);
   readonly priority = signal('one');
   readonly options = [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
   ];
+  readonly optionLabel = (option: (typeof this.multiOptions)[number]) => option.label;
 }
 
 @Component({
@@ -99,7 +105,7 @@ function getRequiredElement(root: ParentNode, selector: string): Element {
 }
 
 describe('form controls', () => {
-  it('uses native values and exposes accessible native controls', () => {
+  it('uses accessible controls and propagates their values', () => {
     const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
       FormControlsHost,
     );
@@ -114,7 +120,7 @@ describe('form controls', () => {
     const time = getRequiredElement(nativeElement, '#time') as HTMLInputElement;
     const textarea = getRequiredElement(nativeElement, '#notes') as HTMLTextAreaElement;
     const select = getRequiredElement(nativeElement, '#select') as HTMLSelectElement;
-    const multi = getRequiredElement(nativeElement, '#multi') as HTMLSelectElement;
+    const multi = getRequiredElement(nativeElement, '#multi') as HTMLElement;
     const checkbox = getRequiredElement(nativeElement, '#enabled') as HTMLInputElement;
     const radio = getRequiredElement(nativeElement, '#priority-option-1') as HTMLInputElement;
 
@@ -133,9 +139,13 @@ describe('form controls', () => {
     textarea.dispatchEvent(new Event('input'));
     select.value = 'two';
     select.dispatchEvent(new Event('change'));
-    multi.options[0].selected = false;
-    multi.options[1].selected = true;
-    multi.dispatchEvent(new Event('change'));
+    multi.click();
+    fixture.detectChanges();
+    const secondMultiOption = Array.from(document.querySelectorAll('[role="option"]')).find(
+      (option) => option.textContent.includes('Two'),
+    ) as HTMLElement | undefined;
+    if (secondMultiOption === undefined) throw new Error('Missing multi-select option Two');
+    secondMultiOption.click();
     checkbox.checked = true;
     checkbox.dispatchEvent(new Event('change'));
     radio.checked = true;
@@ -147,7 +157,7 @@ describe('form controls', () => {
     expect(host.time()).toBe('14:45');
     expect(host.notes()).toBe('changed note');
     expect(host.select()).toBe('two');
-    expect(host.multi()).toEqual(['two']);
+    expect(host.multi()).toEqual([host.multiOptions[0], host.multiOptions[1]]);
     expect(host.enabled()).toBe(true);
     expect(host.priority()).toBe('two');
   });
