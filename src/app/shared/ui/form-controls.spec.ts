@@ -57,6 +57,7 @@ import { AppTime } from './app-time/app-time';
       controlId="priority"
       [(value)]="priority"
       [options]="options"
+      orientation="horizontal"
       testId="priority"
     />
     <app-radio-group
@@ -150,6 +151,19 @@ describe('form controls', () => {
     ) as HTMLInputElement;
 
     expect(nativeElement.querySelector('label[for="text"]')?.textContent).toContain('Text');
+    expect(
+      nativeElement
+        .querySelector('fieldset[data-testid="priority"] .options')
+        ?.classList.contains('options-horizontal'),
+    ).toBe(true);
+    expect(
+      nativeElement
+        .querySelector('fieldset[data-testid="numeric-priority"] .options')
+        ?.classList.contains('options-horizontal'),
+    ).toBe(false);
+    expect(nativeElement.querySelector('label[for="multi"]')).toBeNull();
+    expect(nativeElement.querySelector('label#multi-label')?.textContent).toContain('Multi');
+    expect(multi.getAttribute('aria-labelledby')).toBe('multi-label');
     expect(nativeElement.innerHTML).toContain('Help');
 
     text.value = 'changed';

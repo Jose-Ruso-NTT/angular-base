@@ -9,7 +9,7 @@ import { injectFieldState } from '../form-field/field-state';
   styleUrl: './app-field-shell.css',
   template: `
     <div class="field">
-      <label [for]="controlId()">
+      <label [id]="labelId()" [attr.for]="labelFor() === undefined ? controlId() : labelFor()">
         {{ label() }}
         @if (required()) {
           <span aria-hidden="true">*</span>
@@ -27,8 +27,16 @@ export class AppFieldShell {
   readonly label = input.required<string>();
   /** Identifier shared by label, control and support text. */
   readonly controlId = input.required<string>();
+  /**
+   * Native control associated with the label. Use `null` for ARIA widgets,
+   * which are labelled through `aria-labelledby` instead.
+   */
+  readonly labelFor = input<string | null>();
   /** Help text displayed until validation feedback is shown. */
   readonly hint = input('');
+
+  /** Identifier exposed so ARIA widgets can reference the visible label. */
+  protected readonly labelId = () => `${this.controlId()}-label`;
 
   protected readonly required = this.field.required;
 }

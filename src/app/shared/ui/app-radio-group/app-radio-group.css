@@ -26,6 +26,13 @@ legend {
   margin-block-start: 0.4rem;
 }
 
+.options-horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+}
+
 .options label {
   align-items: center;
   color: var(--color-text-primary);

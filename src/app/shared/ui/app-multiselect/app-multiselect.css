@@ -14,7 +14,14 @@
   justify-content: space-between;
   min-height: 2.75rem;
   padding: 0.65rem 0.75rem;
+  -webkit-user-select: none;
+  user-select: none;
   width: 100%;
+}
+.multiselect-trigger span {
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .multiselect-trigger:focus-visible {
   border-color: var(--color-focus);
@@ -38,11 +45,13 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border-default);
   border-radius: 0.45rem;
+  box-sizing: border-box;
   box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
   margin-top: 0.25rem;
   max-height: 14rem;
   overflow: auto;
   padding: 0.25rem;
+  width: 100%;
 }
 [ngListbox] {
   display: flex;

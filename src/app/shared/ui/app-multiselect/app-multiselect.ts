@@ -12,7 +12,7 @@ import { injectFieldState } from '../form-field/field-state';
   imports: [AppFieldShell, Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule],
   styleUrl: './app-multiselect.css',
   template: `
-    <app-field-shell [label]="label()" [controlId]="controlId()" [hint]="hint()">
+    <app-field-shell [label]="label()" [controlId]="controlId()" [labelFor]="null" [hint]="hint()">
       <div
         #combobox="ngCombobox"
         ngCombobox
@@ -23,6 +23,7 @@ import { injectFieldState } from '../form-field/field-state';
         [preserveContent]="true"
         class="multiselect-trigger"
         [attr.aria-describedby]="describedBy()"
+        [attr.aria-labelledby]="labelId()"
         [attr.aria-invalid]="showError()"
         [attr.aria-required]="fieldRequired()"
         [attr.data-testid]="testId()"
@@ -32,7 +33,8 @@ import { injectFieldState } from '../form-field/field-state';
       </div>
 
       <ng-template
-        [cdkConnectedOverlay]="{ origin: combobox.element, usePopover: 'inline', matchWidth: true }"
+        [cdkConnectedOverlay]="{ origin: combobox.element, usePopover: 'inline' }"
+        [cdkConnectedOverlayMatchWidth]="true"
         [cdkConnectedOverlayOpen]="popupExpanded()"
       >
         <ng-template ngComboboxPopup [combobox]="combobox">
@@ -67,7 +69,7 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
 
   readonly combobox = viewChild.required<Combobox>('combobox');
 
-  /** Label visibly associated with the native multi-select. */
+  /** Label visibly associated with the ARIA combobox trigger. */
   readonly label = input.required<string>();
   /** Identifier shared by label, select and support text. */
   readonly controlId = input.required<string>();
@@ -102,6 +104,7 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
     if (this.hint()) return `${this.controlId()}-hint`;
     return null;
   });
+  protected readonly labelId = computed(() => `${this.controlId()}-label`);
 
   /** Focuses the ARIA combobox trigger used by this custom form control. */
   focus(options?: FocusOptions): void {

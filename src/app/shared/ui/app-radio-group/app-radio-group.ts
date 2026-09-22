@@ -12,6 +12,9 @@ export interface RadioOption<T extends SelectValue = string> {
   readonly label: string;
 }
 
+/** Visual arrangement available for the radio options. */
+export type RadioGroupOrientation = 'horizontal' | 'vertical';
+
 /** Accessible native radio-group wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-radio-group',
@@ -33,7 +36,7 @@ export interface RadioOption<T extends SelectValue = string> {
             <span aria-hidden="true">*</span>
           }
         </legend>
-        <div class="options">
+        <div class="options" [class.options-horizontal]="orientation() === 'horizontal'">
           @for (option of options(); track option.value; let index = $index) {
             <label [for]="optionId(index)">
               <input
@@ -67,6 +70,8 @@ export class AppRadioGroup<T extends SelectValue = string> implements FormValueC
   readonly value = model.required<T>();
   /** Values available for selection. */
   readonly options = input.required<readonly RadioOption<T>[]>();
+  /** Visual arrangement of the radio options. */
+  readonly orientation = input<RadioGroupOrientation>('vertical');
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
   /** Notifies Signal Forms that focus left a radio option. */
