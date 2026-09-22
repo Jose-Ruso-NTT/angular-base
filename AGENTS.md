@@ -64,3 +64,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Add consumer-facing TSDoc (`/** ... */`) to public `input()`, `output()`, and `model()` members of reusable components, exported types, and public service methods.
 - Explain behavior, defaults, valid values, emitted payloads, side effects, and units when they matter to consumers.
 - Do not add comments that merely restate code. Document private or internal code only when its intent or trade-off is not obvious.
+
+## Shared UI
+
+- Before creating or using a shared UI component, read the colocated `README.md` in its component directory. Form controls are documented together in `src/app/shared/ui/form-controls/README.md`.
+- For a feature that combines a table/list, filters, and a create or edit modal, use the local `ui-table-filters-modal` skill. Its code pattern lives with the skill and is not coupled to a feature implementation.

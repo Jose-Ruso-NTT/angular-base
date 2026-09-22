@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tabla, filtros y modal"
+  short_description: "Crea listados Angular siguiendo el patrón del proyecto"
+  default_prompt: "Usa $ui-table-filters-modal para montar una tabla con filtros y un formulario de alta/edición en modal siguiendo este repositorio."

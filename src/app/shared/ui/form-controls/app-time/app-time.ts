@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
 /** Accessible native time input wrapper for Signal Forms controls. */
 @Component({

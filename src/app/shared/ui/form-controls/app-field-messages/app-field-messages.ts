@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
 /** Renders help text and validation feedback for a Signal Forms control. */
 @Component({

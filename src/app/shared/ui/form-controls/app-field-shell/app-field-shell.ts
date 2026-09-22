@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { AppFieldMessages } from '../app-field-messages/app-field-messages';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
 /** Shared label and validation-message layout for standard form controls. */
 @Component({

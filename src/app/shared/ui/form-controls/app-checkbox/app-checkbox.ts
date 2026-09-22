@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormCheckboxControl } from '@angular/forms/signals';
 import { AppFieldMessages } from '../app-field-messages/app-field-messages';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
 /** Accessible checkbox wrapper for Signal Forms controls. */
 @Component({

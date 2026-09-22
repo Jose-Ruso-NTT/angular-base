@@ -15,9 +15,9 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { ProductsService } from '../../core/api/generated';
 import type { ProductInput, ProductOutput } from '../../core/api/generated/schemas';
-import { AppInput } from '../../shared/ui/app-input/app-input';
-import { AppNumber } from '../../shared/ui/app-number/app-number';
-import { AppSelect, type SelectOption } from '../../shared/ui/app-select/app-select';
+import { AppInput } from '../../shared/ui/form-controls/app-input/app-input';
+import { AppNumber } from '../../shared/ui/form-controls/app-number/app-number';
+import { AppSelect, type SelectOption } from '../../shared/ui/form-controls/app-select/app-select';
 import { APP_DIALOG_DATA, AppDialogRef } from '../../shared/ui/dialog/app-dialog.service';
 import { focusBoundControl } from '../../shared/forms/focus-bound-control';
 import { AppAlert } from '../../shared/ui/alert/app-alert';

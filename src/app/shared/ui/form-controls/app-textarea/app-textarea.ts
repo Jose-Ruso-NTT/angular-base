@@ -1,58 +1,51 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
-/** Accessible native number input wrapper for Signal Forms controls. */
+/** Accessible native textarea wrapper for Signal Forms controls. */
 @Component({
-  selector: 'app-number',
+  selector: 'app-textarea',
   imports: [AppFieldShell],
-  styleUrl: './app-number.css',
+  styleUrl: './app-textarea.css',
   template: `
     <app-field-shell [label]="label()" [controlId]="controlId()" [hint]="hint()">
-      <input
-        #input
+      <textarea
+        #textarea
         [id]="controlId()"
-        type="number"
-        [value]="value() ?? ''"
-        (input)="setNativeValue(input.valueAsNumber)"
+        [value]="value()"
+        (input)="value.set(textarea.value)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [readonly]="fieldReadonly()"
+        [rows]="rows()"
         [attr.placeholder]="placeholder() || null"
-        [attr.min]="min()"
-        [attr.max]="max()"
-        [attr.step]="step()"
         [attr.aria-describedby]="describedBy()"
         [attr.aria-invalid]="showError()"
         [attr.aria-required]="fieldRequired()"
         [attr.data-testid]="testId()"
-      />
+      ></textarea>
     </app-field-shell>
   `,
 })
-export class AppNumber implements FormValueControl<number | null> {
+export class AppTextarea implements FormValueControl<string> {
   private readonly field = injectFieldState();
 
-  readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
+  readonly textarea = viewChild.required<ElementRef<HTMLTextAreaElement>>('textarea');
 
-  /** Label visibly associated with the native number input. */
+  /** Label visibly associated with the textarea. */
   readonly label = input.required<string>();
-  /** Identifier shared by label, input and support text. */
+  /** Identifier shared by label, textarea and support text. */
   readonly controlId = input.required<string>();
-  /** Numeric value managed by the parent Signal Form. */
-  readonly value = model.required<number | null>();
+  /** Text value managed by the parent Signal Form. */
+  readonly value = model.required<string>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
+  /** Number of visible text rows. */
+  readonly rows = input(3);
   /** Text shown when the field has no value. */
   readonly placeholder = input('');
-  /** Minimum native value. */
-  readonly min = input<number | undefined>(undefined);
-  /** Maximum native value. */
-  readonly max = input<number | undefined>(undefined);
-  /** Native number increment. */
-  readonly step = input<number | 'any' | undefined>(undefined);
-  /** Notifies Signal Forms that the native input lost focus. */
+  /** Notifies Signal Forms that the textarea lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
   readonly testId = input.required<string>();
@@ -67,13 +60,8 @@ export class AppNumber implements FormValueControl<number | null> {
     return null;
   });
 
-  /** Updates the form with a native numeric value, treating an empty value as null. */
-  protected setNativeValue(nativeValue: number): void {
-    this.value.set(Number.isNaN(nativeValue) ? null : nativeValue);
-  }
-
-  /** Focuses the native number input used by this custom form control. */
+  /** Focuses the native textarea used by this custom form control. */
   focus(options?: FocusOptions): void {
-    this.input().nativeElement.focus(options);
+    this.textarea().nativeElement.focus(options);
   }
 }

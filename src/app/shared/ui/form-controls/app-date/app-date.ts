@@ -1,51 +1,52 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
-/** Accessible native textarea wrapper for Signal Forms controls. */
+/** Accessible native date input wrapper for Signal Forms controls. */
 @Component({
-  selector: 'app-textarea',
+  selector: 'app-date',
   imports: [AppFieldShell],
-  styleUrl: './app-textarea.css',
+  styleUrl: './app-date.css',
   template: `
     <app-field-shell [label]="label()" [controlId]="controlId()" [hint]="hint()">
-      <textarea
-        #textarea
+      <input
+        #input
         [id]="controlId()"
-        [value]="value()"
-        (input)="value.set(textarea.value)"
+        type="date"
+        [valueAsDate]="value()"
+        (input)="value.set(input.valueAsDate)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [readonly]="fieldReadonly()"
-        [rows]="rows()"
-        [attr.placeholder]="placeholder() || null"
+        [attr.min]="nativeMin()"
+        [attr.max]="nativeMax()"
         [attr.aria-describedby]="describedBy()"
         [attr.aria-invalid]="showError()"
         [attr.aria-required]="fieldRequired()"
         [attr.data-testid]="testId()"
-      ></textarea>
+      />
     </app-field-shell>
   `,
 })
-export class AppTextarea implements FormValueControl<string> {
+export class AppDate implements FormValueControl<Date | null> {
   private readonly field = injectFieldState();
 
-  readonly textarea = viewChild.required<ElementRef<HTMLTextAreaElement>>('textarea');
+  readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
-  /** Label visibly associated with the textarea. */
+  /** Label visibly associated with the native date input. */
   readonly label = input.required<string>();
-  /** Identifier shared by label, textarea and support text. */
+  /** Identifier shared by label, input and support text. */
   readonly controlId = input.required<string>();
-  /** Text value managed by the parent Signal Form. */
-  readonly value = model.required<string>();
+  /** Date value managed by the parent Signal Form. */
+  readonly value = model.required<Date | null>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
-  /** Number of visible text rows. */
-  readonly rows = input(3);
-  /** Text shown when the field has no value. */
-  readonly placeholder = input('');
-  /** Notifies Signal Forms that the textarea lost focus. */
+  /** Minimum accepted date. */
+  readonly min = input<Date | undefined>(undefined);
+  /** Maximum accepted date. */
+  readonly max = input<Date | undefined>(undefined);
+  /** Notifies Signal Forms that the native input lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
   readonly testId = input.required<string>();
@@ -54,14 +55,16 @@ export class AppTextarea implements FormValueControl<string> {
   protected readonly fieldReadonly = this.field.readonly;
   protected readonly fieldRequired = this.field.required;
   protected readonly showError = this.field.showError;
+  protected readonly nativeMin = computed(() => this.min()?.toISOString().slice(0, 10));
+  protected readonly nativeMax = computed(() => this.max()?.toISOString().slice(0, 10));
   protected readonly describedBy = computed(() => {
     if (this.showError()) return `${this.controlId()}-error`;
     if (this.hint()) return `${this.controlId()}-hint`;
     return null;
   });
 
-  /** Focuses the native textarea used by this custom form control. */
+  /** Focuses the native date input used by this custom form control. */
   focus(options?: FocusOptions): void {
-    this.textarea().nativeElement.focus(options);
+    this.input().nativeElement.focus(options);
   }
 }

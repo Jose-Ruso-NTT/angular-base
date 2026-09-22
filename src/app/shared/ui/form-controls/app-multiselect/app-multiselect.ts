@@ -4,7 +4,7 @@ import { Listbox, Option } from '@angular/aria/listbox';
 import { Component, computed, input, model, output, signal, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
 /** A selectable value rendered by AppMultiselect. */
 export interface MultiselectOption<T> {

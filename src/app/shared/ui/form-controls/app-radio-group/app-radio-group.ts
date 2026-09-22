@@ -2,7 +2,7 @@ import { Component, computed, ElementRef, input, model, output, viewChild } from
 import { FormValueControl } from '@angular/forms/signals';
 import { type SelectValue } from '../app-select/app-select';
 import { AppFieldMessages } from '../app-field-messages/app-field-messages';
-import { injectFieldState } from '../form-field/field-state';
+import { injectFieldState } from '../field-state';
 
 /** A selectable value rendered by AppRadioGroup. */
 export interface RadioOption<T extends SelectValue = string> {

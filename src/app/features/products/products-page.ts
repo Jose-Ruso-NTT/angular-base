@@ -3,10 +3,10 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot, form, maxLength, min, validate } from '@angular/forms/signals';
 import { listProductsResource, ProductsService } from '../../core/api/generated';
 import type { ListProductsParams, ProductOutput } from '../../core/api/generated/schemas';
-import { AppInput } from '../../shared/ui/app-input/app-input';
-import { AppNumber } from '../../shared/ui/app-number/app-number';
-import { AppCheckbox } from '../../shared/ui/app-checkbox/app-checkbox';
-import { AppSelect, type SelectOption } from '../../shared/ui/app-select/app-select';
+import { AppInput } from '../../shared/ui/form-controls/app-input/app-input';
+import { AppNumber } from '../../shared/ui/form-controls/app-number/app-number';
+import { AppCheckbox } from '../../shared/ui/form-controls/app-checkbox/app-checkbox';
+import { AppSelect, type SelectOption } from '../../shared/ui/form-controls/app-select/app-select';
 import {
   AppDataTable,
   DataTableCellDefDirective,
