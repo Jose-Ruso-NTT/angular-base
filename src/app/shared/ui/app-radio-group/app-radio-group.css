@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+legend {
+  color: var(--color-text-primary);
+  font-weight: 650;
+  padding: 0;
+}
+
+.options {
+  display: grid;
+  gap: 0.5rem;
+  margin-block-start: 0.4rem;
+}
+
+.options label {
+  align-items: center;
+  color: var(--color-text-primary);
+  display: flex;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+}
+
+.options input {
+  block-size: 1.1rem;
+  inline-size: 1.1rem;
+  margin: 0;
+}
+
+.options input:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+fieldset[aria-invalid='true'] {
+  color: var(--color-action-danger);
+}

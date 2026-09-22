@@ -6,6 +6,7 @@ import { AppDate } from './app-date/app-date';
 import { AppInput } from './app-input/app-input';
 import { AppMultiselect } from './app-multiselect/app-multiselect';
 import { AppNumber } from './app-number/app-number';
+import { AppRadioGroup } from './app-radio-group/app-radio-group';
 import { AppSelect } from './app-select/app-select';
 import { AppTextarea } from './app-textarea/app-textarea';
 import { AppTime } from './app-time/app-time';
@@ -14,6 +15,7 @@ import { AppTime } from './app-time/app-time';
   imports: [
     AppInput,
     AppNumber,
+    AppRadioGroup,
     AppDate,
     AppTime,
     AppTextarea,
@@ -42,6 +44,13 @@ import { AppTime } from './app-time/app-time';
       testId="multi"
     />
     <app-checkbox label="Enabled" controlId="enabled" [(checked)]="enabled" testId="enabled" />
+    <app-radio-group
+      label="Priority"
+      controlId="priority"
+      [(value)]="priority"
+      [options]="options"
+      testId="priority"
+    />
   `,
 })
 class FormControlsHost {
@@ -53,6 +62,7 @@ class FormControlsHost {
   readonly select = signal('one');
   readonly multi = signal(['one']);
   readonly enabled = signal(false);
+  readonly priority = signal('one');
   readonly options = [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
@@ -106,6 +116,7 @@ describe('form controls', () => {
     const select = getRequiredElement(nativeElement, '#select') as HTMLSelectElement;
     const multi = getRequiredElement(nativeElement, '#multi') as HTMLSelectElement;
     const checkbox = getRequiredElement(nativeElement, '#enabled') as HTMLInputElement;
+    const radio = getRequiredElement(nativeElement, '#priority-option-1') as HTMLInputElement;
 
     expect(nativeElement.querySelector('label[for="text"]')?.textContent).toContain('Text');
     expect(nativeElement.innerHTML).toContain('Help');
@@ -127,6 +138,8 @@ describe('form controls', () => {
     multi.dispatchEvent(new Event('change'));
     checkbox.checked = true;
     checkbox.dispatchEvent(new Event('change'));
+    radio.checked = true;
+    radio.dispatchEvent(new Event('change'));
 
     expect(host.text()).toBe('changed');
     expect(host.number()).toBeNull();
@@ -136,6 +149,7 @@ describe('form controls', () => {
     expect(host.select()).toBe('two');
     expect(host.multi()).toEqual(['two']);
     expect(host.enabled()).toBe(true);
+    expect(host.priority()).toBe('two');
   });
 
   it('shows Signal Forms errors after blur and replaces the hint', () => {
