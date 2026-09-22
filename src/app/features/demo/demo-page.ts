@@ -1,20 +1,20 @@
 import { JsonPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
-import { AppCheckbox } from '../../shared/ui/form-controls/app-checkbox/app-checkbox';
-import { AppDate } from '../../shared/ui/form-controls/app-date/app-date';
-import { AppInput } from '../../shared/ui/form-controls/app-input/app-input';
+import { AppCheckbox } from '@shared/ui/form-controls/app-checkbox/app-checkbox';
+import { AppDate } from '@shared/ui/form-controls/app-date/app-date';
+import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
 import {
   AppMultiselect,
   type MultiselectOption,
-} from '../../shared/ui/form-controls/app-multiselect/app-multiselect';
-import { AppNumber } from '../../shared/ui/form-controls/app-number/app-number';
+} from '@shared/ui/form-controls/app-multiselect/app-multiselect';
+import { AppNumber } from '@shared/ui/form-controls/app-number/app-number';
 import {
   AppRadioGroup,
   RadioOption,
-} from '../../shared/ui/form-controls/app-radio-group/app-radio-group';
-import { AppSelect, type SelectOption } from '../../shared/ui/form-controls/app-select/app-select';
-import { AppTextarea } from '../../shared/ui/form-controls/app-textarea/app-textarea';
-import { AppTime } from '../../shared/ui/form-controls/app-time/app-time';
+} from '@shared/ui/form-controls/app-radio-group/app-radio-group';
+import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-select/app-select';
+import { AppTextarea } from '@shared/ui/form-controls/app-textarea/app-textarea';
+import { AppTime } from '@shared/ui/form-controls/app-time/app-time';
 
 interface Team {
   readonly id: string;

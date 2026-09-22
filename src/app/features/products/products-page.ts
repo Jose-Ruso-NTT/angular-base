@@ -1,33 +1,33 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot, form, maxLength, min, validate } from '@angular/forms/signals';
-import { listProductsResource, ProductsService } from '../../core/api/generated';
-import type { ListProductsParams, ProductOutput } from '../../core/api/generated/schemas';
-import { AppInput } from '../../shared/ui/form-controls/app-input/app-input';
-import { AppNumber } from '../../shared/ui/form-controls/app-number/app-number';
-import { AppCheckbox } from '../../shared/ui/form-controls/app-checkbox/app-checkbox';
-import { AppSelect, type SelectOption } from '../../shared/ui/form-controls/app-select/app-select';
+import { listProductsResource, ProductsService } from '@core/api/generated';
+import type { ListProductsParams, ProductOutput } from '@core/api/generated/schemas';
+import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
+import { AppNumber } from '@shared/ui/form-controls/app-number/app-number';
+import { AppCheckbox } from '@shared/ui/form-controls/app-checkbox/app-checkbox';
+import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-select/app-select';
 import {
   AppDataTable,
   DataTableCellDefDirective,
   type DataTableColumn,
-} from '../../shared/ui/data-table/data-table';
-import { AppDialogService } from '../../shared/ui/dialog/app-dialog.service';
-import { ConfirmDialog } from '../../shared/ui/dialog/confirm-dialog';
-import { LoadingOverlay } from '../../shared/ui/loading-overlay/loading-overlay';
-import { AppAlert } from '../../shared/ui/alert/app-alert';
-import { focusBoundControl } from '../../shared/forms/focus-bound-control';
+} from '@shared/ui/data-table/data-table';
+import { AppDialogService } from '@shared/ui/dialog/app-dialog.service';
+import { ConfirmDialog } from '@shared/ui/dialog/confirm-dialog';
+import { LoadingOverlay } from '@shared/ui/loading-overlay/loading-overlay';
+import { AppAlert } from '@shared/ui/alert/app-alert';
+import { focusBoundControl } from '@shared/forms/focus-bound-control';
 import {
   createUrlTableFormState,
   mappedUrlParam,
   nullableNumberUrlParam,
   stringUrlParam,
-} from '../../shared/routing/url-table-form-state';
+} from '@shared/routing/url-table-form-state';
 import { ProductFormDialog } from './product-form-dialog';
 import { ProductStatusLabelPipe } from './product-status-label.pipe';
 import { ProductStatusTonePipe } from './product-status-tone.pipe';
-import { AppStatusBadge } from '../../shared/ui/status-badge/app-status-badge';
-import { withPreviousValue } from '../../shared/resource/with-previous-value';
+import { AppStatusBadge } from '@shared/ui/status-badge/app-status-badge';
+import { withPreviousValue } from '@shared/resource/with-previous-value';
 
 interface ProductFilters {
   readonly search?: string;
