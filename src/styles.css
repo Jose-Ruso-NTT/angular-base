@@ -1,8 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/cdk/overlay-prebuilt.css';
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   color-scheme: light;
+  --color-surface-page: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f5f7fa;
+  --color-surface-hover: #f8fbff;
+  --color-surface-info: #eff8ff;
+  --color-surface-warning: #fffaeb;
+  --color-surface-danger: #fff0ef;
+  --color-text-primary: #172033;
+  --color-text-secondary: #526176;
+  --color-text-tertiary: #3d4a5f;
+  --color-text-on-action: #ffffff;
+  --color-border-subtle: #d8dee9;
+  --color-border-default: #8994a8;
+  --color-border-strong: #68758a;
+  --color-focus: #005fcc;
+  --color-focus-ring: #cfe4ff;
+  --color-action-primary: #005fcc;
+  --color-action-danger: #b42318;
+  --color-danger-text: #8a1c13;
+  --color-info-border: #1570ef;
+  --color-info-text: #175cd3;
+  --color-warning-border: #f79009;
+  --color-warning-text: #b54708;
+  --color-success-surface: #dcfae6;
+  --color-success-text: #067647;
+  --color-neutral-surface: #eef2f6;
+  --color-neutral-text: #475467;
+  --color-status-warning-surface: #ffead5;
+  --color-status-warning-text: #9b3b00;
+  --color-overlay: rgb(255 255 255 / 75%);
+  --shadow-dialog: 0 18px 45px rgb(23 32 51 / 25%);
   font-family:
     Inter,
     system-ui,
@@ -12,7 +49,7 @@
     sans-serif;
 }
 body {
-  background: #f4f7fb;
+  background: var(--color-surface-page);
   margin: 0;
   min-width: 20rem;
 }

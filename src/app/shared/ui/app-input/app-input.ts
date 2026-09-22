@@ -9,7 +9,7 @@ import {
 /** Accessible native-input wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-input',
-  styleUrl: './app-input.component.css',
+  styleUrl: './app-input.css',
   template: `
     <div class="field">
       <label [for]="inputId()"
@@ -46,7 +46,7 @@ import {
     </div>
   `,
 })
-export class AppInputComponent implements FormValueControl<string | number | null> {
+export class AppInput implements FormValueControl<string | number | null> {
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
   /** Label visibly associated with the native input. */

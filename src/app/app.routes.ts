@@ -5,9 +5,7 @@ export const routes: Routes = [
     path: '',
     title: 'Productos',
     loadComponent: () =>
-      import('./features/products/products-page.component').then(
-        (component) => component.ProductsPageComponent,
-      ),
+      import('./features/products/products-page').then((component) => component.ProductsPage),
   },
   { path: '**', redirectTo: '' },
 ];

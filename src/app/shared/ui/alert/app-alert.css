@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+.alert {
+  border-left: 4px solid;
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+}
+
+.alert p {
+  margin: 0;
+}
+
+.alert :is(button) {
+  margin-top: 0.75rem;
+}
+
+.info {
+  background: var(--color-surface-info);
+  border-color: var(--color-info-border);
+  color: var(--color-info-text);
+}
+
+.warning {
+  background: var(--color-surface-warning);
+  border-color: var(--color-warning-border);
+  color: var(--color-warning-text);
+}
+
+.alert-error {
+  background: var(--color-surface-danger);
+  border-color: var(--color-action-danger);
+  color: var(--color-danger-text);
+}

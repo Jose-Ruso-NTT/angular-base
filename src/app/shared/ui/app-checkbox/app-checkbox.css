@@ -11,7 +11,7 @@
 }
 .checkbox {
   align-items: center;
-  color: #172033;
+  color: var(--color-text-primary);
   display: flex;
   font-weight: 650;
   gap: 0.5rem;
@@ -23,7 +23,7 @@
   margin: 0;
 }
 .checkbox input:focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 .support {
@@ -31,7 +31,7 @@
   min-block-size: 1.25rem;
 }
 .error {
-  color: #b42318;
+  color: var(--color-action-danger);
   font-size: 0.875rem;
   line-height: 1.25rem;
   margin: 0;

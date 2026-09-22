@@ -15,13 +15,11 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { ProductsService } from '../../core/api/generated';
 import type { ProductInput, ProductOutput } from '../../core/api/generated/schemas';
-import { AppInputComponent } from '../../shared/ui/app-input/app-input.component';
-import {
-  AppSelectComponent,
-  type SelectOption,
-} from '../../shared/ui/app-select/app-select.component';
+import { AppInput } from '../../shared/ui/app-input/app-input';
+import { AppSelect, type SelectOption } from '../../shared/ui/app-select/app-select';
 import { APP_DIALOG_DATA, AppDialogRef } from '../../shared/ui/dialog/app-dialog.service';
 import { focusBoundControl } from '../../shared/forms/focus-bound-control';
+import { AppAlert } from '../../shared/ui/alert/app-alert';
 
 /** Data accepted by the product editor dialog. Omitting product creates a new item. */
 export interface ProductFormDialogData {
@@ -41,89 +39,11 @@ interface ProductFormModel {
 /** Product creation and editing form displayed through the dialog wrapper. */
 @Component({
   selector: 'app-product-form-dialog',
-  imports: [FormField, FormRoot, AppInputComponent, AppSelectComponent],
-  styleUrl: './product-form-dialog.component.css',
-  template: `
-    <section class="dialog" aria-labelledby="product-form-title">
-      <header>
-        <h2 id="product-form-title">{{ title() }}</h2>
-        <p>Los campos marcados con <span aria-hidden="true">*</span> son obligatorios.</p>
-      </header>
-      @if (submitError()) {
-        <p class="submit-error" role="alert">{{ submitError() }}</p>
-      }
-      <form [formRoot]="form">
-        <app-input
-          label="Nombre"
-          inputId="product-name"
-          [formField]="form.name"
-          autocomplete="off"
-          testId="product-name-input"
-        />
-        <app-input
-          label="SKU"
-          inputId="product-sku"
-          [formField]="form.sku"
-          hint="De 3 a 32 caracteres: mayúsculas, números y guiones."
-          autocomplete="off"
-          testId="product-sku-input"
-        />
-        <app-input
-          label="Descripción"
-          inputId="product-description"
-          [formField]="form.description"
-          autocomplete="off"
-          testId="product-description-input"
-        />
-        <div class="two-columns">
-          <app-input
-            label="Precio (€)"
-            inputId="product-price"
-            type="number"
-            [formField]="form.price"
-            [step]="0.01"
-            testId="product-price-input"
-          />
-          <app-input
-            label="Stock"
-            inputId="product-stock"
-            type="number"
-            [formField]="form.stock"
-            [step]="1"
-            testId="product-stock-input"
-          />
-        </div>
-        <app-select
-          label="Estado"
-          selectId="product-status"
-          [formField]="form.status"
-          [options]="statusOptions"
-          testId="product-status-select"
-        />
-        <div class="actions">
-          <button
-            type="button"
-            class="secondary"
-            (click)="dialogRef.close(false)"
-            [disabled]="form().submitting()"
-            data-testid="product-form-cancel"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            class="primary"
-            [disabled]="form().submitting()"
-            data-testid="product-form-submit"
-          >
-            {{ form().submitting() ? 'Guardando…' : submitLabel() }}
-          </button>
-        </div>
-      </form>
-    </section>
-  `,
+  imports: [FormField, FormRoot, AppInput, AppSelect, AppAlert],
+  styleUrl: './product-form-dialog.css',
+  templateUrl: './product-form-dialog.html',
 })
-export class ProductFormDialogComponent {
+export class ProductFormDialog {
   protected readonly data = inject(APP_DIALOG_DATA) as ProductFormDialogData;
   protected readonly dialogRef = inject(AppDialogRef<boolean>);
   private readonly productsService = inject(ProductsService);

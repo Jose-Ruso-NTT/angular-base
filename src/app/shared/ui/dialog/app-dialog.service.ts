@@ -1,4 +1,11 @@
-import { Injectable, InjectionToken, Type, inject, type StaticProvider } from '@angular/core';
+import {
+  Injectable,
+  InjectionToken,
+  Service,
+  Type,
+  inject,
+  type StaticProvider,
+} from '@angular/core';
 import { Dialog, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import type { Observable } from 'rxjs';
 
@@ -27,7 +34,7 @@ export interface AppDialogConfig<D> {
 }
 
 /** Application boundary for CDK dialogs, keeping CDK-specific APIs out of features. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppDialogService {
   private readonly dialog = inject(Dialog);
 

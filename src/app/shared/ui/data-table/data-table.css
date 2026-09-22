@@ -5,7 +5,7 @@
   overflow-x: auto;
 }
 .table-scroll:focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 table {
@@ -15,20 +15,20 @@ table {
 }
 th,
 td {
-  border-bottom: 1px solid #d8dee9;
+  border-bottom: 1px solid var(--color-border-subtle);
   padding: 0.85rem 1rem;
   text-align: left;
   vertical-align: middle;
 }
 th {
-  background: #f5f7fa;
-  color: #27354b;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-tertiary);
   font-size: 0.875rem;
   font-weight: 700;
   white-space: nowrap;
 }
 td {
-  color: #172033;
+  color: var(--color-text-primary);
 }
 .align-center {
   text-align: center;
@@ -37,7 +37,7 @@ td {
   text-align: right;
 }
 tr:hover td {
-  background: #f8fbff;
+  background: var(--color-surface-hover);
 }
 .sort-button {
   align-items: center;
@@ -53,17 +53,17 @@ tr:hover td {
   padding: 0.5rem;
 }
 .sort-button:focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 .empty {
-  color: #526176;
+  color: var(--color-text-secondary);
   padding-block: 2rem;
   text-align: center;
 }
 .pagination {
   align-items: center;
-  border-top: 1px solid #d8dee9;
+  border-top: 1px solid var(--color-border-subtle);
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
@@ -75,17 +75,17 @@ tr:hover td {
   font-weight: 650;
 }
 .pagination select {
-  border: 1px solid #68758a;
+  border: 1px solid var(--color-border-strong);
   border-radius: 0.35rem;
   font: inherit;
   min-height: 2.4rem;
   padding: 0.35rem;
 }
 .pagination button {
-  background: #fff;
-  border: 1px solid #68758a;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
   border-radius: 0.4rem;
-  color: #172033;
+  color: var(--color-text-primary);
   cursor: pointer;
   font: inherit;
   font-weight: 650;
@@ -94,7 +94,7 @@ tr:hover td {
 }
 .pagination button:focus-visible,
 .pagination select:focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 .pagination button:disabled {

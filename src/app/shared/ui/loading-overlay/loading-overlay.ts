@@ -3,7 +3,7 @@ import { Component, input } from '@angular/core';
 /** Places a loading layer above projected content without changing its layout. */
 @Component({
   selector: 'app-loading-overlay',
-  styleUrl: './loading-overlay.component.css',
+  styleUrl: './loading-overlay.css',
   template: `
     <div class="overlay-host" [attr.aria-busy]="loading() ? 'true' : 'false'">
       <ng-content />
@@ -16,7 +16,7 @@ import { Component, input } from '@angular/core';
     </div>
   `,
 })
-export class LoadingOverlayComponent {
+export class LoadingOverlay {
   /** Whether the overlay should be visible. */
   readonly loading = input(false);
   /** Accessible text announced while the projected content is loading. */

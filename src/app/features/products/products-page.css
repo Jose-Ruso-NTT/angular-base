@@ -2,7 +2,7 @@
   display: block;
 }
 .page {
-  color: #172033;
+  color: var(--color-text-primary);
   margin: 0 auto;
   max-width: 80rem;
   padding: 2rem clamp(1rem, 4vw, 3rem);
@@ -16,7 +16,7 @@
 }
 h1,
 h2 {
-  color: #172033;
+  color: var(--color-text-primary);
   margin: 0;
 }
 h1 {
@@ -27,13 +27,13 @@ h2 {
 }
 .page-header p,
 .catalogue-heading p {
-  color: #526176;
+  color: var(--color-text-secondary);
   margin: 0.4rem 0 0;
 }
 .filters,
 .catalogue {
-  background: #fff;
-  border: 1px solid #d8dee9;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
   border-radius: 0.75rem;
   margin-top: 1.5rem;
   padding: 1.25rem;
@@ -65,19 +65,9 @@ h2 {
   margin-bottom: 1rem;
 }
 .loading {
-  color: #526176;
+  color: var(--color-text-secondary);
   padding: 2rem;
   text-align: center;
-}
-.alert {
-  background: #fff0ef;
-  border-left: 4px solid #b42318;
-  color: #8a1c13;
-  margin: 1rem 0;
-  padding: 0.85rem 1rem;
-}
-.alert p {
-  margin: 0 0 0.75rem;
 }
 button,
 select {
@@ -93,7 +83,7 @@ button {
 button:focus-visible,
 select:focus-visible,
 .checkbox input:focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 button:disabled {
@@ -101,22 +91,22 @@ button:disabled {
   opacity: 0.55;
 }
 .primary {
-  background: #005fcc;
-  border: 1px solid #005fcc;
-  color: #fff;
+  background: var(--color-action-primary);
+  border: 1px solid var(--color-action-primary);
+  color: var(--color-text-on-action);
 }
 .danger {
-  background: #b42318;
-  border: 1px solid #b42318;
-  color: #fff;
+  background: var(--color-action-danger);
+  border: 1px solid var(--color-action-danger);
+  color: var(--color-text-on-action);
 }
 .secondary {
-  background: #fff;
-  border: 1px solid #68758a;
-  color: #172033;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-primary);
 }
 small {
-  color: #526176;
+  color: var(--color-text-secondary);
   display: block;
   margin-top: 0.15rem;
 }
@@ -128,16 +118,16 @@ small {
   padding: 0.25rem 0.6rem;
 }
 .active {
-  background: #dcfae6;
-  color: #067647;
+  background: var(--color-success-surface);
+  color: var(--color-success-text);
 }
 .inactive {
-  background: #eef2f6;
-  color: #475467;
+  background: var(--color-neutral-surface);
+  color: var(--color-neutral-text);
 }
 .discontinued {
-  background: #ffead5;
-  color: #9b3b00;
+  background: var(--color-status-warning-surface);
+  color: var(--color-status-warning-text);
 }
 @media (max-width: 65rem) {
   .filters form {

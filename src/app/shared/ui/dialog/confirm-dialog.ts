@@ -14,7 +14,7 @@ export interface ConfirmDialogData {
 /** Reusable confirmation content opened through AppDialogService. */
 @Component({
   selector: 'app-confirm-dialog',
-  styleUrl: './confirm-dialog.component.css',
+  styleUrl: './confirm-dialog.css',
   template: `
     <section class="dialog" aria-labelledby="confirm-dialog-title">
       <h2 id="confirm-dialog-title">{{ data.title }}</h2>
@@ -40,7 +40,7 @@ export interface ConfirmDialogData {
     </section>
   `,
 })
-export class ConfirmDialogComponent {
-  protected readonly data = inject(APP_DIALOG_DATA) as ConfirmDialogData;
+export class ConfirmDialog {
+  protected readonly data = inject<ConfirmDialogData>(APP_DIALOG_DATA);
   protected readonly dialogRef = inject(AppDialogRef<boolean>);
 }

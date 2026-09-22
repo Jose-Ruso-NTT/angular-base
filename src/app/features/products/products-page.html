@@ -1,0 +1,164 @@
+<main class="page" aria-labelledby="page-title">
+  <header class="page-header">
+    <div>
+      <h1 id="page-title">Productos</h1>
+      <p>Gestiona el catálogo y consulta su disponibilidad.</p>
+    </div>
+    <button
+      type="button"
+      class="primary"
+      (click)="openProductForm()"
+      data-testid="product-create-button"
+    >
+      Añadir producto
+    </button>
+  </header>
+
+  <section class="filters" aria-labelledby="filters-title">
+    <h2 id="filters-title">Filtrar productos</h2>
+    <form [formRoot]="filtersForm">
+      <app-input
+        label="Buscar"
+        inputId="product-search"
+        type="search"
+        [formField]="filtersForm.search"
+        hint="Busca por nombre, SKU o descripción."
+        testId="product-search-input"
+      />
+      <app-select
+        label="Estado"
+        selectId="filter-status"
+        [formField]="filtersForm.status"
+        [options]="filterStatusOptions"
+        testId="product-status-filter"
+      />
+      <app-input
+        label="Precio mínimo"
+        inputId="min-price"
+        type="number"
+        [formField]="filtersForm.minPrice"
+        [step]="0.01"
+        testId="product-min-price-input"
+      />
+      <app-input
+        label="Precio mínimo"
+        inputId="max-price"
+        type="number"
+        [formField]="filtersForm.maxPrice"
+        [step]="0.01"
+        testId="product-max-price-input"
+      />
+      <app-checkbox
+        label="Solo con stock"
+        [formField]="filtersForm.inStock"
+        testId="product-in-stock-filter"
+      />
+      <div class="filter-actions">
+        <button type="submit" class="primary" data-testid="product-filter-submit">
+          Aplicar filtros
+        </button>
+        <button
+          type="button"
+          class="secondary"
+          (click)="clearFilters()"
+          data-testid="product-filter-clear"
+        >
+          Limpiar
+        </button>
+      </div>
+    </form>
+  </section>
+
+  @if (operationError()) {
+    <app-alert type="alert" [message]="operationError()" />
+  }
+
+  <section
+    class="catalogue"
+    aria-labelledby="catalogue-title"
+    [attr.aria-busy]="products.isLoading() ? 'true' : 'false'"
+  >
+    <div class="catalogue-heading">
+      <h2 id="catalogue-title">Listado</h2>
+      @if (products.hasValue()) {
+        <p aria-live="polite">{{ products.value().pagination.totalItems }} productos encontrados</p>
+      }
+    </div>
+
+    @if (products.error()) {
+      <app-alert type="alert" message="No se han podido cargar los productos.">
+        <button
+          type="button"
+          class="secondary"
+          (click)="productsResource.reload()"
+          data-testid="product-retry-button"
+        >
+          Reintentar
+        </button>
+      </app-alert>
+    }
+
+    <app-loading-overlay [loading]="products.isLoading()" message="Cargando productos…">
+      @if (products.hasValue()) {
+        <app-data-table
+          [rows]="products.value().data"
+          [columns]="columns"
+          [sortBy]="urlState.tableState().sortBy"
+          [sortDirection]="urlState.tableState().sortDirection"
+          [rowTrackBy]="productTrackBy"
+          [pagination]="products.value().pagination"
+          [pageSizeOptions]="urlState.pageSizeOptions"
+          [selectedPageSize]="urlState.tableState().pageSize"
+          paginationTestId="product"
+          emptyMessage="No hay productos que coincidan con los filtros."
+          (sortChange)="urlState.setTableState({ kind: 'sort', sortBy: $event })"
+          (pageChange)="urlState.setTableState({ kind: 'page', page: $event })"
+          (pageSizeChange)="urlState.setTableState({ kind: 'pageSize', pageSize: $event })"
+          data-testid="products-table"
+        >
+          <ng-template appDataTableCellDef="name" let-product>
+            <strong>{{ product.name }}</strong>
+            <small>{{ product.sku }}</small>
+          </ng-template>
+          <ng-template appDataTableCellDef="price" let-product>
+            {{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          </ng-template>
+          <ng-template appDataTableCellDef="status" let-product>
+            <span
+              class="status"
+              [class.active]="product.status === 'ACTIVE'"
+              [class.inactive]="product.status === 'INACTIVE'"
+              [class.discontinued]="product.status === 'DISCONTINUED'"
+              >{{ product.status | productStatusLabel }}</span
+            >
+          </ng-template>
+          <ng-template appDataTableCellDef="createdAt" let-product>
+            {{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+          </ng-template>
+          <ng-template appDataTableCellDef="actions" let-product>
+            <div class="row-actions">
+              <button
+                type="button"
+                class="primary"
+                (click)="openProductForm(product)"
+                [attr.aria-label]="'Editar ' + product.name"
+                [attr.data-testid]="'product-edit-' + product.id"
+              >
+                Editar
+              </button>
+              <button
+                type="button"
+                class="danger"
+                (click)="confirmDelete(product)"
+                [attr.aria-label]="'Eliminar ' + product.name"
+                [attr.data-testid]="'product-delete-' + product.id"
+              >
+                Eliminar
+              </button>
+            </div>
+          </ng-template>
+        </app-data-table>
+      }
+    </app-loading-overlay>
+  </section>
+</main>

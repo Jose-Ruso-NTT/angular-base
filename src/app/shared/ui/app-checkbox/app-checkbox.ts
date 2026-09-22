@@ -8,7 +8,7 @@ import {
 /** Accessible checkbox wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-checkbox',
-  styleUrl: './app-checkbox.component.css',
+  styleUrl: './app-checkbox.css',
   template: `
     <div class="field">
       <span class="label-placeholder" aria-hidden="true">&nbsp;</span>
@@ -34,7 +34,7 @@ import {
     </div>
   `,
 })
-export class AppCheckboxComponent implements FormCheckboxControl {
+export class AppCheckbox implements FormCheckboxControl {
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
   /** Text visibly associated with the checkbox. */

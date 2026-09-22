@@ -10,7 +10,7 @@ import {
   output,
 } from '@angular/core';
 
-/** Definition for a visible column in AppDataTableComponent. */
+/** Definition for a visible column in AppDataTable. */
 export interface DataTableColumn<T> {
   /** Unique column identifier, also used to match an optional cell template. */
   readonly id: string;
@@ -50,7 +50,7 @@ export class DataTableCellDefDirective<T> {
 @Component({
   selector: 'app-data-table',
   imports: [NgTemplateOutlet],
-  styleUrl: './data-table.component.css',
+  styleUrl: './data-table.css',
   template: `
     <div class="table-scroll" tabindex="0">
       <table>
@@ -144,7 +144,7 @@ export class DataTableCellDefDirective<T> {
     }
   `,
 })
-export class AppDataTableComponent<T> {
+export class AppDataTable<T> {
   /** Rows rendered in the table body. */
   readonly rows = input.required<readonly T[]>();
   /** Ordered definitions for the visible columns. */

@@ -1,7 +1,7 @@
 .dialog {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 0.75rem;
-  box-shadow: 0 18px 45px #17203340;
+  box-shadow: var(--shadow-dialog);
   box-sizing: border-box;
   max-height: calc(100dvh - 2rem);
   max-width: 42rem;
@@ -10,12 +10,12 @@
   width: calc(100vw - 2rem);
 }
 h2 {
-  color: #172033;
+  color: var(--color-text-primary);
   font-size: 1.35rem;
   margin: 0;
 }
 header p {
-  color: #526176;
+  color: var(--color-text-secondary);
   margin: 0.45rem 0 1.5rem;
 }
 form {
@@ -26,13 +26,6 @@ form {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.submit-error {
-  background: #fff0ef;
-  border-left: 4px solid #b42318;
-  color: #8a1c13;
-  margin: 0 0 1rem;
-  padding: 0.75rem;
 }
 .actions {
   display: flex;
@@ -50,7 +43,7 @@ button {
   padding: 0.5rem 1rem;
 }
 button:focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 button:disabled {
@@ -58,14 +51,14 @@ button:disabled {
   opacity: 0.65;
 }
 .secondary {
-  background: #fff;
-  border: 1px solid #68758a;
-  color: #172033;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-primary);
 }
 .primary {
-  background: #005fcc;
-  border: 1px solid #005fcc;
-  color: #fff;
+  background: var(--color-action-primary);
+  border: 1px solid var(--color-action-primary);
+  color: var(--color-text-on-action);
 }
 @media (max-width: 35rem) {
   .two-columns {

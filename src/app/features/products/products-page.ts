@@ -3,20 +3,18 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot, form, maxLength, min, validate } from '@angular/forms/signals';
 import { listProductsResource, ProductsService } from '../../core/api/generated';
 import type { ListProductsParams, ProductOutput } from '../../core/api/generated/schemas';
-import { AppInputComponent } from '../../shared/ui/app-input/app-input.component';
-import { AppCheckboxComponent } from '../../shared/ui/app-checkbox/app-checkbox.component';
+import { AppInput } from '../../shared/ui/app-input/app-input';
+import { AppCheckbox } from '../../shared/ui/app-checkbox/app-checkbox';
+import { AppSelect, type SelectOption } from '../../shared/ui/app-select/app-select';
 import {
-  AppSelectComponent,
-  type SelectOption,
-} from '../../shared/ui/app-select/app-select.component';
-import {
-  AppDataTableComponent,
+  AppDataTable,
   DataTableCellDefDirective,
   type DataTableColumn,
-} from '../../shared/ui/data-table/data-table.component';
+} from '../../shared/ui/data-table/data-table';
 import { AppDialogService } from '../../shared/ui/dialog/app-dialog.service';
-import { ConfirmDialogComponent } from '../../shared/ui/dialog/confirm-dialog.component';
-import { LoadingOverlayComponent } from '../../shared/ui/loading-overlay/loading-overlay.component';
+import { ConfirmDialog } from '../../shared/ui/dialog/confirm-dialog';
+import { LoadingOverlay } from '../../shared/ui/loading-overlay/loading-overlay';
+import { AppAlert } from '../../shared/ui/alert/app-alert';
 import { focusBoundControl } from '../../shared/forms/focus-bound-control';
 import {
   createUrlTableFormState,
@@ -24,7 +22,7 @@ import {
   nullableNumberUrlParam,
   stringUrlParam,
 } from '../../shared/routing/url-table-form-state';
-import { ProductFormDialogComponent } from './product-form-dialog.component';
+import { ProductFormDialog } from './product-form-dialog';
 import { ProductStatusLabelPipe } from './product-status-label.pipe';
 import { withPreviousValue } from '../../shared/resource/with-previous-value';
 
@@ -70,188 +68,21 @@ type ProductSortBy = (typeof PRODUCT_SORT_BY)[number];
   imports: [
     FormField,
     FormRoot,
-    AppCheckboxComponent,
-    AppInputComponent,
-    AppSelectComponent,
-    AppDataTableComponent,
+    AppCheckbox,
+    AppInput,
+    AppSelect,
+    AppDataTable,
     DataTableCellDefDirective,
-    LoadingOverlayComponent,
+    LoadingOverlay,
+    AppAlert,
     CurrencyPipe,
     DatePipe,
     ProductStatusLabelPipe,
   ],
-  styleUrl: './products-page.component.css',
-  template: `
-    <main class="page" aria-labelledby="page-title">
-      <header class="page-header">
-        <div>
-          <h1 id="page-title">Productos</h1>
-          <p>Gestiona el catálogo y consulta su disponibilidad.</p>
-        </div>
-        <button
-          type="button"
-          class="primary"
-          (click)="openProductForm()"
-          data-testid="product-create-button"
-        >
-          Añadir producto
-        </button>
-      </header>
-
-      <section class="filters" aria-labelledby="filters-title">
-        <h2 id="filters-title">Filtrar productos</h2>
-        <form [formRoot]="filtersForm">
-          <app-input
-            label="Buscar"
-            inputId="product-search"
-            type="search"
-            [formField]="filtersForm.search"
-            hint="Busca por nombre, SKU o descripción."
-            testId="product-search-input"
-          />
-          <app-select
-            label="Estado"
-            selectId="filter-status"
-            [formField]="filtersForm.status"
-            [options]="filterStatusOptions"
-            testId="product-status-filter"
-          />
-          <app-input
-            label="Precio mínimo"
-            inputId="min-price"
-            type="number"
-            [formField]="filtersForm.minPrice"
-            [step]="0.01"
-            testId="product-min-price-input"
-          />
-          <app-input
-            label="Precio máximo"
-            inputId="max-price"
-            type="number"
-            [formField]="filtersForm.maxPrice"
-            [step]="0.01"
-            testId="product-max-price-input"
-          />
-          <app-checkbox
-            label="Solo con stock"
-            [formField]="filtersForm.inStock"
-            testId="product-in-stock-filter"
-          />
-          <div class="filter-actions">
-            <button type="submit" class="primary" data-testid="product-filter-submit">
-              Aplicar filtros
-            </button>
-            <button
-              type="button"
-              class="secondary"
-              (click)="clearFilters()"
-              data-testid="product-filter-clear"
-            >
-              Limpiar
-            </button>
-          </div>
-        </form>
-      </section>
-
-      @if (operationError()) {
-        <p class="alert" role="alert">{{ operationError() }}</p>
-      }
-
-      <section
-        class="catalogue"
-        aria-labelledby="catalogue-title"
-        [attr.aria-busy]="products.isLoading() ? 'true' : 'false'"
-      >
-        <div class="catalogue-heading">
-          <h2 id="catalogue-title">Listado</h2>
-          @if (products.hasValue()) {
-            <p aria-live="polite">
-              {{ products.value().pagination.totalItems }} productos encontrados
-            </p>
-          }
-        </div>
-
-        @if (products.error()) {
-          <div class="alert" role="alert">
-            <p>No se han podido cargar los productos.</p>
-            <button
-              type="button"
-              class="secondary"
-              (click)="productsResource.reload()"
-              data-testid="product-retry-button"
-            >
-              Reintentar
-            </button>
-          </div>
-        }
-
-        <app-loading-overlay [loading]="products.isLoading()" message="Cargando productos…">
-          @if (products.hasValue()) {
-            <app-data-table
-              [rows]="products.value().data"
-              [columns]="columns"
-              [sortBy]="urlState.tableState().sortBy"
-              [sortDirection]="urlState.tableState().sortDirection"
-              [rowTrackBy]="productTrackBy"
-              [pagination]="products.value().pagination"
-              [pageSizeOptions]="urlState.pageSizeOptions"
-              [selectedPageSize]="urlState.tableState().pageSize"
-              paginationTestId="product"
-              emptyMessage="No hay productos que coincidan con los filtros."
-              (sortChange)="urlState.setTableState({ kind: 'sort', sortBy: $event })"
-              (pageChange)="urlState.setTableState({ kind: 'page', page: $event })"
-              (pageSizeChange)="urlState.setTableState({ kind: 'pageSize', pageSize: $event })"
-              data-testid="products-table"
-            >
-              <ng-template appDataTableCellDef="name" let-product>
-                <strong>{{ product.name }}</strong>
-                <small>{{ product.sku }}</small>
-              </ng-template>
-              <ng-template appDataTableCellDef="price" let-product>
-                {{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
-              </ng-template>
-              <ng-template appDataTableCellDef="status" let-product>
-                <span
-                  class="status"
-                  [class.active]="product.status === 'ACTIVE'"
-                  [class.inactive]="product.status === 'INACTIVE'"
-                  [class.discontinued]="product.status === 'DISCONTINUED'"
-                  >{{ product.status | productStatusLabel }}</span
-                >
-              </ng-template>
-              <ng-template appDataTableCellDef="createdAt" let-product>
-                {{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}
-              </ng-template>
-              <ng-template appDataTableCellDef="actions" let-product>
-                <div class="row-actions">
-                  <button
-                    type="button"
-                    class="primary"
-                    (click)="openProductForm(product)"
-                    [attr.aria-label]="'Editar ' + product.name"
-                    [attr.data-testid]="'product-edit-' + product.id"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    type="button"
-                    class="danger"
-                    (click)="confirmDelete(product)"
-                    [attr.aria-label]="'Eliminar ' + product.name"
-                    [attr.data-testid]="'product-delete-' + product.id"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </ng-template>
-            </app-data-table>
-          }
-        </app-loading-overlay>
-      </section>
-    </main>
-  `,
+  styleUrl: './products-page.css',
+  templateUrl: './products-page.html',
 })
-export class ProductsPageComponent {
+export class ProductsPage {
   private readonly dialog = inject(AppDialogService);
   private readonly productsService = inject(ProductsService);
 
@@ -372,7 +203,7 @@ export class ProductsPageComponent {
 
   protected openProductForm(product?: ProductOutput): void {
     this.dialog
-      .open(ProductFormDialogComponent, {
+      .open(ProductFormDialog, {
         data: { product },
         ariaLabel: product ? 'Editar producto' : 'Nuevo producto',
       })
@@ -383,7 +214,7 @@ export class ProductsPageComponent {
 
   protected confirmDelete(product: ProductOutput): void {
     this.dialog
-      .open(ConfirmDialogComponent, {
+      .open(ConfirmDialog, {
         data: {
           title: 'Eliminar producto',
           message: `Vas a eliminar «${product.name}». Esta acción no se puede deshacer.`,

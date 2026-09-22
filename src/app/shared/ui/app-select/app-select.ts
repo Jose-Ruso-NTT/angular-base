@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 
-/** A selectable value rendered by AppSelectComponent. */
+/** A selectable value rendered by AppSelect. */
 export interface SelectOption {
   /** Value stored in the form control. */
   readonly value: string;
@@ -12,7 +12,7 @@ export interface SelectOption {
 /** Accessible select wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-select',
-  styleUrl: './app-select.component.css',
+  styleUrl: './app-select.css',
   template: `
     <div class="field">
       <label [for]="selectId()"
@@ -44,7 +44,7 @@ export interface SelectOption {
     </div>
   `,
 })
-export class AppSelectComponent implements FormValueControl<string> {
+export class AppSelect implements FormValueControl<string> {
   readonly select = viewChild.required<ElementRef<HTMLInputElement>>('select');
 
   /** Label visibly associated with the native select. */
