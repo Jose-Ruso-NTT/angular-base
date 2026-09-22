@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, input, model, output } from '@angular/core';
+import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import {
   FormValueControl,
   ValidationError,
@@ -19,6 +19,7 @@ import {
         }
       </label>
       <input
+        #input
         [id]="inputId()"
         [type]="type()"
         [value]="rawValue()"
@@ -46,7 +47,7 @@ import {
   `,
 })
 export class AppInputComponent implements FormValueControl<string | number | null> {
-  private readonly elementRef = inject(ElementRef).nativeElement as HTMLElement;
+  readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
   /** Label visibly associated with the native input. */
   readonly label = input.required<string>();
@@ -109,6 +110,6 @@ export class AppInputComponent implements FormValueControl<string | number | nul
 
   /** Focuses the native input used by this custom form control. */
   focus(options?: FocusOptions): void {
-    this.elementRef.querySelector('input')?.focus(options);
+    this.input().nativeElement.focus(options);
   }
 }

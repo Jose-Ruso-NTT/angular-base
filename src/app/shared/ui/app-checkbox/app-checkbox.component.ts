@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, input, model, output } from '@angular/core';
+import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import {
   FormCheckboxControl,
   ValidationError,
@@ -14,6 +14,7 @@ import {
       <span class="label-placeholder" aria-hidden="true">&nbsp;</span>
       <label class="checkbox">
         <input
+          #input
           type="checkbox"
           [checked]="checked()"
           (change)="checked.set($any($event.target).checked)"
@@ -34,7 +35,7 @@ import {
   `,
 })
 export class AppCheckboxComponent implements FormCheckboxControl {
-  private readonly elementRef = inject(ElementRef).nativeElement as HTMLElement;
+  readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
   /** Text visibly associated with the checkbox. */
   readonly label = input.required<string>();
@@ -66,6 +67,6 @@ export class AppCheckboxComponent implements FormCheckboxControl {
 
   /** Focuses the native checkbox used by this custom form control. */
   focus(options?: FocusOptions): void {
-    this.elementRef.querySelector('input')?.focus(options);
+    this.input().nativeElement.focus(options);
   }
 }

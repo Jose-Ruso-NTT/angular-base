@@ -28,7 +28,8 @@ input[aria-invalid='true'] {
   border-color: #b42318;
 }
 .support {
-  min-block-size: 2.5rem;
+  /* Reserve one message line without creating a large empty gap. */
+  min-block-size: 1.25rem;
 }
 .hint,
 .error {

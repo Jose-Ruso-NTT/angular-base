@@ -30,6 +30,12 @@ th {
 td {
   color: #172033;
 }
+.align-center {
+  text-align: center;
+}
+.align-right {
+  text-align: right;
+}
 tr:hover td {
   background: #f8fbff;
 }

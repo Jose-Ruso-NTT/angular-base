@@ -20,6 +20,7 @@ header p {
 }
 form {
   display: grid;
+  gap: 1rem;
 }
 .two-columns {
   display: grid;

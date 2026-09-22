@@ -16,6 +16,7 @@ import {
 } from '../../shared/ui/data-table/data-table.component';
 import { AppDialogService } from '../../shared/ui/dialog/app-dialog.service';
 import { ConfirmDialogComponent } from '../../shared/ui/dialog/confirm-dialog.component';
+import { LoadingOverlayComponent } from '../../shared/ui/loading-overlay/loading-overlay.component';
 import { focusBoundControl } from '../../shared/forms/focus-bound-control';
 import {
   createUrlTableFormState,
@@ -25,6 +26,7 @@ import {
 } from '../../shared/routing/url-table-form-state';
 import { ProductFormDialogComponent } from './product-form-dialog.component';
 import { ProductStatusLabelPipe } from './product-status-label.pipe';
+import { withPreviousValue } from '../../shared/resource/with-previous-value';
 
 interface ProductFilters {
   readonly search?: string;
@@ -60,6 +62,8 @@ const PRODUCT_SORT_BY = [
   'createdAt',
 ] as const satisfies readonly NonNullable<ListProductsParams['sortBy']>[];
 
+type ProductSortBy = (typeof PRODUCT_SORT_BY)[number];
+
 /** Product catalogue page backed by the generated products API. */
 @Component({
   selector: 'app-products-page',
@@ -71,6 +75,7 @@ const PRODUCT_SORT_BY = [
     AppSelectComponent,
     AppDataTableComponent,
     DataTableCellDefDirective,
+    LoadingOverlayComponent,
     CurrencyPipe,
     DatePipe,
     ProductStatusLabelPipe,
@@ -151,6 +156,7 @@ const PRODUCT_SORT_BY = [
       @if (operationError()) {
         <p class="alert" role="alert">{{ operationError() }}</p>
       }
+
       <section
         class="catalogue"
         aria-labelledby="catalogue-title"
@@ -164,82 +170,83 @@ const PRODUCT_SORT_BY = [
             </p>
           }
         </div>
-        @if (products.isLoading()) {
-          <p class="loading" role="status">Cargando productos…</p>
-        }
+
         @if (products.error()) {
           <div class="alert" role="alert">
             <p>No se han podido cargar los productos.</p>
             <button
               type="button"
               class="secondary"
-              (click)="products.reload()"
+              (click)="productsResource.reload()"
               data-testid="product-retry-button"
             >
               Reintentar
             </button>
           </div>
         }
-        @if (products.hasValue()) {
-          <app-data-table
-            [rows]="products.value().data"
-            [columns]="columns"
-            [sortBy]="urlState.tableState().sortBy"
-            [sortDirection]="urlState.tableState().sortDirection"
-            [rowTrackBy]="productTrackBy"
-            [pagination]="products.value().pagination"
-            [pageSizeOptions]="urlState.pageSizeOptions"
-            [selectedPageSize]="urlState.tableState().pageSize"
-            paginationTestId="product"
-            emptyMessage="No hay productos que coincidan con los filtros."
-            (sortChange)="urlState.setTableState({ kind: 'sort', sortBy: $event })"
-            (pageChange)="urlState.setTableState({ kind: 'page', page: $event })"
-            (pageSizeChange)="urlState.setTableState({ kind: 'pageSize', pageSize: $event })"
-            data-testid="products-table"
-          >
-            <ng-template appDataTableCellDef="name" let-product>
-              <strong>{{ product.name }}</strong>
-              <small>{{ product.sku }}</small>
-            </ng-template>
-            <ng-template appDataTableCellDef="price" let-product>
-              {{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </ng-template>
-            <ng-template appDataTableCellDef="status" let-product>
-              <span
-                class="status"
-                [class.active]="product.status === 'ACTIVE'"
-                [class.inactive]="product.status === 'INACTIVE'"
-                [class.discontinued]="product.status === 'DISCONTINUED'"
-                >{{ product.status | productStatusLabel }}</span
-              >
-            </ng-template>
-            <ng-template appDataTableCellDef="createdAt" let-product>
-              {{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}
-            </ng-template>
-            <ng-template appDataTableCellDef="actions" let-product>
-              <div class="row-actions">
-                <button
-                  type="button"
-                  class="link-button"
-                  (click)="openProductForm(product)"
-                  [attr.aria-label]="'Editar ' + product.name"
-                  [attr.data-testid]="'product-edit-' + product.id"
+
+        <app-loading-overlay [loading]="products.isLoading()" message="Cargando productos…">
+          @if (products.hasValue()) {
+            <app-data-table
+              [rows]="products.value().data"
+              [columns]="columns"
+              [sortBy]="urlState.tableState().sortBy"
+              [sortDirection]="urlState.tableState().sortDirection"
+              [rowTrackBy]="productTrackBy"
+              [pagination]="products.value().pagination"
+              [pageSizeOptions]="urlState.pageSizeOptions"
+              [selectedPageSize]="urlState.tableState().pageSize"
+              paginationTestId="product"
+              emptyMessage="No hay productos que coincidan con los filtros."
+              (sortChange)="urlState.setTableState({ kind: 'sort', sortBy: $event })"
+              (pageChange)="urlState.setTableState({ kind: 'page', page: $event })"
+              (pageSizeChange)="urlState.setTableState({ kind: 'pageSize', pageSize: $event })"
+              data-testid="products-table"
+            >
+              <ng-template appDataTableCellDef="name" let-product>
+                <strong>{{ product.name }}</strong>
+                <small>{{ product.sku }}</small>
+              </ng-template>
+              <ng-template appDataTableCellDef="price" let-product>
+                {{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </ng-template>
+              <ng-template appDataTableCellDef="status" let-product>
+                <span
+                  class="status"
+                  [class.active]="product.status === 'ACTIVE'"
+                  [class.inactive]="product.status === 'INACTIVE'"
+                  [class.discontinued]="product.status === 'DISCONTINUED'"
+                  >{{ product.status | productStatusLabel }}</span
                 >
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  class="link-button danger-text"
-                  (click)="confirmDelete(product)"
-                  [attr.aria-label]="'Eliminar ' + product.name"
-                  [attr.data-testid]="'product-delete-' + product.id"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </ng-template>
-          </app-data-table>
-        }
+              </ng-template>
+              <ng-template appDataTableCellDef="createdAt" let-product>
+                {{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </ng-template>
+              <ng-template appDataTableCellDef="actions" let-product>
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="primary"
+                    (click)="openProductForm(product)"
+                    [attr.aria-label]="'Editar ' + product.name"
+                    [attr.data-testid]="'product-edit-' + product.id"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="danger"
+                    (click)="confirmDelete(product)"
+                    [attr.aria-label]="'Eliminar ' + product.name"
+                    [attr.data-testid]="'product-delete-' + product.id"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </ng-template>
+            </app-data-table>
+          }
+        </app-loading-overlay>
       </section>
     </main>
   `,
@@ -286,7 +293,7 @@ export class ProductsPageComponent {
   protected readonly urlState = createUrlTableFormState<
     ProductFiltersModel,
     ProductUrlFilters,
-    (typeof PRODUCT_SORT_BY)[number]
+    ProductSortBy
   >({
     namespace: 'products',
     form: this.filtersForm,
@@ -330,11 +337,11 @@ export class ProductsPageComponent {
 
   protected readonly columns: readonly DataTableColumn<ProductOutput>[] = [
     { id: 'name', label: 'Producto', sortable: true },
-    { id: 'price', label: 'Precio', sortable: true },
-    { id: 'stock', label: 'Stock', sortable: true },
+    { id: 'price', label: 'Precio', align: 'right', sortable: true },
+    { id: 'stock', label: 'Stock', align: 'right', sortable: true },
     { id: 'status', label: 'Estado', sortable: true },
     { id: 'createdAt', label: 'Creado', sortable: true },
-    { id: 'actions', label: 'Acciones' },
+    { id: 'actions', label: 'Acciones', align: 'right' },
   ];
 
   protected readonly productTrackBy = (product: ProductOutput) => product.id;
@@ -350,7 +357,8 @@ export class ProductsPageComponent {
     };
   });
 
-  protected readonly products = listProductsResource(this.params);
+  protected readonly productsResource = listProductsResource(this.params);
+  protected readonly products = withPreviousValue(this.productsResource);
 
   private async applyFilters(): Promise<void> {
     this.operationError.set('');
@@ -369,7 +377,7 @@ export class ProductsPageComponent {
         ariaLabel: product ? 'Editar producto' : 'Nuevo producto',
       })
       .subscribe((saved) => {
-        if (saved) this.products.reload();
+        if (saved) this.productsResource.reload();
       });
   }
 
@@ -388,7 +396,7 @@ export class ProductsPageComponent {
         this.operationError.set('');
         this.productsService.deleteProduct(product.id).subscribe({
           next: () => {
-            this.products.reload();
+            this.productsResource.reload();
           },
           error: () => {
             this.operationError.set('No se ha podido eliminar el producto. Inténtalo de nuevo.');

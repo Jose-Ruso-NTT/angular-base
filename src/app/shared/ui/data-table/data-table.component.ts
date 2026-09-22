@@ -16,6 +16,8 @@ export interface DataTableColumn<T> {
   readonly id: string;
   /** Text displayed in the table header. */
   readonly label: string;
+  /** Horizontal alignment shared by the header and cells in this column. */
+  readonly align?: 'left' | 'center' | 'right';
   /** Allows the user to request server-side sorting on this field. */
   readonly sortable?: boolean;
   /** Optional text transformer. Without it, the table renders the row property matching `id`. */
@@ -55,7 +57,12 @@ export class DataTableCellDefDirective<T> {
         <thead>
           <tr>
             @for (column of columns(); track column.id) {
-              <th scope="col" [attr.aria-sort]="ariaSort(column)">
+              <th
+                scope="col"
+                [class.align-center]="column.align === 'center'"
+                [class.align-right]="column.align === 'right'"
+                [attr.aria-sort]="ariaSort(column)"
+              >
                 @if (column.sortable) {
                   <button
                     type="button"
@@ -76,7 +83,10 @@ export class DataTableCellDefDirective<T> {
           @for (row of rows(); track rowTrackBy()(row)) {
             <tr>
               @for (column of columns(); track column.id) {
-                <td>
+                <td
+                  [class.align-center]="column.align === 'center'"
+                  [class.align-right]="column.align === 'right'"
+                >
                   @if (cellTemplate(column.id); as template) {
                     <ng-container
                       [ngTemplateOutlet]="template"

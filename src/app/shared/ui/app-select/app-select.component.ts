@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, input, model, output } from '@angular/core';
+import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 
 /** A selectable value rendered by AppSelectComponent. */
@@ -22,6 +22,7 @@ export interface SelectOption {
         }
       </label>
       <select
+        #select
         [id]="selectId()"
         [value]="value()"
         (change)="value.set($any($event.target).value)"
@@ -44,7 +45,7 @@ export interface SelectOption {
   `,
 })
 export class AppSelectComponent implements FormValueControl<string> {
-  private readonly elementRef = inject(ElementRef).nativeElement as HTMLElement;
+  readonly select = viewChild.required<ElementRef<HTMLInputElement>>('select');
 
   /** Label visibly associated with the native select. */
   readonly label = input.required<string>();
@@ -82,6 +83,6 @@ export class AppSelectComponent implements FormValueControl<string> {
 
   /** Focuses the native select used by this custom form control. */
   focus(options?: FocusOptions): void {
-    this.elementRef.querySelector('select')?.focus(options);
+    this.select().nativeElement.focus(options);
   }
 }
