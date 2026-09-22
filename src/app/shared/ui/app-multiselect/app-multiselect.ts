@@ -1,27 +1,22 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
+import { type SelectOption } from '../app-select/app-select';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../form-field/field-state';
 
-/** A selectable value rendered by the native select controls. */
-export interface SelectOption {
-  /** Value stored in the form control. */
-  readonly value: string;
-  /** User-facing option text. */
-  readonly label: string;
-}
-
-/** Accessible native select wrapper for Signal Forms controls. */
+/** Accessible native multi-select wrapper for Signal Forms controls. */
 @Component({
-  selector: 'app-select',
+  selector: 'app-multiselect',
   imports: [AppFieldShell],
-  styleUrl: './app-select.css',
+  styleUrl: './app-multiselect.css',
   template: `
     <app-field-shell [label]="label()" [controlId]="controlId()" [hint]="hint()"
       ><select
         #select
         [id]="controlId()"
-        (change)="value.set(select.value)"
+        multiple
+        [size]="size()"
+        (change)="setSelected(select)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [attr.aria-describedby]="describedBy()"
@@ -30,7 +25,7 @@ export interface SelectOption {
         [attr.data-testid]="testId()"
       >
         @for (option of options(); track option.value) {
-          <option [value]="option.value" [selected]="option.value === value()">
+          <option [value]="option.value" [selected]="value().includes(option.value)">
             {{ option.label }}
           </option>
         }
@@ -38,21 +33,23 @@ export interface SelectOption {
     >
   `,
 })
-export class AppSelect implements FormValueControl<string> {
+export class AppMultiselect implements FormValueControl<string[]> {
   private readonly field = injectFieldState();
 
   readonly select = viewChild.required<ElementRef<HTMLSelectElement>>('select');
 
-  /** Label visibly associated with the native select. */
+  /** Label visibly associated with the native multi-select. */
   readonly label = input.required<string>();
   /** Identifier shared by label, select and support text. */
   readonly controlId = input.required<string>();
-  /** Value managed by the parent Signal Form. */
-  readonly value = model.required<string>();
+  /** Selected values managed by the parent Signal Form. */
+  readonly value = model.required<string[]>();
   /** Values available to select. */
   readonly options = input.required<readonly SelectOption[]>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
+  /** Number of options displayed without scrolling. */
+  readonly size = input(4);
   /** Notifies Signal Forms that the select lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
@@ -67,7 +64,11 @@ export class AppSelect implements FormValueControl<string> {
     return null;
   });
 
-  /** Focuses the native select used by this custom form control. */
+  protected setSelected(select: HTMLSelectElement): void {
+    this.value.set(Array.from(select.selectedOptions, (option) => option.value));
+  }
+
+  /** Focuses the native multi-select used by this custom form control. */
   focus(options?: FocusOptions): void {
     this.select().nativeElement.focus(options);
   }

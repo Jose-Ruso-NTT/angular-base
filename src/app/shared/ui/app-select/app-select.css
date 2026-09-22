@@ -1,14 +1,6 @@
 :host {
   display: block;
 }
-.field {
-  display: grid;
-  gap: 0.4rem;
-}
-label {
-  color: var(--color-text-primary);
-  font-weight: 650;
-}
 select {
   background: var(--color-surface);
   border: 1px solid var(--color-border-default);
@@ -26,14 +18,4 @@ select:focus-visible {
 }
 select[aria-invalid='true'] {
   border-color: var(--color-action-danger);
-}
-.support {
-  /* Reserve one message line without creating a large empty gap. */
-  min-block-size: 1.25rem;
-}
-.error {
-  color: var(--color-action-danger);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  margin: 0;
 }

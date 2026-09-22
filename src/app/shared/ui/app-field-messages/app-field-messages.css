@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+
+.support {
+  min-block-size: 1.25rem;
+}
+
+.hint,
+.error {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin: 0;
+}
+
+.hint {
+  color: var(--color-text-secondary);
+}
+
+.error {
+  color: var(--color-action-danger);
+}

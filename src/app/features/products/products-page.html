@@ -19,7 +19,7 @@
     <form [formRoot]="filtersForm">
       <app-input
         label="Buscar"
-        inputId="product-search"
+        controlId="product-search"
         type="search"
         [formField]="filtersForm.search"
         hint="Busca por nombre, SKU o descripción."
@@ -27,29 +27,28 @@
       />
       <app-select
         label="Estado"
-        selectId="filter-status"
+        controlId="filter-status"
         [formField]="filtersForm.status"
         [options]="filterStatusOptions"
         testId="product-status-filter"
       />
-      <app-input
+      <app-number
         label="Precio mínimo"
-        inputId="min-price"
-        type="number"
+        controlId="min-price"
         [formField]="filtersForm.minPrice"
         [step]="0.01"
         testId="product-min-price-input"
       />
-      <app-input
+      <app-number
         label="Precio mínimo"
-        inputId="max-price"
-        type="number"
+        controlId="max-price"
         [formField]="filtersForm.maxPrice"
         [step]="0.01"
         testId="product-max-price-input"
       />
       <app-checkbox
         label="Solo con stock"
+        controlId="product-in-stock"
         [formField]="filtersForm.inStock"
         testId="product-in-stock-filter"
       />

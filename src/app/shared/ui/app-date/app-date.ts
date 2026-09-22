@@ -3,26 +3,24 @@ import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../form-field/field-state';
 
-type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
-
-/** Accessible text-like native input wrapper for Signal Forms controls. */
+/** Accessible native date input wrapper for Signal Forms controls. */
 @Component({
-  selector: 'app-input',
+  selector: 'app-date',
   imports: [AppFieldShell],
-  styleUrl: './app-input.css',
+  styleUrl: './app-date.css',
   template: `
     <app-field-shell [label]="label()" [controlId]="controlId()" [hint]="hint()">
       <input
         #input
         [id]="controlId()"
-        [type]="type()"
-        [value]="value()"
-        (input)="value.set(input.value)"
+        type="date"
+        [valueAsDate]="value()"
+        (input)="value.set(input.valueAsDate)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [readonly]="fieldReadonly()"
-        [attr.autocomplete]="autocomplete()"
-        [attr.placeholder]="placeholder() || null"
+        [attr.min]="nativeMin()"
+        [attr.max]="nativeMax()"
         [attr.aria-describedby]="describedBy()"
         [attr.aria-invalid]="showError()"
         [attr.aria-required]="fieldRequired()"
@@ -31,25 +29,23 @@ type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
     </app-field-shell>
   `,
 })
-export class AppInput implements FormValueControl<string> {
+export class AppDate implements FormValueControl<Date | null> {
   private readonly field = injectFieldState();
 
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
-  /** Label visibly associated with the native input. */
+  /** Label visibly associated with the native date input. */
   readonly label = input.required<string>();
   /** Identifier shared by label, input and support text. */
   readonly controlId = input.required<string>();
-  /** Value managed by the parent Signal Form through the formField directive. */
-  readonly value = model.required<string>();
-  /** Native text input type. Defaults to text. */
-  readonly type = input<TextInputType>('text');
+  /** Date value managed by the parent Signal Form. */
+  readonly value = model.required<Date | null>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
-  /** Expected browser autofill token. */
-  readonly autocomplete = input('off');
-  /** Text shown when the field has no value. */
-  readonly placeholder = input('');
+  /** Minimum accepted date. */
+  readonly min = input<Date | undefined>(undefined);
+  /** Maximum accepted date. */
+  readonly max = input<Date | undefined>(undefined);
   /** Notifies Signal Forms that the native input lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
@@ -59,13 +55,15 @@ export class AppInput implements FormValueControl<string> {
   protected readonly fieldReadonly = this.field.readonly;
   protected readonly fieldRequired = this.field.required;
   protected readonly showError = this.field.showError;
+  protected readonly nativeMin = computed(() => this.min()?.toISOString().slice(0, 10));
+  protected readonly nativeMax = computed(() => this.max()?.toISOString().slice(0, 10));
   protected readonly describedBy = computed(() => {
     if (this.showError()) return `${this.controlId()}-error`;
     if (this.hint()) return `${this.controlId()}-hint`;
     return null;
   });
 
-  /** Focuses the native input used by this custom form control. */
+  /** Focuses the native date input used by this custom form control. */
   focus(options?: FocusOptions): void {
     this.input().nativeElement.focus(options);
   }

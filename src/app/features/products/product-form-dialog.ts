@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { ProductsService } from '../../core/api/generated';
 import type { ProductInput, ProductOutput } from '../../core/api/generated/schemas';
 import { AppInput } from '../../shared/ui/app-input/app-input';
+import { AppNumber } from '../../shared/ui/app-number/app-number';
 import { AppSelect, type SelectOption } from '../../shared/ui/app-select/app-select';
 import { APP_DIALOG_DATA, AppDialogRef } from '../../shared/ui/dialog/app-dialog.service';
 import { focusBoundControl } from '../../shared/forms/focus-bound-control';
@@ -39,7 +40,7 @@ interface ProductFormModel {
 /** Product creation and editing form displayed through the dialog wrapper. */
 @Component({
   selector: 'app-product-form-dialog',
-  imports: [FormField, FormRoot, AppInput, AppSelect, AppAlert],
+  imports: [FormField, FormRoot, AppInput, AppNumber, AppSelect, AppAlert],
   styleUrl: './product-form-dialog.css',
   templateUrl: './product-form-dialog.html',
 })

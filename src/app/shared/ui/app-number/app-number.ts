@@ -3,26 +3,26 @@ import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../form-field/field-state';
 
-type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
-
-/** Accessible text-like native input wrapper for Signal Forms controls. */
+/** Accessible native number input wrapper for Signal Forms controls. */
 @Component({
-  selector: 'app-input',
+  selector: 'app-number',
   imports: [AppFieldShell],
-  styleUrl: './app-input.css',
+  styleUrl: './app-number.css',
   template: `
     <app-field-shell [label]="label()" [controlId]="controlId()" [hint]="hint()">
       <input
         #input
         [id]="controlId()"
-        [type]="type()"
-        [value]="value()"
-        (input)="value.set(input.value)"
+        type="number"
+        [value]="value() ?? ''"
+        (input)="setNativeValue(input.valueAsNumber)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [readonly]="fieldReadonly()"
-        [attr.autocomplete]="autocomplete()"
         [attr.placeholder]="placeholder() || null"
+        [attr.min]="min()"
+        [attr.max]="max()"
+        [attr.step]="step()"
         [attr.aria-describedby]="describedBy()"
         [attr.aria-invalid]="showError()"
         [attr.aria-required]="fieldRequired()"
@@ -31,25 +31,27 @@ type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
     </app-field-shell>
   `,
 })
-export class AppInput implements FormValueControl<string> {
+export class AppNumber implements FormValueControl<number | null> {
   private readonly field = injectFieldState();
 
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
-  /** Label visibly associated with the native input. */
+  /** Label visibly associated with the native number input. */
   readonly label = input.required<string>();
   /** Identifier shared by label, input and support text. */
   readonly controlId = input.required<string>();
-  /** Value managed by the parent Signal Form through the formField directive. */
-  readonly value = model.required<string>();
-  /** Native text input type. Defaults to text. */
-  readonly type = input<TextInputType>('text');
+  /** Numeric value managed by the parent Signal Form. */
+  readonly value = model.required<number | null>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
-  /** Expected browser autofill token. */
-  readonly autocomplete = input('off');
   /** Text shown when the field has no value. */
   readonly placeholder = input('');
+  /** Minimum native value. */
+  readonly min = input<number | undefined>(undefined);
+  /** Maximum native value. */
+  readonly max = input<number | undefined>(undefined);
+  /** Native number increment. */
+  readonly step = input<number | 'any' | undefined>(undefined);
   /** Notifies Signal Forms that the native input lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
@@ -65,7 +67,12 @@ export class AppInput implements FormValueControl<string> {
     return null;
   });
 
-  /** Focuses the native input used by this custom form control. */
+  /** Updates the form with a native numeric value, treating an empty value as null. */
+  protected setNativeValue(nativeValue: number): void {
+    this.value.set(Number.isNaN(nativeValue) ? null : nativeValue);
+  }
+
+  /** Focuses the native number input used by this custom form control. */
   focus(options?: FocusOptions): void {
     this.input().nativeElement.focus(options);
   }

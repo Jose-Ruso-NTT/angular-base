@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+label {
+  color: var(--color-text-primary);
+  font-weight: 650;
+}

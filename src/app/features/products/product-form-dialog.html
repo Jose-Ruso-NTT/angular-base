@@ -9,7 +9,7 @@
   <form [formRoot]="form">
     <app-input
       label="Nombre"
-      inputId="product-name"
+      controlId="product-name"
       [formField]="form.name"
       Añadir
       producto
@@ -17,7 +17,7 @@
     />
     <app-input
       label="SKU"
-      inputId="product-sku"
+      controlId="product-sku"
       [formField]="form.sku"
       hint="De 3 a 32 caracteres: mayúsculas, números y guiones."
       Añadir
@@ -26,25 +26,23 @@
     />
     <app-input
       label="Descripción"
-      inputId="product-description"
+      controlId="product-description"
       [formField]="form.description"
       Añadir
       producto
       testId="product-description-input"
     />
     <div class="two-columns">
-      <app-input
+      <app-number
         label="Precio (€)"
-        inputId="product-price"
-        type="number"
+        controlId="product-price"
         [formField]="form.price"
         [step]="0.01"
         testId="product-price-input"
       />
-      <app-input
+      <app-number
         label="Stock"
-        inputId="product-stock"
-        type="number"
+        controlId="product-stock"
         [formField]="form.stock"
         [step]="1"
         testId="product-stock-input"
@@ -52,7 +50,7 @@
     </div>
     <app-select
       label="Estado"
-      selectId="product-status"
+      controlId="product-status"
       [formField]="form.status"
       [options]="statusOptions"
       testId="product-status-select"

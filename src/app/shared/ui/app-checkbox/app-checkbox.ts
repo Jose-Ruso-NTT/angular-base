@@ -1,69 +1,59 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
-import {
-  FormCheckboxControl,
-  ValidationError,
-  WithOptionalFieldTree,
-} from '@angular/forms/signals';
+import { FormCheckboxControl } from '@angular/forms/signals';
+import { AppFieldMessages } from '../app-field-messages/app-field-messages';
+import { injectFieldState } from '../form-field/field-state';
 
 /** Accessible checkbox wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-checkbox',
+  imports: [AppFieldMessages],
   styleUrl: './app-checkbox.css',
   template: `
     <div class="field">
-      <span class="label-placeholder" aria-hidden="true">&nbsp;</span>
-      <label class="checkbox">
+      <label class="checkbox" [for]="controlId()">
         <input
           #input
+          [id]="controlId()"
           type="checkbox"
           [checked]="checked()"
-          (change)="checked.set($any($event.target).checked)"
+          (change)="checked.set(input.checked)"
           (blur)="touch.emit()"
-          [disabled]="disabled()"
+          [disabled]="fieldDisabled()"
           [attr.aria-invalid]="showError()"
-          [attr.aria-describedby]="showError() ? errorId() : null"
+          [attr.aria-describedby]="describedBy()"
           [attr.data-testid]="testId()"
         />
         <span>{{ label() }}</span>
       </label>
-      <div class="support">
-        @if (showError()) {
-          <p class="error" [id]="errorId()" role="alert">{{ errorMessage() }}</p>
-        }
-      </div>
+      <app-field-messages [controlId]="controlId()" [hint]="hint()" />
     </div>
   `,
 })
 export class AppCheckbox implements FormCheckboxControl {
+  private readonly field = injectFieldState();
+
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
   /** Text visibly associated with the checkbox. */
   readonly label = input.required<string>();
-  /** Checked state managed by the parent Signal Form through the formField directive. */
+  /** Identifier shared by checkbox and support text. */
+  readonly controlId = input.required<string>();
+  /** Checked state managed by the parent Signal Form. */
   readonly checked = model.required<boolean>();
-  /** Whether the form prevents changing the checkbox. */
-  readonly disabled = input(false);
-  /** Whether the form has reported one or more validation errors. */
-  readonly invalid = input(false);
-  /** Whether the user has moved focus away from the checkbox. */
-  readonly touched = input(false);
-  /** Whether the checked state differs from the initial form value. */
-  readonly dirty = input(false);
-  /** Validation errors supplied by the form. */
-  readonly errors = input<readonly WithOptionalFieldTree<ValidationError>[]>([]);
-  /** Notifies the form that the native checkbox has lost focus. */
+  /** Help text displayed until a validation error is shown. */
+  readonly hint = input('');
+  /** Notifies Signal Forms that the checkbox lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
   readonly testId = input.required<string>();
 
-  /** Whether validation feedback should be visible to the user. */
-  protected readonly showError = computed(() => this.invalid() && (this.touched() || this.dirty()));
-  /** Identifier used by the validation feedback. */
-  protected readonly errorId = computed(() => `${this.testId()}-error`);
-  /** First validation message supplied by the form, with an accessible fallback. */
-  protected readonly errorMessage = computed(
-    () => this.errors().find((error) => error.message)?.message ?? 'Revisa este campo.',
-  );
+  protected readonly fieldDisabled = this.field.disabled;
+  protected readonly showError = this.field.showError;
+  protected readonly describedBy = computed(() => {
+    if (this.showError()) return `${this.controlId()}-error`;
+    if (this.hint()) return `${this.controlId()}-hint`;
+    return null;
+  });
 
   /** Focuses the native checkbox used by this custom form control. */
   focus(options?: FocusOptions): void {

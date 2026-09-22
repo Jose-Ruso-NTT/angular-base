@@ -5,10 +5,6 @@
   display: grid;
   gap: 0.4rem;
 }
-.label-placeholder {
-  font-weight: 650;
-  line-height: normal;
-}
 .checkbox {
   align-items: center;
   color: var(--color-text-primary);
@@ -25,14 +21,4 @@
 .checkbox input:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
-}
-.support {
-  /* Reserve one message line without creating a large empty gap. */
-  min-block-size: 1.25rem;
-}
-.error {
-  color: var(--color-action-danger);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  margin: 0;
 }
