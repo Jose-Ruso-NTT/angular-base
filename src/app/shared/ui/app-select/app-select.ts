@@ -12,6 +12,8 @@ export interface SelectOption<T extends SelectValue = string> {
   readonly value: T;
   /** User-facing option text. */
   readonly label: string;
+  /** Prevents selecting this option while keeping it visible. */
+  readonly disabled?: boolean;
 }
 
 /** Accessible native select wrapper for Signal Forms controls. */
@@ -33,7 +35,11 @@ export interface SelectOption<T extends SelectValue = string> {
         [attr.data-testid]="testId()"
       >
         @for (option of options(); track option.value) {
-          <option [value]="optionValue(option.value)" [selected]="option.value === value()">
+          <option
+            [value]="optionValue(option.value)"
+            [selected]="option.value === value()"
+            [disabled]="option.disabled ?? false"
+          >
             {{ option.label }}
           </option>
         }

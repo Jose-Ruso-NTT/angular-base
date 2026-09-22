@@ -3,9 +3,12 @@ import { Component, computed, signal } from '@angular/core';
 import { AppCheckbox } from '../../shared/ui/app-checkbox/app-checkbox';
 import { AppDate } from '../../shared/ui/app-date/app-date';
 import { AppInput } from '../../shared/ui/app-input/app-input';
-import { AppMultiselect } from '../../shared/ui/app-multiselect/app-multiselect';
+import {
+  AppMultiselect,
+  type MultiselectOption,
+} from '../../shared/ui/app-multiselect/app-multiselect';
 import { AppNumber } from '../../shared/ui/app-number/app-number';
-import { AppRadioGroup } from '../../shared/ui/app-radio-group/app-radio-group';
+import { AppRadioGroup, RadioOption } from '../../shared/ui/app-radio-group/app-radio-group';
 import { AppSelect, type SelectOption } from '../../shared/ui/app-select/app-select';
 import { AppTextarea } from '../../shared/ui/app-textarea/app-textarea';
 import { AppTime } from '../../shared/ui/app-time/app-time';
@@ -47,22 +50,20 @@ export class DemoPage {
   protected readonly statusOptions: readonly SelectOption[] = [
     { value: 'draft', label: 'Borrador' },
     { value: 'in-progress', label: 'En progreso' },
-    { value: 'complete', label: 'Completado' },
+    { value: 'complete', label: 'Completado', disabled: true },
   ];
-  protected readonly priorityOptions: readonly SelectOption[] = [
+  protected readonly priorityOptions: readonly RadioOption[] = [
     { value: 'low', label: 'Baja' },
     { value: 'medium', label: 'Media' },
-    { value: 'high', label: 'Alta' },
+    { value: 'high', label: 'Alta', disabled: true },
   ];
-  protected readonly teams: readonly Team[] = [
-    { id: 'design', name: 'Dise\u00f1o' },
-    { id: 'development', name: 'Desarrollo' },
-    { id: 'marketing', name: 'Marketing' },
-    { id: 'sales', name: 'Ventas' },
+  protected readonly teams: readonly MultiselectOption<Team>[] = [
+    { value: { id: 'design', name: 'Dise\u00f1o' }, label: 'Dise\u00f1o' },
+    { value: { id: 'development', name: 'Desarrollo' }, label: 'Desarrollo' },
+    { value: { id: 'marketing', name: 'Marketing' }, label: 'Marketing' },
+    { value: { id: 'sales', name: 'Ventas' }, label: 'Ventas', disabled: true },
   ];
-  protected readonly selectedTeams = signal<Team[]>([this.teams[0], this.teams[1]]);
-  protected readonly teamLabel = (team: Team): string => team.name;
-  protected readonly teamTrackBy = (team: Team): string => team.id;
+  protected readonly selectedTeams = signal<Team[]>([this.teams[0].value, this.teams[1].value]);
   protected readonly liveValues = computed(() => ({
     nombre: this.name(),
     correo: this.email(),
@@ -86,7 +87,7 @@ export class DemoPage {
     );
     this.status.set('in-progress');
     this.priority.set('medium');
-    this.selectedTeams.set([this.teams[0], this.teams[1]]);
+    this.selectedTeams.set([this.teams[0].value, this.teams[1].value]);
     this.newsletter.set(true);
   }
 }

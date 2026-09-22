@@ -10,6 +10,8 @@ export interface RadioOption<T extends SelectValue = string> {
   readonly value: T;
   /** User-facing option text. */
   readonly label: string;
+  /** Prevents selecting this option while keeping it visible. */
+  readonly disabled?: boolean;
 }
 
 /** Visual arrangement available for the radio options. */
@@ -45,6 +47,7 @@ export type RadioGroupOrientation = 'horizontal' | 'vertical';
                 [name]="controlId()"
                 [value]="optionValue(option.value)"
                 [checked]="option.value === value()"
+                [disabled]="option.disabled ?? false"
                 (change)="value.set(option.value)"
                 (blur)="touch.emit()"
               />

@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { FormField, FormRoot, form, required } from '@angular/forms/signals';
+import { FormField, FormRoot, disabled, form, required } from '@angular/forms/signals';
 import { AppCheckbox } from './app-checkbox/app-checkbox';
 import { AppDate } from './app-date/app-date';
 import { AppInput } from './app-input/app-input';
@@ -48,7 +48,6 @@ import { AppTime } from './app-time/app-time';
       controlId="multi"
       [(value)]="multi"
       [options]="multiOptions"
-      [optionLabel]="optionLabel"
       testId="multi"
     />
     <app-checkbox label="Enabled" controlId="enabled" [(checked)]="enabled" testId="enabled" />
@@ -78,22 +77,23 @@ class FormControlsHost {
   readonly select = signal('one');
   readonly numericSelect = signal(1);
   readonly multiOptions = [
-    { id: 'one', label: 'One' },
-    { id: 'two', label: 'Two' },
+    { value: { id: 'one', label: 'One' }, label: 'One' },
+    { value: { id: 'two', label: 'Two' }, label: 'Two' },
+    { value: { id: 'three', label: 'Three' }, label: 'Three', disabled: true },
   ];
-  readonly multi = signal([this.multiOptions[0]]);
+  readonly multi = signal([this.multiOptions[0].value]);
   readonly enabled = signal(false);
   readonly priority = signal('one');
   readonly numericPriority = signal(1);
   readonly options = [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
+    { value: 'three', label: 'Three', disabled: true },
   ];
   readonly numericOptions = [
     { value: 1, label: 'One' },
     { value: 2, label: 'Two' },
   ];
-  readonly optionLabel = (option: (typeof this.multiOptions)[number]) => option.label;
 }
 
 @Component({
@@ -114,6 +114,55 @@ class BoundFieldHost {
   private readonly model = signal({ name: '' });
   readonly form = form(this.model, (path) => {
     required(path.name, { message: 'Name is required.' });
+  });
+}
+
+@Component({
+  imports: [FormField, FormRoot, AppSelect, AppMultiselect, AppRadioGroup],
+  template: `
+    <form [formRoot]="form">
+      <app-select
+        label="Select"
+        controlId="disabled-select"
+        [formField]="form.select"
+        [options]="options"
+        testId="disabled-select"
+      />
+      <app-multiselect
+        label="Multi"
+        controlId="disabled-multi"
+        [formField]="form.multi"
+        [options]="multiOptions"
+        testId="disabled-multi"
+      />
+      <app-radio-group
+        label="Radio"
+        controlId="disabled-radio"
+        [formField]="form.radio"
+        [options]="options"
+        testId="disabled-radio"
+      />
+    </form>
+  `,
+})
+class DisabledFieldsHost {
+  readonly options = [
+    { value: 'one', label: 'One' },
+    { value: 'two', label: 'Two' },
+  ];
+  readonly multiOptions = this.options.map((option) => ({
+    value: { id: option.value, label: option.label },
+    label: option.label,
+  }));
+  private readonly model = signal({
+    select: 'one',
+    multi: [this.multiOptions[0].value],
+    radio: 'one',
+  });
+  readonly form = form(this.model, (path) => {
+    disabled(path.select, { when: () => true });
+    disabled(path.multi, { when: () => true });
+    disabled(path.radio, { when: () => true });
   });
 }
 
@@ -165,6 +214,10 @@ describe('form controls', () => {
     expect(nativeElement.querySelector('label#multi-label')?.textContent).toContain('Multi');
     expect(multi.getAttribute('aria-labelledby')).toBe('multi-label');
     expect(nativeElement.innerHTML).toContain('Help');
+    expect(select.options[2].disabled).toBe(true);
+    expect(nativeElement.querySelector<HTMLInputElement>('#priority-option-2')?.disabled).toBe(
+      true,
+    );
 
     text.value = 'changed';
     text.dispatchEvent(new Event('input'));
@@ -202,11 +255,44 @@ describe('form controls', () => {
     expect(host.select()).toBe('two');
     expect(host.numericSelect()).toBe(2);
     expect(typeof host.numericSelect()).toBe('number');
-    expect(host.multi()).toEqual([host.multiOptions[0], host.multiOptions[1]]);
+    expect(host.multi()).toEqual([host.multiOptions[0].value, host.multiOptions[1].value]);
     expect(host.enabled()).toBe(true);
     expect(host.priority()).toBe('two');
     expect(host.numericPriority()).toBe(2);
     expect(typeof host.numericPriority()).toBe('number');
+  });
+
+  it('marks disabled multiselect choices as unavailable', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
+      FormControlsHost,
+    );
+    fixture.detectChanges();
+
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const multi = getRequiredElement(nativeElement, '#multi') as HTMLElement;
+    multi.click();
+    fixture.detectChanges();
+
+    const disabledMultiOption = Array.from(document.querySelectorAll('[role="option"]')).find(
+      (option) => option.textContent.includes('Three'),
+    );
+    expect(disabledMultiOption?.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('disables fields configured by Signal Forms', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [DisabledFieldsHost],
+    }).createComponent(DisabledFieldsHost);
+    fixture.detectChanges();
+
+    const disabledRoot = fixture.nativeElement as HTMLElement;
+    expect(getRequiredElement(disabledRoot, '#disabled-select')).toHaveProperty('disabled', true);
+    expect(getRequiredElement(disabledRoot, '#disabled-multi').getAttribute('aria-disabled')).toBe(
+      'true',
+    );
+    expect(
+      getRequiredElement(disabledRoot, 'fieldset[data-testid="disabled-radio"]'),
+    ).toHaveProperty('disabled', true);
   });
 
   it('shows Signal Forms errors after blur and replaces the hint', () => {

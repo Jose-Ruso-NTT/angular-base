@@ -6,6 +6,16 @@ import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../form-field/field-state';
 
+/** A selectable value rendered by AppMultiselect. */
+export interface MultiselectOption<T> {
+  /** Value stored in the form control. */
+  readonly value: T;
+  /** User-facing and accessible option text. */
+  readonly label: string;
+  /** Prevents selecting this option while keeping it visible. */
+  readonly disabled?: boolean;
+}
+
 /** Accessible ARIA multiselect wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-multiselect',
@@ -51,9 +61,14 @@ import { injectFieldState } from '../form-field/field-state';
               [disabled]="fieldDisabled()"
               [activeDescendant]="listbox.activeDescendant()"
             >
-              @for (option of options(); track trackBy()(option)) {
-                <div ngOption [value]="option" [label]="optionLabel()(option)">
-                  <span>{{ optionLabel()(option) }}</span>
+              @for (option of options(); track option.value) {
+                <div
+                  ngOption
+                  [value]="option.value"
+                  [label]="option.label"
+                  [disabled]="option.disabled ?? false"
+                >
+                  <span>{{ option.label }}</span>
                   <span class="multiselect-check" aria-hidden="true">✓</span>
                 </div>
               }
@@ -75,12 +90,8 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
   readonly controlId = input.required<string>();
   /** Selected objects managed by the parent Signal Form. */
   readonly value = model.required<T[]>();
-  /** Objects available to select. */
-  readonly options = input.required<readonly T[]>();
-  /** Produces the visible and accessible label for an option. */
-  readonly optionLabel = input.required<(option: T) => string>();
-  /** Produces a stable key for an option. Defaults to object identity. */
-  readonly trackBy = input<(option: T) => unknown>((option) => option);
+  /** Options available to select. */
+  readonly options = input.required<readonly MultiselectOption<T>[]>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
   /** Notifies Signal Forms that the select lost focus. */
@@ -96,7 +107,7 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
     const selected = this.value();
     if (selected.length === 0) return 'Selecciona opciones';
 
-    const labels = selected.map((option) => this.optionLabel()(option));
+    const labels = selected.map((value) => this.displayLabelFor(value));
     return labels.length === 1 ? labels[0] : `${labels[0]} + ${(labels.length - 1).toString()} más`;
   });
   protected readonly describedBy = computed(() => {
@@ -105,6 +116,11 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
     return null;
   });
   protected readonly labelId = computed(() => `${this.controlId()}-label`);
+
+  /** Finds the display label for a selected value. */
+  private displayLabelFor(value: T): string {
+    return this.options().find((option) => option.value === value)?.label ?? '';
+  }
 
   /** Focuses the ARIA combobox trigger used by this custom form control. */
   focus(options?: FocusOptions): void {

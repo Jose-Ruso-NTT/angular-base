@@ -78,6 +78,11 @@
 [ngOption][aria-selected='true'] {
   background: var(--color-focus-ring);
 }
+[ngOption][aria-disabled='true'] {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 .multiselect-check {
   visibility: hidden;
 }
