@@ -36,6 +36,13 @@ import { AppTime } from './app-time/app-time';
       [options]="options"
       testId="select"
     />
+    <app-select
+      label="Numeric select"
+      controlId="numeric-select"
+      [(value)]="numericSelect"
+      [options]="numericOptions"
+      testId="numeric-select"
+    />
     <app-multiselect
       label="Multi"
       controlId="multi"
@@ -52,6 +59,13 @@ import { AppTime } from './app-time/app-time';
       [options]="options"
       testId="priority"
     />
+    <app-radio-group
+      label="Numeric priority"
+      controlId="numeric-priority"
+      [(value)]="numericPriority"
+      [options]="numericOptions"
+      testId="numeric-priority"
+    />
   `,
 })
 class FormControlsHost {
@@ -61,6 +75,7 @@ class FormControlsHost {
   readonly time = signal('09:30');
   readonly notes = signal('note');
   readonly select = signal('one');
+  readonly numericSelect = signal(1);
   readonly multiOptions = [
     { id: 'one', label: 'One' },
     { id: 'two', label: 'Two' },
@@ -68,9 +83,14 @@ class FormControlsHost {
   readonly multi = signal([this.multiOptions[0]]);
   readonly enabled = signal(false);
   readonly priority = signal('one');
+  readonly numericPriority = signal(1);
   readonly options = [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
+  ];
+  readonly numericOptions = [
+    { value: 1, label: 'One' },
+    { value: 2, label: 'Two' },
   ];
   readonly optionLabel = (option: (typeof this.multiOptions)[number]) => option.label;
 }
@@ -120,9 +140,14 @@ describe('form controls', () => {
     const time = getRequiredElement(nativeElement, '#time') as HTMLInputElement;
     const textarea = getRequiredElement(nativeElement, '#notes') as HTMLTextAreaElement;
     const select = getRequiredElement(nativeElement, '#select') as HTMLSelectElement;
+    const numericSelect = getRequiredElement(nativeElement, '#numeric-select') as HTMLSelectElement;
     const multi = getRequiredElement(nativeElement, '#multi') as HTMLElement;
     const checkbox = getRequiredElement(nativeElement, '#enabled') as HTMLInputElement;
     const radio = getRequiredElement(nativeElement, '#priority-option-1') as HTMLInputElement;
+    const numericRadio = getRequiredElement(
+      nativeElement,
+      '#numeric-priority-option-1',
+    ) as HTMLInputElement;
 
     expect(nativeElement.querySelector('label[for="text"]')?.textContent).toContain('Text');
     expect(nativeElement.innerHTML).toContain('Help');
@@ -139,6 +164,8 @@ describe('form controls', () => {
     textarea.dispatchEvent(new Event('input'));
     select.value = 'two';
     select.dispatchEvent(new Event('change'));
+    numericSelect.value = '2';
+    numericSelect.dispatchEvent(new Event('change'));
     multi.click();
     fixture.detectChanges();
     const secondMultiOption = Array.from(document.querySelectorAll('[role="option"]')).find(
@@ -150,6 +177,8 @@ describe('form controls', () => {
     checkbox.dispatchEvent(new Event('change'));
     radio.checked = true;
     radio.dispatchEvent(new Event('change'));
+    numericRadio.checked = true;
+    numericRadio.dispatchEvent(new Event('change'));
 
     expect(host.text()).toBe('changed');
     expect(host.number()).toBeNull();
@@ -157,9 +186,13 @@ describe('form controls', () => {
     expect(host.time()).toBe('14:45');
     expect(host.notes()).toBe('changed note');
     expect(host.select()).toBe('two');
+    expect(host.numericSelect()).toBe(2);
+    expect(typeof host.numericSelect()).toBe('number');
     expect(host.multi()).toEqual([host.multiOptions[0], host.multiOptions[1]]);
     expect(host.enabled()).toBe(true);
     expect(host.priority()).toBe('two');
+    expect(host.numericPriority()).toBe(2);
+    expect(typeof host.numericPriority()).toBe('number');
   });
 
   it('shows Signal Forms errors after blur and replaces the hint', () => {

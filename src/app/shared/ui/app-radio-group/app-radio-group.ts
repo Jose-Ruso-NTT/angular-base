@@ -1,12 +1,13 @@
 import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
+import { type SelectValue } from '../app-select/app-select';
 import { AppFieldMessages } from '../app-field-messages/app-field-messages';
 import { injectFieldState } from '../form-field/field-state';
 
 /** A selectable value rendered by AppRadioGroup. */
-export interface RadioOption {
+export interface RadioOption<T extends SelectValue = string> {
   /** Value stored in the form control. */
-  readonly value: string;
+  readonly value: T;
   /** User-facing option text. */
   readonly label: string;
 }
@@ -39,7 +40,7 @@ export interface RadioOption {
                 type="radio"
                 [id]="optionId(index)"
                 [name]="controlId()"
-                [value]="option.value"
+                [value]="optionValue(option.value)"
                 [checked]="option.value === value()"
                 (change)="value.set(option.value)"
                 (blur)="touch.emit()"
@@ -53,7 +54,7 @@ export interface RadioOption {
     </div>
   `,
 })
-export class AppRadioGroup implements FormValueControl<string> {
+export class AppRadioGroup<T extends SelectValue = string> implements FormValueControl<T> {
   private readonly field = injectFieldState();
 
   readonly group = viewChild.required<ElementRef<HTMLFieldSetElement>>('group');
@@ -63,9 +64,9 @@ export class AppRadioGroup implements FormValueControl<string> {
   /** Identifier used to group radio inputs and associate validation feedback. */
   readonly controlId = input.required<string>();
   /** Selected value managed by the parent Signal Form. */
-  readonly value = model.required<string>();
+  readonly value = model.required<T>();
   /** Values available for selection. */
-  readonly options = input.required<readonly RadioOption[]>();
+  readonly options = input.required<readonly RadioOption<T>[]>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
   /** Notifies Signal Forms that focus left a radio option. */
@@ -86,6 +87,11 @@ export class AppRadioGroup implements FormValueControl<string> {
   /** Produces a stable unique ID for an option in this group. */
   protected optionId(index: number): string {
     return `${this.controlId()}-option-${String(index)}`;
+  }
+
+  /** Converts a typed option value to the string required by native radio inputs. */
+  protected optionValue(value: SelectValue): string {
+    return String(value);
   }
 
   /** Focuses the selected radio option, or the first option when no value is selected. */
