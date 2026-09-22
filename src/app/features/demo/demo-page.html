@@ -1,0 +1,137 @@
+<main class="page" aria-labelledby="page-title">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Laboratorio UI</p>
+      <h1 id="page-title">Demo de formularios</h1>
+      <p>Prueba todos los controles compartidos y observa sus valores en tiempo real.</p>
+    </div>
+    <button type="button" class="secondary" (click)="reset()">Restablecer valores</button>
+  </header>
+  <section class="demo-grid" aria-label="Controles de formulario">
+    <article class="demo-card">
+      <div class="card-heading">
+        <h2>Texto y n&uacute;meros</h2>
+        <p>Entradas nativas de una l&iacute;nea.</p>
+      </div>
+      <div class="fields two-columns">
+        <app-input
+          label="Nombre completo"
+          controlId="demo-name"
+          [(value)]="name"
+          autocomplete="name"
+          hint="Campo de texto con ayuda."
+          testId="demo-name"
+        /><app-input
+          label="Correo electr&oacute;nico"
+          controlId="demo-email"
+          type="email"
+          [(value)]="email"
+          autocomplete="email"
+          placeholder="nombre@empresa.com"
+          testId="demo-email"
+        /><app-number
+          label="Importe"
+          controlId="demo-amount"
+          [(value)]="amount"
+          [min]="0"
+          [step]="0.01"
+          placeholder="0,00"
+          hint="Acepta decimales."
+          testId="demo-amount"
+        />
+      </div>
+    </article>
+    <article class="demo-card">
+      <div class="card-heading">
+        <h2>Fecha y hora</h2>
+        <p>Con l&iacute;mites y selector del navegador.</p>
+      </div>
+      <div class="fields two-columns">
+        <app-date
+          label="Fecha de entrega"
+          controlId="demo-date"
+          [(value)]="deliveryDate"
+          testId="demo-date"
+        /><app-time
+          label="Hora de entrega"
+          controlId="demo-time"
+          [(value)]="deliveryTime"
+          min="08:00"
+          max="20:00"
+          [step]="900"
+          hint="De 08:00 a 20:00."
+          testId="demo-time"
+        />
+      </div>
+    </article>
+    <article class="demo-card wide-card">
+      <div class="card-heading">
+        <h2>Texto largo</h2>
+        <p>El &aacute;rea se adapta al contenido que quieras introducir.</p>
+      </div>
+      <app-textarea
+        label="Notas"
+        controlId="demo-notes"
+        [(value)]="notes"
+        [rows]="5"
+        placeholder="Escribe una nota&hellip;"
+        hint="Puedes usar varias l&iacute;neas."
+        testId="demo-notes"
+      />
+    </article>
+    <article class="demo-card">
+      <div class="card-heading">
+        <h2>Selecci&oacute;n</h2>
+        <p>Una opci&oacute;n o varias mediante el desplegable.</p>
+      </div>
+      <div class="fields">
+        <app-select
+          label="Estado"
+          controlId="demo-status"
+          [(value)]="status"
+          [options]="statusOptions"
+          hint="Select nativo."
+          testId="demo-status"
+        /><app-multiselect
+          label="Equipos implicados"
+          controlId="demo-teams"
+          [(value)]="selectedTeams"
+          [options]="teams"
+          [optionLabel]="teamLabel"
+          [trackBy]="teamTrackBy"
+          hint="Abre el desplegable para seleccionar varios."
+          testId="demo-teams"
+        />
+      </div>
+    </article>
+    <article class="demo-card">
+      <div class="card-heading">
+        <h2>Opciones</h2>
+        <p>Controles de selecci&oacute;n directa.</p>
+      </div>
+      <div class="fields">
+        <app-radio-group
+          label="Prioridad"
+          controlId="demo-priority"
+          [(value)]="priority"
+          [options]="priorityOptions"
+          hint="Elige una prioridad."
+          testId="demo-priority"
+        /><app-checkbox
+          label="Quiero recibir novedades"
+          controlId="demo-newsletter"
+          [(checked)]="newsletter"
+          hint="Checkbox con texto de ayuda."
+          testId="demo-newsletter"
+        />
+      </div>
+    </article>
+  </section>
+  <section class="values-card" aria-labelledby="values-title">
+    <div>
+      <h2 id="values-title">Valores actuales</h2>
+      <p>Este panel se actualiza al interactuar con los campos.</p>
+    </div>
+    <pre>{{ liveValues() | json }}</pre>
+  </section>
+</main>

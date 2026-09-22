@@ -7,5 +7,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/products/products-page').then((component) => component.ProductsPage),
   },
+  {
+    path: 'demo',
+    title: 'Demo de formularios',
+    loadComponent: () =>
+      import('./features/demo/demo-page').then((component) => component.DemoPage),
+  },
   { path: '**', redirectTo: '' },
 ];
