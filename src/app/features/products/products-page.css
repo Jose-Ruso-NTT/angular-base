@@ -110,25 +110,6 @@ small {
   display: block;
   margin-top: 0.15rem;
 }
-.status {
-  border-radius: 999px;
-  display: inline-block;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-}
-.active {
-  background: var(--color-success-surface);
-  color: var(--color-success-text);
-}
-.inactive {
-  background: var(--color-neutral-surface);
-  color: var(--color-neutral-text);
-}
-.discontinued {
-  background: var(--color-status-warning-surface);
-  color: var(--color-status-warning-text);
-}
 @media (max-width: 65rem) {
   .filters form {
     grid-template-columns: repeat(2, minmax(0, 1fr));

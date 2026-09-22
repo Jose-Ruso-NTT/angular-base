@@ -124,13 +124,10 @@
             {{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
           </ng-template>
           <ng-template appDataTableCellDef="status" let-product>
-            <span
-              class="status"
-              [class.active]="product.status === 'ACTIVE'"
-              [class.inactive]="product.status === 'INACTIVE'"
-              [class.discontinued]="product.status === 'DISCONTINUED'"
-              >{{ product.status | productStatusLabel }}</span
-            >
+            <app-status-badge
+              [label]="product.status | productStatusLabel"
+              [tone]="product.status | productStatusTone"
+            />
           </ng-template>
           <ng-template appDataTableCellDef="createdAt" let-product>
             {{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}

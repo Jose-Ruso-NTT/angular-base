@@ -24,6 +24,8 @@ import {
 } from '../../shared/routing/url-table-form-state';
 import { ProductFormDialog } from './product-form-dialog';
 import { ProductStatusLabelPipe } from './product-status-label.pipe';
+import { ProductStatusTonePipe } from './product-status-tone.pipe';
+import { AppStatusBadge } from '../../shared/ui/status-badge/app-status-badge';
 import { withPreviousValue } from '../../shared/resource/with-previous-value';
 
 interface ProductFilters {
@@ -77,7 +79,9 @@ type ProductSortBy = (typeof PRODUCT_SORT_BY)[number];
     AppAlert,
     CurrencyPipe,
     DatePipe,
+    AppStatusBadge,
     ProductStatusLabelPipe,
+    ProductStatusTonePipe,
   ],
   styleUrl: './products-page.css',
   templateUrl: './products-page.html',
@@ -165,7 +169,6 @@ export class ProductsPage {
     { value: 'INACTIVE', label: 'Inactivo' },
     { value: 'DISCONTINUED', label: 'Descatalogado' },
   ];
-
   protected readonly columns: readonly DataTableColumn<ProductOutput>[] = [
     { id: 'name', label: 'Producto', sortable: true },
     { id: 'price', label: 'Precio', align: 'right', sortable: true },
