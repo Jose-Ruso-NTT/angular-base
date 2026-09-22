@@ -11,17 +11,30 @@ import {
 } from '@angular/core';
 
 /** Definition for a visible column in AppDataTable. */
-export interface DataTableColumn<T> {
-  /** Unique column identifier, also used to match an optional cell template. */
-  readonly id: string;
+export type DataTableColumn<T, TSortableId extends string = string> =
+  SortableDataTableColumn<T, TSortableId> | NonSortableDataTableColumn<T>;
+
+interface BaseDataTableColumn<T> {
   /** Text displayed in the table header. */
   readonly label: string;
   /** Horizontal alignment shared by the header and cells in this column. */
   readonly align?: 'left' | 'center' | 'right';
-  /** Allows the user to request server-side sorting on this field. */
-  readonly sortable?: boolean;
   /** Optional text transformer. Without it, the table renders the row property matching `id`. */
   readonly render?: (row: T) => string;
+}
+
+interface SortableDataTableColumn<T, TSortableId extends string> extends BaseDataTableColumn<T> {
+  /** Unique column identifier, also used to match an optional cell template. */
+  readonly id: TSortableId;
+  /** Allows the user to request server-side sorting on this field. */
+  readonly sortable: true;
+}
+
+interface NonSortableDataTableColumn<T> extends BaseDataTableColumn<T> {
+  /** Unique column identifier, also used to match an optional cell template. */
+  readonly id: string;
+  /** This column cannot be used to request sorting. */
+  readonly sortable?: false;
 }
 
 /** Server or client pagination state rendered below a data table. */
@@ -144,21 +157,21 @@ export class DataTableCellDefDirective<T> {
     }
   `,
 })
-export class AppDataTable<T> {
+export class AppDataTable<T, TSortableId extends string = string> {
   /** Rows rendered in the table body. */
   readonly rows = input.required<readonly T[]>();
   /** Ordered definitions for the visible columns. */
-  readonly columns = input.required<readonly DataTableColumn<T>[]>();
+  readonly columns = input.required<readonly DataTableColumn<T, TSortableId>[]>();
   /** Accessible message displayed if rows is empty. */
   readonly emptyMessage = input('No hay resultados.');
   /** Current server-side sort field. */
-  readonly sortBy = input<string | null>(null);
+  readonly sortBy = input<TSortableId | null>(null);
   /** Current sort direction. */
   readonly sortDirection = input<'asc' | 'desc' | null>(null);
   /** Stable key generator for rendering rows. */
   readonly rowTrackBy = input.required<(row: T) => string | number>();
   /** Emits a column id after the user requests a sort change. */
-  readonly sortChange = output<string>();
+  readonly sortChange = output<TSortableId>();
   /** Optional pagination state. The owning feature remains responsible for loading data. */
   readonly pagination = input<DataTablePagination | null>(null);
   /** Page-size choices available to the user. */
@@ -194,7 +207,7 @@ export class AppDataTable<T> {
   }
 
   /** Converts a scalar row property into fallback cell text. Complex values need a template or renderer. */
-  protected cellValue(row: T, column: DataTableColumn<T>): string {
+  protected cellValue(row: T, column: DataTableColumn<T, TSortableId>): string {
     const value = (row as Record<string, unknown>)[column.id];
     return typeof value === 'string' ||
       typeof value === 'number' ||
@@ -210,19 +223,21 @@ export class AppDataTable<T> {
     if (Number.isInteger(pageSize) && pageSize > 0) this.pageSizeChange.emit(pageSize);
   }
 
-  protected ariaSort(column: DataTableColumn<T>): 'ascending' | 'descending' | 'none' | null {
+  protected ariaSort(
+    column: DataTableColumn<T, TSortableId>,
+  ): 'ascending' | 'descending' | 'none' | null {
     if (!column.sortable || this.sortBy() !== column.id || this.sortDirection() === null) {
       return null;
     }
     return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
   }
 
-  protected sortIndicator(column: DataTableColumn<T>): string {
+  protected sortIndicator(column: DataTableColumn<T, TSortableId>): string {
     if (this.sortBy() !== column.id) return '↕';
     return this.sortDirection() === 'asc' ? '↑' : '↓';
   }
 
-  protected sortLabel(column: DataTableColumn<T>): string {
+  protected sortLabel(column: DataTableColumn<T, TSortableId>): string {
     if (this.sortBy() === column.id && this.sortDirection() === 'desc') {
       return `Quitar la ordenación por ${column.label}`;
     }

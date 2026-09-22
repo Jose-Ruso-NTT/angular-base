@@ -130,7 +130,6 @@ export class ProductsPage {
     ProductUrlFilters,
     ProductSortBy
   >({
-    namespace: 'products',
     form: this.filtersForm,
     defaultFilters: createProductFiltersDefaultValue,
     filters: {
@@ -169,7 +168,7 @@ export class ProductsPage {
     { value: 'INACTIVE', label: 'Inactivo' },
     { value: 'DISCONTINUED', label: 'Descatalogado' },
   ];
-  protected readonly columns: readonly DataTableColumn<ProductOutput>[] = [
+  protected readonly columns: readonly DataTableColumn<ProductOutput, ProductSortBy>[] = [
     { id: 'name', label: 'Producto', sortable: true },
     { id: 'price', label: 'Precio', align: 'right', sortable: true },
     { id: 'stock', label: 'Stock', align: 'right', sortable: true },

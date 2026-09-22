@@ -23,10 +23,10 @@ export type UrlParamSchema<TFilters extends object> = {
 };
 
 /** A discrete state change requested by a reusable data table. */
-export type DataTableStateChange =
+export type DataTableStateChange<TSortBy extends string = string> =
   | { readonly kind: 'page'; readonly page: number }
   | { readonly kind: 'pageSize'; readonly pageSize: number }
-  | { readonly kind: 'sort'; readonly sortBy: string };
+  | { readonly kind: 'sort'; readonly sortBy: TSortBy };
 
 /** Fields shared by every URL table state. */
 interface BaseUrlTableState<TUrlFilters extends object> {
@@ -85,8 +85,6 @@ export interface CreateUrlTableFormStateConfig<
   TUrlFilters extends object,
   TSortBy extends string = string,
 > {
-  /** Prefix isolating this table's parameters from other tables on the route. */
-  readonly namespace: string;
   /** Signal Form whose draft value is synchronized when URL state changes. */
   readonly form: UrlTableForm<TFormValue>;
   /** Produces a fresh default form value for initialization and reset. */
@@ -118,7 +116,7 @@ export interface UrlTableFormStateStore<
   /** Restores form and URL filters to their defaults and returns to the first page. */
   resetFilters(): Promise<boolean>;
   /** Synchronizes a pagination or sort action emitted by the table. */
-  setTableState(change: DataTableStateChange): Promise<boolean>;
+  setTableState(change: DataTableStateChange<TSortBy>): Promise<boolean>;
 }
 
 /** Options for decoding a nullable numeric URL parameter. */
@@ -147,8 +145,10 @@ export function stringUrlParam(): UrlParamCodec<string> {
 
 /** Creates a codec for optional finite numeric query parameters. */
 export function nullableNumberUrlParam(
-  options: NullableNumberUrlParamOptions = { minimum: 0 },
+  options: NullableNumberUrlParamOptions = {},
 ): UrlParamCodec<number | null> {
+  const minimum = options.minimum ?? 0;
+
   return {
     parse: (value, fallback) => {
       if (value === null || value.trim() === '') return fallback;
@@ -156,7 +156,7 @@ export function nullableNumberUrlParam(
       const isValid =
         Number.isFinite(parsed) &&
         (!options.integer || Number.isInteger(parsed)) &&
-        (options.minimum === undefined || parsed >= options.minimum) &&
+        parsed >= minimum &&
         (options.maximum === undefined || parsed <= options.maximum);
       return isValid ? parsed : fallback;
     },
@@ -193,12 +193,15 @@ export function createUrlTableFormState<
 >(
   config: CreateUrlTableFormStateConfig<TFormValue, TUrlFilters, TSortBy>,
 ): UrlTableFormStateStore<TFormValue, TUrlFilters, TSortBy> {
+  if (!config.table.pageSizeOptions.includes(config.table.defaultPageSize)) {
+    throw new Error('The default page size must be included in pageSizeOptions.');
+  }
+
   const router = inject(Router);
   const route = inject(ActivatedRoute);
   const queryParams = toSignal(route.queryParamMap, {
     initialValue: route.snapshot.queryParamMap,
   });
-  const key = (name: string) => `${config.namespace}.${name}`;
   const defaults = () => config.defaultFilters();
   const defaultUrlFilters = () => config.toUrlFilters(defaults());
   const urlFilters = computed(() => {
@@ -208,7 +211,7 @@ export function createUrlTableFormState<
 
     for (const filterName of Object.keys(config.filters) as (keyof TUrlFilters)[]) {
       filters[filterName] = config.filters[filterName].parse(
-        params.get(key(String(filterName))),
+        params.get(String(filterName)),
         defaultValues[filterName],
       );
     }
@@ -218,12 +221,12 @@ export function createUrlTableFormState<
   const tableState = computed<UrlTableState<TUrlFilters, TSortBy>>(() => {
     const params = queryParams();
     const currentFilters = urlFilters();
-    const requestedPageSize = parsePositiveInteger(params.get(key('pageSize')));
+    const requestedPageSize = parsePositiveInteger(params.get('pageSize'));
     const pageSize = requestedPageSize ?? config.table.defaultPageSize;
-    const requestedSortBy = params.get(key('sortBy'));
-    const requestedDirection = params.get(key('sortDirection'));
+    const requestedSortBy = params.get('sortBy');
+    const requestedDirection = params.get('sortDirection');
     const baseState: BaseUrlTableState<TUrlFilters> = {
-      page: parsePositiveInteger(params.get(key('page'))) ?? 1,
+      page: parsePositiveInteger(params.get('page')) ?? 1,
       pageSize: config.table.pageSizeOptions.includes(pageSize)
         ? pageSize
         : config.table.defaultPageSize,
@@ -263,7 +266,7 @@ export function createUrlTableFormState<
     const changes: Params = {};
 
     for (const filterName of Object.keys(config.filters) as (keyof TUrlFilters)[]) {
-      changes[key(String(filterName))] = config.filters[filterName].serialize(
+      changes[String(filterName)] = config.filters[filterName].serialize(
         urlFilters[filterName],
         defaultValues[filterName],
       );
@@ -279,43 +282,42 @@ export function createUrlTableFormState<
     applyFilters: () =>
       navigate({
         ...serializeFilters(config.form().value()),
-        [key('page')]: null,
+        page: null,
       }),
     resetFilters: () => {
       const defaultValue = defaults();
       config.form().reset(defaultValue);
-      return navigate({ ...serializeFilters(defaultValue), [key('page')]: null });
+      return navigate({ ...serializeFilters(defaultValue), page: null });
     },
     setTableState: (change) => {
       const current = tableState();
 
       if (change.kind === 'page') {
         return change.page > 0
-          ? navigate({ [key('page')]: change.page === 1 ? null : change.page })
+          ? navigate({ page: change.page === 1 ? null : change.page })
           : Promise.resolve(false);
       }
 
       if (change.kind === 'pageSize') {
         return config.table.pageSizeOptions.includes(change.pageSize)
           ? navigate({
-              [key('pageSize')]:
-                change.pageSize === config.table.defaultPageSize ? null : change.pageSize,
-              [key('page')]: null,
+              pageSize: change.pageSize === config.table.defaultPageSize ? null : change.pageSize,
+              page: null,
             })
           : Promise.resolve(false);
       }
 
-      if (!config.table.sortByOptions.includes(change.sortBy as TSortBy)) {
+      if (!config.table.sortByOptions.includes(change.sortBy)) {
         return Promise.resolve(false);
       }
 
-      const sortBy = change.sortBy as TSortBy;
+      const sortBy = change.sortBy;
       const sortDirection =
         current.sortBy !== sortBy ? 'asc' : current.sortDirection === 'asc' ? 'desc' : null;
       return navigate({
-        [key('sortBy')]: sortDirection === null ? null : sortBy,
-        [key('sortDirection')]: sortDirection,
-        [key('page')]: null,
+        sortBy: sortDirection === null ? null : sortBy,
+        sortDirection,
+        page: null,
       });
     },
   };
