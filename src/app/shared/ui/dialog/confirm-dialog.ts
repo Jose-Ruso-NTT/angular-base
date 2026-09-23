@@ -16,13 +16,13 @@ export interface ConfirmDialogData {
   selector: 'app-confirm-dialog',
   styleUrl: './confirm-dialog.css',
   template: `
-    <section class="dialog" aria-labelledby="confirm-dialog-title">
+    <section class="app-dialog app-dialog--confirm" aria-labelledby="confirm-dialog-title">
       <h2 id="confirm-dialog-title">{{ data.title }}</h2>
       <p>{{ data.message }}</p>
-      <div class="actions">
+      <div class="app-dialog__actions">
         <button
           type="button"
-          class="secondary"
+          class="app-button app-button--secondary"
           (click)="dialogRef.close(false)"
           data-testid="confirm-dialog-cancel"
         >
@@ -30,7 +30,7 @@ export interface ConfirmDialogData {
         </button>
         <button
           type="button"
-          class="danger"
+          class="app-button app-button--danger"
           (click)="dialogRef.close(true)"
           data-testid="confirm-dialog-accept"
         >

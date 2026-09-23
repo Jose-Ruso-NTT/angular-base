@@ -13,33 +13,39 @@
   font: inherit;
   justify-content: space-between;
   min-height: 2.75rem;
-  padding: 0.65rem 0.75rem;
+  padding: 0.65rem 0.4rem 0.65rem 0.75rem;
   -webkit-user-select: none;
   user-select: none;
   width: 100%;
-}
-.multiselect-trigger span {
-  pointer-events: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.multiselect-trigger:focus-visible {
-  border-color: var(--color-focus);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
-  outline: 0;
-}
-.multiselect-trigger[aria-disabled='true'] {
-  cursor: default;
-  opacity: 0.6;
-}
-.multiselect-trigger[aria-invalid='true'] {
-  border-color: var(--color-action-danger);
-}
-.multiselect-arrow {
-  transition: transform 150ms ease-in-out;
-}
-.multiselect-trigger[aria-expanded='true'] .multiselect-arrow {
-  transform: rotate(180deg);
+
+  & > span {
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  & > .multiselect-arrow {
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    height: 0.35rem;
+    transform: rotate(45deg) translateY(-0.125rem);
+    width: 0.35rem;
+  }
+
+  &:focus-visible {
+    border-color: var(--color-focus);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    outline: 0;
+  }
+
+  &[aria-disabled='true'] {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-action-danger);
+  }
 }
 .multiselect-popup {
   background: var(--color-surface);
@@ -52,40 +58,48 @@
   overflow: auto;
   padding: 0.25rem;
   width: 100%;
-}
-[ngListbox] {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  outline: 0;
-}
-[ngOption] {
-  align-items: center;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  min-height: 2.5rem;
-  padding: 0 0.75rem;
-}
-[ngOption]:hover,
-[ngOption][data-active='true'] {
-  background: var(--color-surface-raised, var(--color-surface));
-}
-[ngOption][data-active='true'] {
-  box-shadow: inset 0 0 0 2px var(--color-focus);
-}
-[ngOption][aria-selected='true'] {
-  background: var(--color-focus-ring);
-}
-[ngOption][aria-disabled='true'] {
-  color: var(--color-text-secondary);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-.multiselect-check {
-  visibility: hidden;
-}
-[ngOption][aria-selected='true'] .multiselect-check {
-  visibility: visible;
+
+  [ngListbox] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    outline: 0;
+
+    [ngOption] {
+      align-items: center;
+      border-radius: 0.3rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      min-height: 2.5rem;
+      padding: 0 0.75rem;
+
+      &:not([aria-disabled='true']):hover,
+      &:not([aria-disabled='true'])[data-active='true'] {
+        background: var(--color-surface-hover);
+      }
+
+      &[data-active='true'] {
+        box-shadow: inset 0 0 0 2px var(--color-focus);
+      }
+
+      &[aria-selected='true'] {
+        background: var(--color-focus-ring);
+
+        .multiselect-check {
+          visibility: visible;
+        }
+      }
+
+      &[aria-disabled='true'] {
+        color: var(--color-text-secondary);
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .multiselect-check {
+        visibility: hidden;
+      }
+    }
+  }
 }

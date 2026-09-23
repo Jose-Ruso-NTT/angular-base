@@ -39,7 +39,7 @@ export interface MultiselectOption<T> {
         [attr.data-testid]="testId()"
       >
         <span class="multiselect-value">{{ displayValue() }}</span>
-        <span class="multiselect-arrow" aria-hidden="true">▾</span>
+        <span class="multiselect-arrow" aria-hidden="true"></span>
       </div>
 
       <ng-template

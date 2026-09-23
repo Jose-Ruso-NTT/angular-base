@@ -1,4 +1,4 @@
-<section class="dialog" aria-labelledby="product-form-title">
+<section class="app-dialog app-dialog--product-form" aria-labelledby="product-form-title">
   <header>
     <h2 id="product-form-title">{{ title() }}</h2>
     <p>Los campos marcados con <span aria-hidden="true">*</span> son obligatorios.</p>
@@ -49,10 +49,10 @@
       [options]="statusOptions"
       testId="product-status-select"
     />
-    <div class="actions">
+    <div class="app-dialog__actions">
       <button
         type="button"
-        class="secondary"
+        class="app-button app-button--secondary"
         (click)="dialogRef.close(false)"
         [disabled]="form().submitting()"
         data-testid="product-form-cancel"
@@ -61,7 +61,7 @@
       </button>
       <button
         type="submit"
-        class="primary"
+        class="app-button app-button--primary"
         [disabled]="form().submitting()"
         data-testid="product-form-submit"
       >

@@ -67,5 +67,5 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 ## Shared UI
 
-- Before creating or using a shared UI component, read the colocated `README.md` in its component directory. Form controls are documented together in `src/app/shared/ui/form-controls/README.md`.
+- Before creating or using a shared UI component, read its component or group `README.md` when one exists. Form controls are documented together in `src/app/shared/ui/form-controls/README.md`.
 - For a feature that combines a table/list, filters, and a create or edit modal, use the local `ui-table-filters-modal` skill. Its code pattern lives with the skill and is not coupled to a feature implementation.

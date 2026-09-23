@@ -10,12 +10,19 @@ input {
   min-height: 2.75rem;
   padding: 0.65rem 0.75rem;
   width: 100%;
-}
-input:focus-visible {
-  border-color: var(--color-focus);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
-  outline: 0;
-}
-input[aria-invalid='true'] {
-  border-color: var(--color-action-danger);
+
+  &:focus-visible {
+    border-color: var(--color-focus);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    outline: 0;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-action-danger);
+  }
 }

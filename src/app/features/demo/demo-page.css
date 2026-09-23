@@ -42,23 +42,6 @@ h2 {
   color: var(--color-text-secondary);
   margin-bottom: 0;
 }
-button {
-  border-radius: 0.4rem;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 650;
-  min-height: 2.6rem;
-  padding: 0.5rem 0.9rem;
-}
-button:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
-}
-.secondary {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
-  color: var(--color-text-primary);
-}
 .demo-grid {
   display: grid;
   gap: 1rem;

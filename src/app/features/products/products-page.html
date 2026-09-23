@@ -6,7 +6,7 @@
     </div>
     <button
       type="button"
-      class="primary"
+      class="app-button app-button--primary"
       (click)="openProductForm()"
       data-testid="product-create-button"
     >
@@ -40,7 +40,7 @@
         testId="product-min-price-input"
       />
       <app-number
-        label="Precio mínimo"
+        label="Precio máximo"
         controlId="max-price"
         [formField]="filtersForm.maxPrice"
         [step]="0.01"
@@ -53,12 +53,16 @@
         testId="product-in-stock-filter"
       />
       <div class="filter-actions">
-        <button type="submit" class="primary" data-testid="product-filter-submit">
+        <button
+          type="submit"
+          class="app-button app-button--primary"
+          data-testid="product-filter-submit"
+        >
           Aplicar filtros
         </button>
         <button
           type="button"
-          class="secondary"
+          class="app-button app-button--secondary"
           (click)="clearFilters()"
           data-testid="product-filter-clear"
         >
@@ -88,7 +92,7 @@
       <app-alert type="alert" message="No se han podido cargar los productos.">
         <button
           type="button"
-          class="secondary"
+          class="app-button app-button--secondary"
           (click)="productsResource.reload()"
           data-testid="product-retry-button"
         >
@@ -135,7 +139,7 @@
             <div class="row-actions">
               <button
                 type="button"
-                class="primary"
+                class="app-button app-button--primary"
                 (click)="openProductForm(product)"
                 [attr.aria-label]="'Editar ' + product.name"
                 [attr.data-testid]="'product-edit-' + product.id"
@@ -144,7 +148,7 @@
               </button>
               <button
                 type="button"
-                class="danger"
+                class="app-button app-button--danger"
                 (click)="confirmDelete(product)"
                 [attr.aria-label]="'Eliminar ' + product.name"
                 [attr.data-testid]="'product-delete-' + product.id"
