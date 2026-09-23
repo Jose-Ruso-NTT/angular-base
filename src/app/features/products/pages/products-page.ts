@@ -23,9 +23,9 @@ import {
   nullableNumberUrlParam,
   stringUrlParam,
 } from '@shared/routing/url-table-form-state';
-import { ProductFormDialog } from './product-form-dialog';
-import { ProductStatusLabelPipe } from './product-status-label.pipe';
-import { ProductStatusTonePipe } from './product-status-tone.pipe';
+import { ProductFormDialog } from '../ui/product-form-dialog';
+import { ProductStatusLabelPipe } from '../ui/product-status-label.pipe';
+import { ProductStatusTonePipe } from '../ui/product-status-tone.pipe';
 import { AppStatusBadge } from '@shared/ui/status-badge/app-status-badge';
 import { withPreviousValue } from '@shared/resource/with-previous-value';
 

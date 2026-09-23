@@ -2,6 +2,10 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
 
+## Arquitectura
+
+La estructura, los límites entre capas y el criterio para hacerla crecer están documentados en [docs/architecture.md](docs/architecture.md).
+
 ## Development server
 
 To start a local development server, run:

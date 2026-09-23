@@ -1,7 +1,13 @@
-<section class="app-dialog app-dialog--product-form" aria-labelledby="product-form-title">
+<section
+  class="app-dialog app-dialog--product-form"
+  aria-describedby="product-form-description"
+  aria-labelledby="product-form-title"
+>
   <header>
     <h2 id="product-form-title">{{ title() }}</h2>
-    <p>Los campos marcados con <span aria-hidden="true">*</span> son obligatorios.</p>
+    <p id="product-form-description">
+      Los campos marcados con <span aria-hidden="true">*</span> son obligatorios.
+    </p>
   </header>
   @if (submitError()) {
     <app-alert type="alert" [message]="submitError()" />

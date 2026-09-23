@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import type { ProductOutput } from '@core/api/generated/schemas';
 
-/** Spanish labels for the product statuses exposed by the API. */
+/** Feature-specific Spanish labels for the product statuses exposed by the API. */
 export const PRODUCT_STATUS_LABELS: Readonly<Record<ProductOutput['status'], string>> = {
   ACTIVE: 'Activo',
   INACTIVE: 'Inactivo',

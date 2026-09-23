@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import type { ProductOutput } from '@core/api/generated/schemas';
 import type { StatusBadgeTone } from '@shared/ui/status-badge/app-status-badge';
 
-/** Product status appearances expressed with the semantic tones of shared UI. */
+/** Feature-specific product status appearances expressed with shared UI tones. */
 const PRODUCT_STATUS_BADGE_TONES: Readonly<Record<ProductOutput['status'], StatusBadgeTone>> = {
   ACTIVE: 'success',
   INACTIVE: 'neutral',

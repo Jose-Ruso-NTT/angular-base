@@ -89,7 +89,7 @@ export interface CreateUrlTableFormStateConfig<
   readonly form: UrlTableForm<TFormValue>;
   /** Produces a fresh default form value for initialization and reset. */
   readonly defaultFilters: () => TFormValue;
-  /** URL codecs for every filter, including a search field when the form has one. */
+  /** URL codecs for every filter. */
   readonly filters: UrlParamSchema<TUrlFilters>;
   /** Converts form values into the URL filter shape. */
   readonly toUrlFilters: (value: TFormValue) => TUrlFilters;

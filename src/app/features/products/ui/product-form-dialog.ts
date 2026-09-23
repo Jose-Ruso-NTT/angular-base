@@ -37,7 +37,7 @@ interface ProductFormModel {
   status: string;
 }
 
-/** Product creation and editing form displayed through the dialog wrapper. */
+/** Feature-local product creation and editing form displayed through the dialog wrapper. */
 @Component({
   selector: 'app-product-form-dialog',
   imports: [FormField, FormRoot, AppInput, AppNumber, AppSelect, AppAlert],

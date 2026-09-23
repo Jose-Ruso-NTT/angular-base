@@ -69,3 +69,16 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - Before creating or using a shared UI component, read its component or group `README.md` when one exists. Form controls are documented together in `src/app/shared/ui/form-controls/README.md`.
 - For a feature that combines a table/list, filters, and a create or edit modal, use the local `ui-table-filters-modal` skill. Its code pattern lives with the skill and is not coupled to a feature implementation.
+
+## HTML and CSS
+
+- When creating or modifying HTML and CSS, follow the patterns used by neighboring components first.
+- Use native CSS with nesting; do not write descendant selectors by duplicating the root block.
+- Within a block, nest related states and elements using `&`, for example `&:focus-visible`, `&:disabled`, and `&__actions`.
+- Keep styles encapsulated in the component's CSS; use the existing `var(--color-...)` tokens, spacing values, and shadows.
+- Do not introduce Sass or other preprocessors unless explicitly requested.
+- In templates, use the project's BEM classes (`.app-component`, `.app-component__element`, `.app-component--variant`) and semantic, accessible HTML.
+
+## Architecture
+
+- Read `docs/architecture.md` before adding a feature, cross-cutting infrastructure, or shared code. It defines the dependency boundaries and the criteria for evolving each layer.
