@@ -1,77 +1,59 @@
-# AngularBase
+# Angular Base
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
+Base frontend en Angular para construir aplicaciones por funcionalidades. Incluye un catálogo de productos como referencia de una pantalla con filtros, tabla, paginación, ordenación, diálogos y consumo tipado de API.
+
+## Requisitos
+
+- Node.js compatible con Angular 22
+- npm 11.6.3 (definido en `package.json`)
+- El backend disponible en `http://127.0.0.1:3000` para usar la aplicación completa
+
+## Puesta en marcha
+
+```bash
+npm install
+npm start
+```
+
+Abre `http://localhost:4200`. Durante el desarrollo, las solicitudes a `/api/**` se redirigen al backend mediante `src/proxy.conf.json`.
+
+## Comandos habituales
+
+```bash
+npm start                 # Servidor de desarrollo
+npm run build             # Build de producción
+npm test                  # Tests en modo interactivo
+npm run test:ci           # Tests para CI
+npm run test:coverage     # Tests con cobertura
+npm run lint              # Lint
+npm run typecheck         # Comprobación de tipos
+npm run format:check      # Verifica el formato
+npm run format            # Aplica Prettier
+npm run generate:api      # Regenera el cliente desde swagger/api.yaml
+```
 
 ## Arquitectura
 
-La estructura, los límites entre capas y el criterio para hacerla crecer están documentados en [docs/architecture.md](docs/architecture.md).
+La aplicación se organiza por funcionalidades (`features/`). Cada feature posee sus rutas, páginas y UI privada; `shared/` contiene elementos reutilizables y agnósticos de dominio; `core/` aloja infraestructura transversal.
 
-## Development server
+Las reglas de dependencia, estado, API y criterios para hacer crecer la estructura están en [docs/architecture.md](docs/architecture.md).
 
-To start a local development server, run:
+El código de `src/app/core/api/generated/` es generado por Orval a partir de `swagger/api.yaml`: no debe editarse manualmente. Tras cambiar el contrato, ejecuta `npm run generate:api` y versiona el resultado generado.
 
-```bash
-ng serve
-```
+## Convenciones de desarrollo
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Usa `signal` para el estado local y la URL para el estado recuperable de filtros, paginación y ordenación.
+- Mantén los tipos y helpers locales junto a su único consumidor. Crea `model/` o `data-access/` dentro de una feature solo cuando exista una responsabilidad o reutilización real.
+- No importes una feature desde otra. Los componentes de `shared/` no conocen dominios como productos o pedidos.
 
-## Code scaffolding
+## Hooks de Git
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Husky ejecuta `lint-staged` antes de confirmar y valida los mensajes con Commitlint.
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Git hooks (Husky)
-
-Husky está situado en `.husky/` porque es configuración del frontend: ejecuta `lint-staged` antes de confirmar y valida el mensaje mediante `commitlint`.
-
-En este repositorio didáctico, el frontend está en `angular-base/` y el backend es su carpeta hermana (`../backend`). Para no aplicar las comprobaciones frontend a commits que modifican únicamente el backend, los hooks se ejecutan solo si hay archivos preparados bajo `angular-base/`.
-
-Tras clonar esta estructura conjunta, actívalos una vez desde la raíz del repositorio:
+En este repositorio didáctico, el frontend está en `angular-base/` y el backend es su carpeta hermana (`../backend`). Para no ejecutar las comprobaciones del frontend en commits que afectan solo al backend, activa los hooks una vez desde la raíz Git:
 
 ```bash
 git config core.hooksPath angular-base/.husky/_
 ```
 
-En el uso habitual, cuando este frontend vive solo en su propio repositorio, no hace falta esa configuración especial: `.husky/` está en la raíz Git y Husky usa el valor estándar `.husky/_`. Basta con instalar las dependencias en esta carpeta (`npm install`); el script `prepare` configura los hooks.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Si el frontend vive en su propio repositorio, basta con instalar dependencias: el script `prepare` configura los hooks en la ruta estándar.
