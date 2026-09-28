@@ -11,6 +11,7 @@ import {
   minLength,
   pattern,
   required,
+  validate,
 } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { ProductsService } from '@core/api/generated';
@@ -20,6 +21,7 @@ import { AppNumber } from '@shared/ui/form-controls/app-number/app-number';
 import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-select/app-select';
 import { APP_DIALOG_DATA, AppDialogRef } from '@shared/ui/dialog/app-dialog.service';
 import { focusBoundControl } from '@shared/forms/focus-bound-control';
+import { integer } from '@shared/forms/integer.validator';
 import { AppAlert } from '@shared/ui/alert/app-alert';
 
 /** Data accepted by the product editor dialog. Omitting product creates a new item. */
@@ -80,6 +82,7 @@ export class ProductFormDialog {
       min(path.price, 0, { message: 'El precio no puede ser negativo.' });
       required(path.stock, { message: 'El stock es obligatorio.' });
       min(path.stock, 0, { message: 'El stock no puede ser negativo.' });
+      validate(path.stock, integer('El stock debe ser un número entero.'));
       required(path.status, { message: 'Selecciona un estado.' });
     },
     {
