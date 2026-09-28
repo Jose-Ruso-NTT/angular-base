@@ -2,11 +2,14 @@
 
 Base frontend en Angular para construir aplicaciones por funcionalidades. Incluye un catálogo de productos como referencia de una pantalla con filtros, tabla, paginación, ordenación, diálogos y consumo tipado de API.
 
+## Repositorio relacionado
+
+La API que consume esta aplicación está en el repositorio independiente [angular-base-backend](https://github.com/Jose-Ruso-NTT/angular-base-backend). Debe estar disponible en `http://127.0.0.1:3000` para usar la aplicación completa.
+
 ## Requisitos
 
 - Node.js compatible con Angular 22
 - npm 11.6.3 (definido en `package.json`)
-- El backend disponible en `http://127.0.0.1:3000` para usar la aplicación completa
 
 ## Puesta en marcha
 
@@ -48,12 +51,4 @@ El código de `src/app/core/api/generated/` es generado por Orval a partir de `s
 
 ## Hooks de Git
 
-Husky ejecuta `lint-staged` antes de confirmar y valida los mensajes con Commitlint.
-
-En este repositorio didáctico, el frontend está en `angular-base/` y el backend es su carpeta hermana (`../backend`). Para no ejecutar las comprobaciones del frontend en commits que afectan solo al backend, activa los hooks una vez desde la raíz Git:
-
-```bash
-git config core.hooksPath angular-base/.husky/_
-```
-
-Si el frontend vive en su propio repositorio, basta con instalar dependencias: el script `prepare` configura los hooks en la ruta estándar.
+Husky ejecuta `lint-staged` antes de confirmar y valida los mensajes con Commitlint. Al instalar dependencias, el script `prepare` configura los hooks para este repositorio.
