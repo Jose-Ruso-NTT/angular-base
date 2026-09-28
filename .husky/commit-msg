@@ -1,9 +1,3 @@
 #!/usr/bin/env sh
 
-# Mantiene el control de mensajes junto al frontend y lo omite para backend puro.
-if ! git diff --cached --name-only | grep -q '^angular-base/'; then
-  exit 0
-fi
-
-repository_root="$(git rev-parse --show-toplevel)" || exit 1
-node "$repository_root/angular-base/node_modules/@commitlint/cli/lib/cli.js" --config "$repository_root/angular-base/commitlint.config.cjs" --edit "$1"
+npx --no-install commitlint --edit "$1"
