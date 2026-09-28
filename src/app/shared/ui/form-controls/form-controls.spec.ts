@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormField, FormRoot, disabled, form, required } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
 import { AppCheckbox } from './app-checkbox/app-checkbox';
 import { AppDate } from './app-date/app-date';
 import { AppInput } from './app-input/app-input';
@@ -277,6 +278,23 @@ describe('form controls', () => {
       (option) => option.textContent.includes('Three'),
     );
     expect(disabledMultiOption?.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('keeps the last numeric value while a number is incomplete', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
+      FormControlsHost,
+    );
+    fixture.detectChanges();
+
+    const host = fixture.componentInstance;
+    const numberControl = fixture.debugElement.query(By.directive(AppNumber))
+      .componentInstance as unknown as {
+      setNativeValue(rawValue: string, nativeValue: number): void;
+    };
+
+    numberControl.setNativeValue('12.', Number.NaN);
+
+    expect(host.number()).toBe(4);
   });
 
   it('disables fields configured by Signal Forms', () => {

@@ -1,0 +1,87 @@
+<div class="table-scroll" tabindex="0">
+  <table>
+    <thead>
+      <tr>
+        @for (column of columns(); track column.id) {
+          <th
+            scope="col"
+            [class.align-center]="column.align === 'center'"
+            [class.align-right]="column.align === 'right'"
+            [attr.aria-sort]="ariaSort(column)"
+          >
+            @if (column.sortable) {
+              <button
+                type="button"
+                class="sort-button"
+                (click)="sortChange.emit(column.id)"
+                [attr.aria-label]="sortLabel(column)"
+              >
+                {{ column.label }} <span aria-hidden="true">{{ sortIndicator(column) }}</span>
+              </button>
+            } @else {
+              {{ column.label }}
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track rowTrackBy()(row)) {
+        <tr>
+          @for (column of columns(); track column.id) {
+            <td
+              [class.align-center]="column.align === 'center'"
+              [class.align-right]="column.align === 'right'"
+            >
+              @if (cellTemplate(column.id); as template) {
+                <ng-container
+                  [ngTemplateOutlet]="template"
+                  [ngTemplateOutletContext]="{ $implicit: row, row }"
+                />
+              } @else {
+                {{ column.render?.(row) ?? cellValue(row, column) }}
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td class="empty" [attr.colspan]="columns().length">{{ emptyMessage() }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+@if (pagination(); as page) {
+  <nav class="pagination" [attr.aria-label]="paginationLabel()">
+    <label [for]="pageSizeId()">{{ pageSizeLabel() }}</label>
+    <select
+      [id]="pageSizeId()"
+      (change)="onPageSizeChange($any($event.target).value)"
+      [attr.data-testid]="pageSizeTestId()"
+    >
+      @for (pageSize of pageSizeOptions(); track pageSize) {
+        <option [value]="pageSize" [selected]="pageSize === (selectedPageSize() ?? page.pageSize)">
+          {{ pageSize }}
+        </option>
+      }
+    </select>
+    <span>Página {{ page.page }} de {{ page.totalPages || 1 }}</span>
+    <button
+      type="button"
+      (click)="pageChange.emit(page.page - 1)"
+      [disabled]="!page.hasPreviousPage"
+      [attr.data-testid]="previousPageTestId()"
+    >
+      Anterior
+    </button>
+    <button
+      type="button"
+      (click)="pageChange.emit(page.page + 1)"
+      [disabled]="!page.hasNextPage"
+      [attr.data-testid]="nextPageTestId()"
+    >
+      Siguiente
+    </button>
+  </nav>
+}

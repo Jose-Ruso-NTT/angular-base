@@ -18,7 +18,7 @@ import { Component, input } from '@angular/core';
 })
 export class LoadingOverlay {
   /** Whether the overlay should be visible. */
-  readonly loading = input(false);
+  readonly loading = input.required();
   /** Accessible text announced while the projected content is loading. */
   readonly message = input('Cargando…');
 }
