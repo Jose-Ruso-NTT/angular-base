@@ -3,7 +3,11 @@ import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../field-state';
 
-/** ISO calendar date represented without a time or timezone (`YYYY-MM-DD`). */
+/**
+ * ISO calendar date without a time or timezone (`YYYY-MM-DD`).
+ *
+ * This is a string-format convention; the native date input validates the complete calendar value.
+ */
 export type LocalDate = `${number}-${number}-${number}`;
 
 /** Accessible native date input wrapper for Signal Forms controls. */
