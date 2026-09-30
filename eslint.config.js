@@ -130,6 +130,7 @@ module.exports = defineConfig([
         },
       ],
       'jsdoc/require-description': 'error',
+      '@typescript-eslint/no-extraneous-class': ['error', { allowWithDecorator: true }],
       '@angular-eslint/directive-selector': [
         'error',
         {
