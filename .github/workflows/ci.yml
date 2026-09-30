@@ -26,6 +26,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify generated API is up to date
+        run: |
+          npm run generate:api
+          git diff --exit-code -- src/app/core/api/generated
+
       - name: Check formatting
         run: npm run format:check
 
