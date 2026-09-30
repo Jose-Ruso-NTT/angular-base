@@ -28,7 +28,7 @@ import { ProductStatusLabelPipe } from '../ui/product-status-label.pipe';
 import { ProductStatusTonePipe } from '../ui/product-status-tone.pipe';
 import { AppStatusBadge } from '@shared/ui/status-badge/app-status-badge';
 import { withPreviousValue } from '@shared/resource/with-previous-value';
-import { EMPTY, switchMap, tap } from 'rxjs';
+import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 
 interface ProductFilters {
   readonly search?: string;
@@ -232,13 +232,10 @@ export class ProductsPage {
           if (!confirmed) return EMPTY;
           this.operationError.set('');
           return this.productsService.deleteProduct(product.id).pipe(
-            tap({
-              next: () => this.productsResource.reload(),
-              error: () => {
-                this.operationError.set(
-                  'No se ha podido eliminar el producto. Inténtalo de nuevo.',
-                );
-              },
+            tap(() => this.productsResource.reload()),
+            catchError(() => {
+              this.operationError.set('No se ha podido eliminar el producto. Inténtalo de nuevo.');
+              return EMPTY;
             }),
           );
         }),
