@@ -27,8 +27,8 @@ export class AppDialogRef<R = unknown> {
 export interface AppDialogConfig<D> {
   /** Data consumed by the opened component via APP_DIALOG_DATA. */
   readonly data: D;
-  /** Accessible dialog label when the component does not provide a title. */
-  readonly ariaLabel?: string;
+  /** Accessible name announced for the dialog container. */
+  readonly ariaLabel: string;
   /** Prevents dismissing the dialog by backdrop click or Escape. */
   readonly disableClose?: boolean;
 }

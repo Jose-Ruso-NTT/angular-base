@@ -2,6 +2,8 @@
 
 Las funcionalidades no usan CDK Dialog directamente. Inyectan `AppDialogService`, reciben los datos con `APP_DIALOG_DATA` y cierran con `AppDialogRef<R>`.
 
+`ariaLabel` es obligatorio: garantiza un nombre accesible para el contenedor aunque el contenido cambie.
+
 ```ts
 this.dialog
   .open(OrderFormDialog, {
