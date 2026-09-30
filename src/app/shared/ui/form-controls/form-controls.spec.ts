@@ -289,10 +289,14 @@ describe('form controls', () => {
     const host = fixture.componentInstance;
     const numberControl = fixture.debugElement.query(By.directive(AppNumber))
       .componentInstance as unknown as {
-      setNativeValue(rawValue: string, nativeValue: number): void;
+      setNativeValue(input: HTMLInputElement): void;
     };
 
-    numberControl.setNativeValue('12.', Number.NaN);
+    numberControl.setNativeValue({
+      validity: { badInput: true },
+      value: '12.',
+      valueAsNumber: Number.NaN,
+    } as HTMLInputElement);
 
     expect(host.number()).toBe(4);
   });
