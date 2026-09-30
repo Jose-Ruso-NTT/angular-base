@@ -120,6 +120,26 @@ class BoundFieldHost {
 }
 
 @Component({
+  imports: [FormField, FormRoot, AppCheckbox],
+  template: `
+    <form [formRoot]="form">
+      <app-checkbox
+        label="Terms"
+        controlId="required-checkbox"
+        [formField]="form.accepted"
+        testId="required-checkbox"
+      />
+    </form>
+  `,
+})
+class RequiredCheckboxHost {
+  private readonly model = signal({ accepted: false });
+  readonly form = form(this.model, (path) => {
+    required(path.accepted, { message: 'Acceptance is required.' });
+  });
+}
+
+@Component({
   imports: [FormField, FormRoot, AppSelect, AppMultiselect, AppRadioGroup],
   template: `
     <form [formRoot]="form">
@@ -324,5 +344,21 @@ describe('form controls', () => {
     expect(input.getAttribute('aria-describedby')).toBe('name-error');
     expect(nativeElement.querySelector('#name-error')?.textContent).toContain('Name is required.');
     expect(nativeElement.querySelector('#name-hint')).toBeNull();
+  });
+
+  it('exposes a required checkbox to users and assistive technologies', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [RequiredCheckboxHost],
+    }).createComponent(RequiredCheckboxHost);
+    fixture.detectChanges();
+
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const checkbox = getRequiredElement(nativeElement, '#required-checkbox') as HTMLInputElement;
+
+    expect(checkbox.required).toBe(true);
+    expect(checkbox.getAttribute('aria-required')).toBe('true');
+    expect(nativeElement.querySelector('label[for="required-checkbox"]')?.textContent).toContain(
+      '*',
+    );
   });
 });

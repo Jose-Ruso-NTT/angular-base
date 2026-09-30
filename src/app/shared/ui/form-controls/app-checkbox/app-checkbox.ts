@@ -19,11 +19,18 @@ import { injectFieldState } from '../field-state';
           (change)="checked.set(input.checked)"
           (blur)="touch.emit()"
           [disabled]="fieldDisabled()"
+          [required]="fieldRequired()"
           [attr.aria-invalid]="showError()"
+          [attr.aria-required]="fieldRequired()"
           [attr.aria-describedby]="describedBy()"
           [attr.data-testid]="testId()"
         />
-        <span>{{ label() }}</span>
+        <span>
+          {{ label() }}
+          @if (fieldRequired()) {
+            <span aria-hidden="true">*</span>
+          }
+        </span>
       </label>
       <app-field-messages [controlId]="controlId()" [hint]="hint()" />
     </div>
@@ -48,6 +55,7 @@ export class AppCheckbox implements FormCheckboxControl {
   readonly testId = input.required<string>();
 
   protected readonly fieldDisabled = this.field.disabled;
+  protected readonly fieldRequired = this.field.required;
   protected readonly showError = this.field.showError;
   protected readonly describedBy = computed(() => {
     if (this.showError()) return `${this.controlId()}-error`;
