@@ -1,4 +1,15 @@
-import { Component, computed, ElementRef, input, model, output, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  linkedSignal,
+  model,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../field-state';
@@ -21,8 +32,8 @@ export type LocalDate = `${number}-${number}-${number}`;
         #input
         [id]="controlId()"
         type="date"
-        [value]="value()"
-        (input)="setNativeValue(input.value)"
+        [value]="displayValue()"
+        (input)="setNativeValue(input)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [readonly]="fieldReadonly()"
@@ -62,6 +73,21 @@ export class AppDate implements FormValueControl<LocalDate | null> {
   protected readonly fieldReadonly = this.field.readonly;
   protected readonly fieldRequired = this.field.required;
   protected readonly showError = this.field.showError;
+  /** Whether the browser is currently holding an incomplete or impossible date draft. */
+  private readonly hasBadInput = signal(false);
+  /**
+   * The value last written to the native control.
+   *
+   * During a bad native draft, retaining this value prevents Angular from writing the model's
+   * `null` back to the input and erasing the browser-owned segmented editor.
+   */
+  protected readonly displayValue = linkedSignal({
+    source: () => ({ value: this.value(), hasBadInput: this.hasBadInput() }),
+    computation: ({ value, hasBadInput }, previous) => {
+      if (hasBadInput && value === null && previous) return previous.value;
+      return value ?? '';
+    },
+  });
   protected readonly nativeMin = computed(() => this.min());
   protected readonly nativeMax = computed(() => this.max());
   protected readonly describedBy = computed(() => {
@@ -70,9 +96,28 @@ export class AppDate implements FormValueControl<LocalDate | null> {
     return null;
   });
 
-  /** Synchronizes a native date string without creating a timezone-aware Date instance. */
-  protected setNativeValue(value: string): void {
-    this.value.set(value === '' ? null : (value as LocalDate));
+  constructor() {
+    /** A valid model update replaces any unfinished native draft. */
+    effect(() => {
+      if (this.value() !== null) this.hasBadInput.set(false);
+    });
+  }
+
+  /** Synchronizes a date without replacing the browser-owned native draft. */
+  protected setNativeValue(input: HTMLInputElement): void {
+    if (input.validity.badInput) {
+      this.hasBadInput.set(true);
+      this.value.set(null);
+      return;
+    }
+
+    this.hasBadInput.set(false);
+    this.value.set(input.value === '' ? null : (input.value as LocalDate));
+  }
+
+  /** Clears browser-owned draft state when Signal Forms resets this custom control. */
+  reset(): void {
+    this.hasBadInput.set(false);
   }
 
   /** Focuses the native date input used by this custom form control. */

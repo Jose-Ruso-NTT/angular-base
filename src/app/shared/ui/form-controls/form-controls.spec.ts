@@ -120,6 +120,21 @@ class BoundFieldHost {
 }
 
 @Component({
+  imports: [FormField, FormRoot, AppDate],
+  template: `
+    <form [formRoot]="form">
+      <app-date label="Date" controlId="bound-date" [formField]="form.date" testId="bound-date" />
+    </form>
+  `,
+})
+class BoundDateHost {
+  private readonly model = signal<{ date: LocalDate | null }>({ date: '2026-09-22' });
+  readonly form = form(this.model, (path) => {
+    required(path.date, { message: 'Enter a valid date.' });
+  });
+}
+
+@Component({
   imports: [FormField, FormRoot, AppCheckbox],
   template: `
     <form [formRoot]="form">
@@ -309,6 +324,71 @@ describe('form controls', () => {
     } as HTMLInputElement);
 
     expect(host.number()).toBe(4);
+  });
+
+  it('keeps an invalid date draft visible while clearing its model value', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
+      FormControlsHost,
+    );
+    fixture.detectChanges();
+
+    const host = fixture.componentInstance;
+    const dateControl = fixture.debugElement.query(By.directive(AppDate))
+      .componentInstance as unknown as {
+      displayValue(): string;
+      reset(): void;
+      setNativeValue(input: HTMLInputElement): void;
+    };
+
+    dateControl.setNativeValue({
+      validity: { badInput: true },
+      value: '',
+    } as HTMLInputElement);
+
+    expect(host.date()).toBeNull();
+    expect(dateControl.displayValue()).toBe('2026-09-22');
+
+    dateControl.reset();
+
+    expect(dateControl.displayValue()).toBe('');
+  });
+
+  it('delegates date error presentation and reset state to Signal Forms', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [BoundDateHost] }).createComponent(
+      BoundDateHost,
+    );
+    fixture.detectChanges();
+
+    const host = fixture.componentInstance;
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const input = getRequiredElement(nativeElement, '#bound-date') as HTMLInputElement;
+    const dateControl = fixture.debugElement.query(By.directive(AppDate))
+      .componentInstance as unknown as {
+      displayValue(): string;
+      setNativeValue(input: HTMLInputElement): void;
+    };
+
+    dateControl.setNativeValue({
+      validity: { badInput: true },
+      value: '',
+    } as HTMLInputElement);
+    fixture.detectChanges();
+
+    expect(host.form.date().value()).toBeNull();
+    expect(input.getAttribute('aria-invalid')).toBe('false');
+
+    input.dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    expect(input.getAttribute('aria-invalid')).toBe('true');
+    expect(nativeElement.querySelector('#bound-date-error')?.textContent).toContain(
+      'Enter a valid date.',
+    );
+
+    host.form().reset({ date: null });
+    fixture.detectChanges();
+
+    expect(dateControl.displayValue()).toBe('');
   });
 
   it('disables fields configured by Signal Forms', () => {
