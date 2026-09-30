@@ -162,6 +162,7 @@ export class ProductsPage {
       pageSizeOptions: [10, 25, 50],
       defaultPageSize: 10,
       sortByOptions: PRODUCT_SORT_BY,
+      defaultSort: { sortBy: 'createdAt', sortDirection: 'desc' },
     },
   });
 

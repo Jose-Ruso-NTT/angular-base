@@ -188,9 +188,6 @@ export class AppDataTable<T, TSortableId extends DataTablePropertyId<T> = DataTa
   }
 
   protected sortLabel(column: DataTableColumn<T, TSortableId>): string {
-    if (this.sortBy() === column.id && this.sortDirection() === 'desc') {
-      return `Quitar la ordenación por ${column.label}`;
-    }
     const nextDirection =
       this.sortBy() === column.id && this.sortDirection() === 'asc' ? 'descendente' : 'ascendente';
     return `Ordenar por ${column.label} de forma ${nextDirection}`;

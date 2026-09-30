@@ -69,6 +69,13 @@ export interface UrlTableOptions<TSortBy extends string> {
   readonly defaultPageSize: number;
   /** Sort fields accepted from the URL and emitted by the table. */
   readonly sortByOptions: readonly TSortBy[];
+  /** Sort applied by the data source when the URL has no explicit sort parameters. */
+  readonly defaultSort?: {
+    /** Sort field applied by default. */
+    readonly sortBy: TSortBy;
+    /** Sort direction applied by default. */
+    readonly sortDirection: 'asc' | 'desc';
+  };
 }
 
 /** Root capabilities required from a writable Signal Form. */
@@ -234,6 +241,9 @@ export function createUrlTableFormState<
     };
 
     if (!config.table.sortByOptions.includes(requestedSortBy as TSortBy)) {
+      if (config.table.defaultSort !== undefined) {
+        return { ...baseState, ...config.table.defaultSort };
+      }
       return { ...baseState, sortBy: null, sortDirection: null };
     }
 
@@ -317,9 +327,9 @@ export function createUrlTableFormState<
 
       const sortBy = change.sortBy;
       const sortDirection =
-        current.sortBy !== sortBy ? 'asc' : current.sortDirection === 'asc' ? 'desc' : null;
+        current.sortBy !== sortBy || current.sortDirection === 'desc' ? 'asc' : 'desc';
       return navigate({
-        sortBy: sortDirection === null ? null : sortBy,
+        sortBy,
         sortDirection,
         page: null,
       });
