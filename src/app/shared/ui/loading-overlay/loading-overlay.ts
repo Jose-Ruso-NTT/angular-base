@@ -6,7 +6,9 @@ import { Component, input } from '@angular/core';
   styleUrl: './loading-overlay.css',
   template: `
     <div class="overlay-host" [attr.aria-busy]="loading() ? 'true' : 'false'">
-      <ng-content />
+      <div class="overlay-content" [attr.inert]="loading() ? '' : null">
+        <ng-content />
+      </div>
       @if (loading()) {
         <div class="overlay" role="status" aria-live="polite">
           <span class="spinner" aria-hidden="true"></span>
@@ -17,8 +19,8 @@ import { Component, input } from '@angular/core';
   `,
 })
 export class LoadingOverlay {
-  /** Whether the overlay should be visible. */
-  readonly loading = input.required();
+  /** Whether the overlay is visible and interaction with projected content is blocked. */
+  readonly loading = input.required<boolean>();
   /** Accessible text announced while the projected content is loading. */
   readonly message = input('Cargando…');
 }
