@@ -6,7 +6,7 @@ Esta guía define cómo consumir los controles de formulario de `shared/ui`. Los
 
 - En formularios nuevos usa Signal Forms y `[formField]="form.campo"`. Para estado local aislado usa `[(value)]`; en checkbox, `[(checked)]`.
 - Todos los controles requieren `label`, `controlId` y `testId`. `controlId` es único por pantalla y `testId` es estable y prefijado por funcionalidad.
-- `hint` se muestra hasta que el campo se toca y tiene un error; después se muestra el mensaje de validación. `required`, `disabled` y `readonly` del Signal Form se propagan al control.
+- `hint` se muestra hasta que el campo se toca y tiene un error; después se muestra el mensaje de validación. `required` y `disabled` del Signal Form se propagan a todos los controles. `readonly` se propaga a input, número, fecha, hora y textarea; los controles nativos de selección no admiten ese estado, así que usa `disabled` cuando deban quedar bloqueados.
 - No uses `ngModel`. Los controles implementan el contrato de Signal Forms y exponen `focus()` para enfocar el control asociado cuando falla el envío.
 
 ## Elegir el control
