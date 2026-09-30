@@ -20,6 +20,27 @@ npm start
 
 Abre `http://localhost:4200`. Durante el desarrollo, las solicitudes a `/api/**` se redirigen al backend mediante `src/proxy.conf.json`.
 
+## Despliegue en producción
+
+Genera y valida el artefacto reproducible antes de publicarlo:
+
+```bash
+npm ci
+npm run lint
+npm run typecheck
+npm run test:ci
+npm run build
+```
+
+Sirve el contenido estático de `dist/angular-base/browser/`. El servidor o gateway de producción debe cumplir estas condiciones:
+
+- Redirigir las rutas de la SPA que no correspondan a un archivo, como `/demo`, hacia `index.html`.
+- Enviar `/api/**` al backend conservando la ruta completa. El proxy de `src/proxy.conf.json` solo se usa con `ng serve` y no forma parte del build.
+- Publicar frontend y API bajo el mismo origen y HTTPS. El cliente generado usa URLs relativas `/api/v1/**`; desplegar la API en otro origen requiere introducir explícitamente una configuración de URL base y su política CORS.
+- Evitar caché persistente para `index.html`; los assets con hash sí pueden servirse con caché larga e inmutable.
+
+No uses `ng serve` como servidor de producción.
+
 ## Comandos habituales
 
 ```bash
