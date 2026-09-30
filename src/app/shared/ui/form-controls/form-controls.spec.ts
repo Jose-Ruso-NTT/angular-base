@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormField, FormRoot, disabled, form, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
+import { getRequiredElement } from '@shared/testing/dom';
 import { AppCheckbox } from './app-checkbox/app-checkbox';
 import { AppDate, type LocalDate } from './app-date/app-date';
 import { AppInput } from './app-input/app-input';
@@ -162,14 +163,6 @@ class DisabledFieldsHost {
     disabled(path.multi, { when: () => true });
     disabled(path.radio, { when: () => true });
   });
-}
-
-function getRequiredElement(root: ParentNode, selector: string): Element {
-  const element = root.querySelector(selector);
-
-  if (element === null) throw new Error(`Missing element: ${selector}`);
-
-  return element;
 }
 
 describe('form controls', () => {
