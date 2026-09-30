@@ -33,16 +33,16 @@ const featureNameFromImport = (source, filename) => {
 };
 
 /** @type {import('eslint').Rule.RuleModule} */
-const noFeatureDependenciesRule = {
+const noFeatureImportsFromSharedOrCoreRule = {
   meta: {
     type: 'problem',
     docs: {
-      description: 'Prevents shared/core from importing features and features from importing one another.',
+      description: 'Prevents shared and core infrastructure from importing application features.',
     },
     schema: [],
     messages: {
       forbidden:
-        'Do not import feature "{{targetFeature}}" from {{sourceLayer}}. Move the shared contract to shared/core, or keep this code inside the feature.',
+        'Do not import feature "{{targetFeature}}" from {{sourceLayer}}. Shared and core must remain independent from application features.',
     },
   },
   create(/** @type {import('eslint').Rule.RuleContext} */ context) {
@@ -64,7 +64,7 @@ const noFeatureDependenciesRule = {
       }
 
       const targetFeature = featureNameFromImport(sourceNode.value, sourceFilename);
-      if (targetFeature && targetFeature !== sourceFeature) {
+      if (targetFeature && !sourceFeature) {
         context.report({
           node: sourceNode,
           messageId: 'forbidden',
@@ -83,7 +83,7 @@ const noFeatureDependenciesRule = {
 
 const architecture = {
   rules: {
-    'no-feature-dependencies': noFeatureDependenciesRule,
+    'no-feature-imports-from-shared-or-core': noFeatureImportsFromSharedOrCoreRule,
   },
 };
 
@@ -160,11 +160,11 @@ module.exports = defineConfig([
     rules: {},
   },
   {
-    // Dependencies flow from features to shared/core, never in the opposite direction or across features.
+    // Features may compose other features; shared and core remain independent from all features.
     files: ['src/app/{core,shared,features}/**/*.ts'],
     plugins: { architecture },
     rules: {
-      'architecture/no-feature-dependencies': 'error',
+      'architecture/no-feature-imports-from-shared-or-core': 'error',
     },
   },
 ]);

@@ -5,14 +5,14 @@ La aplicación usa arquitectura por funcionalidades (vertical slices). Cada camb
 ## Capas y dependencias
 
 ```text
-features/  -> shared/ y core/
+features/  -> features/, shared/ y core/
 shared/    -> core/ solo para infraestructura genérica
 core/      -> no depende de features ni shared
 ```
 
 ### `features/`
 
-Contiene casos de uso e interfaz de cada dominio. Una feature no importa otra feature. Las pequeñas pueden tener sus archivos en la raíz; las que crecen siguen esta estructura:
+Contiene casos de uso e interfaz de cada dominio. Una feature puede componer otra cuando representa un flujo real, por ejemplo un dashboard. Esa dependencia debe ser deliberada y superficial: importa su API pública, no detalles internos, y evita ciclos. Las pequeñas pueden tener sus archivos en la raíz; las que crecen siguen esta estructura:
 
 ```text
 features/products/
@@ -68,7 +68,7 @@ Los formularios usan Signal Forms y controles de `shared/ui/form-controls`. Las 
 
 Los pipes que convierten valores del dominio para mostrarlos —etiquetas, formatos o tonos visuales— son UI privada de la feature y viven en `ui/`. Un pipe puramente genérico, sin conocer el dominio, puede pertenecer a `shared/`; un mapeo que modele reglas de negocio, no destinado a renderizar, pertenece a `model/` o `data-access/` según su función.
 
-Los componentes y helpers públicos de `shared/` documentan su contrato con TSDoc. CI ejecuta formato, lint, typecheck, tests con cobertura y build; ESLint evita dependencias entre features y desde `core` o `shared` hacia ellas.
+Los componentes y helpers públicos de `shared/` documentan su contrato con TSDoc. CI ejecuta formato, lint, typecheck, tests con cobertura y build; ESLint evita que `core` o `shared` dependan de una feature.
 
 ## Checklist para una feature nueva
 
