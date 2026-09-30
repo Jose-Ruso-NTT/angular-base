@@ -10,31 +10,69 @@ import {
   output,
 } from '@angular/core';
 
-/** Definition for a visible column in AppDataTable. */
-export type DataTableColumn<T, TSortableId extends string = string> =
-  SortableDataTableColumn<T, TSortableId> | NonSortableDataTableColumn<T>;
+/** String keys available in a row object. */
+type DataTablePropertyId<T> = Extract<keyof T, string>;
 
-interface BaseDataTableColumn<T> {
+/** Definition for a visible column in AppDataTable. */
+export type DataTableColumn<
+  T,
+  TSortableId extends DataTablePropertyId<T> = DataTablePropertyId<T>,
+> =
+  | SortableDataTableColumn<T, TSortableId>
+  | PropertyDataTableColumn<T>
+  | RenderedDataTableColumn<T>
+  | TemplateDataTableColumn;
+
+interface BaseDataTableColumn {
   /** Text displayed in the table header. */
   readonly label: string;
   /** Horizontal alignment shared by the header and cells in this column. */
   readonly align?: 'left' | 'center' | 'right';
-  /** Optional text transformer. Without it, the table renders the row property matching `id`. */
-  readonly render?: (row: T) => string;
 }
 
-interface SortableDataTableColumn<T, TSortableId extends string> extends BaseDataTableColumn<T> {
+interface SortableDataTableColumn<
+  T,
+  TSortableId extends DataTablePropertyId<T>,
+> extends BaseDataTableColumn {
   /** Unique column identifier, also used to match an optional cell template. */
   readonly id: TSortableId;
   /** Allows the user to request server-side sorting on this field. */
   readonly sortable: true;
 }
 
-interface NonSortableDataTableColumn<T> extends BaseDataTableColumn<T> {
-  /** Unique column identifier, also used to match an optional cell template. */
-  readonly id: string;
+interface PropertyDataTableColumn<T> extends BaseDataTableColumn {
+  /** Existing row property rendered when no cell template is supplied. */
+  readonly id: DataTablePropertyId<T>;
   /** This column cannot be used to request sorting. */
   readonly sortable?: false;
+  /** Optional text transformer for an existing row property. */
+  readonly render?: (row: T) => string;
+}
+
+interface RenderedDataTableColumn<T> extends BaseDataTableColumn {
+  /** Identifier for a computed column that does not map to a row property. */
+  readonly id: string;
+  /** Explicit renderer required for a computed column. */
+  readonly render: (row: T) => string;
+  /** This column cannot be used to request sorting. */
+  readonly sortable?: false;
+}
+
+interface TemplateDataTableColumn extends BaseDataTableColumn {
+  /** Identifier matched by a projected appDataTableCellDef template. */
+  readonly id: string;
+  /** Declares that a projected cell template supplies this column's content. */
+  readonly template: true;
+  /** This column cannot be used to request sorting. */
+  readonly sortable?: false;
+}
+
+/** Template context exposed by an appDataTableCellDef. */
+export interface DataTableCellContext<T> {
+  /** Row available through Angular's implicit template variable. */
+  readonly $implicit: T;
+  /** Named alias for the same row. */
+  readonly row: T;
 }
 
 /** Server or client pagination state rendered below a data table. */
@@ -56,7 +94,7 @@ export interface DataTablePagination {
 export class DataTableCellDefDirective<T> {
   /** Identifier of the column rendered by this template. */
   readonly appDataTableCellDef = input.required<string>();
-  readonly template = inject<TemplateRef<{ $implicit: T; row: T }>>(TemplateRef);
+  readonly template = inject<TemplateRef<DataTableCellContext<T>>>(TemplateRef);
 }
 
 /** Generic semantic data table with configurable columns and cell templates. */
@@ -66,7 +104,7 @@ export class DataTableCellDefDirective<T> {
   styleUrl: './data-table.css',
   templateUrl: './data-table.html',
 })
-export class AppDataTable<T, TSortableId extends string = string> {
+export class AppDataTable<T, TSortableId extends DataTablePropertyId<T> = DataTablePropertyId<T>> {
   /** Rows rendered in the table body. */
   readonly rows = input.required<readonly T[]>();
   /** Ordered definitions for the visible columns. */
@@ -111,12 +149,15 @@ export class AppDataTable<T, TSortableId extends string = string> {
   /** Stable selector for the next-page button. */
   protected readonly nextPageTestId = computed(() => `${this.paginationTestId()}-next-page`);
 
-  protected cellTemplate(id: string): TemplateRef<{ $implicit: T; row: T }> | undefined {
+  protected cellTemplate(id: string): TemplateRef<DataTableCellContext<T>> | undefined {
     return this.cellDefs().find((definition) => definition.appDataTableCellDef() === id)?.template;
   }
 
-  /** Converts a scalar row property into fallback cell text. Complex values need a template or renderer. */
+  /** Renders a computed cell or falls back safely to a scalar row property. */
   protected cellValue(row: T, column: DataTableColumn<T, TSortableId>): string {
+    if ('render' in column && column.render !== undefined) return column.render(row);
+    if ('template' in column) return '';
+
     const value = (row as Record<string, unknown>)[column.id];
     return typeof value === 'string' ||
       typeof value === 'number' ||

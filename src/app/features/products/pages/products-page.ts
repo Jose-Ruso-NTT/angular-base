@@ -177,7 +177,7 @@ export class ProductsPage {
     { id: 'stock', label: 'Stock', align: 'right', sortable: true },
     { id: 'status', label: 'Estado', sortable: true },
     { id: 'createdAt', label: 'Creado', sortable: true },
-    { id: 'actions', label: 'Acciones', align: 'right' },
+    { id: 'actions', label: 'Acciones', align: 'right', template: true },
   ];
 
   protected readonly productTrackBy = (product: ProductOutput) => product.id;

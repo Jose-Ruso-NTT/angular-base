@@ -39,7 +39,7 @@
                   [ngTemplateOutletContext]="{ $implicit: row, row }"
                 />
               } @else {
-                {{ column.render?.(row) ?? cellValue(row, column) }}
+                {{ cellValue(row, column) }}
               }
             </td>
           }
