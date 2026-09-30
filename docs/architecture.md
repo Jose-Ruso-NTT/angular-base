@@ -24,13 +24,13 @@ features/products/
   model/          # solo para tipos o estado propios no triviales
 ```
 
-Cada feature posee sus rutas. `app.routes.ts` solo las monta con `loadChildren`; el archivo `*.routes.ts` carga sus páginas de forma diferida.
+Una feature con varias rutas o configuración propia las expone desde `*.routes.ts` y `app.routes.ts` la monta con `loadChildren`. Una feature de una sola pantalla, como `demo`, puede cargarse directamente desde `app.routes.ts` con `loadComponent`; no se crea un archivo de rutas que solo reenvíe una ruta sin aportar configuración.
 
 Los guards se colocan junto a las rutas que protegen: un guard de Productos vive en `features/products/guards/`; uno de autenticación o sesión reutilizable vive en `core/auth/guards/`. No se crea una carpeta global de guards sin una responsabilidad transversal.
 
 ### `shared/`
 
-Incluye UI, formularios, utilidades y helpers reutilizables sin conocer dominios como `Product`, `Order` o `Customer`. Algo pasa a `shared/` después de tener dos consumidores reales; antes permanece privado en la feature.
+Incluye UI, formularios, utilidades y helpers reutilizables sin conocer dominios como `Product`, `Order` o `Customer`. Algo pasa a `shared/` después de tener dos consumidores reales o cuando forma parte deliberada del catálogo base y se mantiene como API pública documentada y probada. Fuera de esos casos permanece privado en la feature.
 
 ### `core/`
 
@@ -72,7 +72,7 @@ Los componentes y helpers públicos de `shared/` documentan su contrato con TSDo
 
 ## Checklist para una feature nueva
 
-1. Crear `features/<nombre>/<nombre>.routes.ts` y montarla lazy desde `app.routes.ts`.
+1. Cargar la feature de forma diferida: mediante `loadComponent` si solo tiene una pantalla o mediante `features/<nombre>/<nombre>.routes.ts` y `loadChildren` si posee varias rutas o configuración propia.
 2. Situar las páginas en `pages/` y los elementos privados en `ui/`.
 3. Usar API generada directamente hasta que exista un motivo concreto para `data-access/`.
 4. Reutilizar `shared/` sin mover código privado preventivamente.
