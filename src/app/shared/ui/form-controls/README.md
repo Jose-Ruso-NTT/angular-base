@@ -11,17 +11,17 @@ Esta guía define cómo consumir los controles de formulario de `shared/ui`. Los
 
 ## Elegir el control
 
-| Componente       | Valor                | Uso                                                                                                              |
-| ---------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `AppInput`       | `string`             | Texto, email, búsqueda, teléfono, URL y contraseña. `type`: `text`, `email`, `password`, `search`, `tel`, `url`. |
-| `AppNumber`      | `number \| null`     | Valores numéricos. Vacío equivale a `null`; admite `min`, `max`, `step`.                                         |
-| `AppDate`        | `YYYY-MM-DD \| null` | Fecha civil nativa sin zona horaria. `min` y `max` usan el mismo formato.                                        |
-| `AppTime`        | `string` (`HH:mm`)   | Hora nativa. `min`/`max` usan `HH:mm`; `step` va en segundos.                                                    |
-| `AppTextarea`    | `string`             | Texto en varias líneas. `rows` predeterminado: 3.                                                                |
-| `AppSelect`      | `string \| number`   | Una opción de lista corta: `{ value, label, disabled? }`.                                                        |
-| `AppMultiselect` | `T[]`                | Varias opciones, también con valores objeto: `{ value, label, disabled? }`.                                      |
-| `AppCheckbox`    | `boolean`            | Decisión independiente sí/no; usa `[(checked)]` si no hay Signal Form.                                           |
-| `AppRadioGroup`  | `string \| number`   | Una opción de un grupo pequeño visible. `orientation`: `vertical` u `horizontal`.                                |
+| Componente       | Valor                  | Uso                                                                                                              |
+| ---------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `AppInput`       | `string`               | Texto, email, búsqueda, teléfono, URL y contraseña. `type`: `text`, `email`, `password`, `search`, `tel`, `url`. |
+| `AppNumber`      | `number \| null`       | Valores numéricos. Vacío equivale a `null`; admite `min`, `max`, `step`.                                         |
+| `AppDate`        | `YYYY-MM-DD \| null`   | Fecha civil nativa sin zona horaria. `min` y `max` usan el mismo formato.                                        |
+| `AppTime`        | `string` (`HH:mm`)     | Hora nativa. `min`/`max` usan `HH:mm`; `step` va en segundos.                                                    |
+| `AppTextarea`    | `string`               | Texto en varias líneas. `rows` predeterminado: 3.                                                                |
+| `AppSelect`      | `string \| number`     | Una opción de lista corta: `{ value, label, disabled? }`.                                                        |
+| `AppMultiselect` | `(string \| number)[]` | Varias opciones con valores primitivos: `{ value, label, disabled? }`.                                           |
+| `AppCheckbox`    | `boolean`              | Decisión independiente sí/no; usa `[(checked)]` si no hay Signal Form.                                           |
+| `AppRadioGroup`  | `string \| number`     | Una opción de un grupo pequeño visible. `orientation`: `vertical` u `horizontal`.                                |
 
 ```html
 <app-input

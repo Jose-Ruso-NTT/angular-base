@@ -6,10 +6,13 @@ import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../field-state';
 
+/** Primitive value supported by AppMultiselect. */
+export type MultiselectValue = string | number;
+
 /** A selectable value rendered by AppMultiselect. */
-export interface MultiselectOption<T> {
+export interface MultiselectOption {
   /** Value stored in the form control. */
-  readonly value: T;
+  readonly value: MultiselectValue;
   /** User-facing and accessible option text. */
   readonly label: string;
   /** Prevents selecting this option while keeping it visible. */
@@ -79,7 +82,7 @@ export interface MultiselectOption<T> {
     </app-field-shell>
   `,
 })
-export class AppMultiselect<T> implements FormValueControl<T[]> {
+export class AppMultiselect implements FormValueControl<MultiselectValue[]> {
   private readonly field = injectFieldState();
 
   readonly combobox = viewChild.required<Combobox>('combobox');
@@ -88,10 +91,10 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
   readonly label = input.required<string>();
   /** Identifier shared by label, select and support text. */
   readonly controlId = input.required<string>();
-  /** Selected objects managed by the parent Signal Form. */
-  readonly value = model.required<T[]>();
-  /** Options available to select. */
-  readonly options = input.required<readonly MultiselectOption<T>[]>();
+  /** Selected primitive values managed by the parent Signal Form. */
+  readonly value = model.required<MultiselectValue[]>();
+  /** Options available to select. Object values are intentionally unsupported. */
+  readonly options = input.required<readonly MultiselectOption[]>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
   /** Notifies Signal Forms that the select lost focus. */
@@ -118,7 +121,7 @@ export class AppMultiselect<T> implements FormValueControl<T[]> {
   protected readonly labelId = computed(() => `${this.controlId()}-label`);
 
   /** Finds the display label for a selected value. */
-  private displayLabelFor(value: T): string {
+  private displayLabelFor(value: MultiselectValue): string {
     return this.options().find((option) => option.value === value)?.label ?? '';
   }
 

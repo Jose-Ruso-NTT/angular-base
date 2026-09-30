@@ -78,9 +78,9 @@ class FormControlsHost {
   readonly select = signal('one');
   readonly numericSelect = signal(1);
   readonly multiOptions = [
-    { value: { id: 'one', label: 'One' }, label: 'One' },
-    { value: { id: 'two', label: 'Two' }, label: 'Two' },
-    { value: { id: 'three', label: 'Three' }, label: 'Three', disabled: true },
+    { value: 'one', label: 'One' },
+    { value: 'two', label: 'Two' },
+    { value: 'three', label: 'Three', disabled: true },
   ];
   readonly multi = signal([this.multiOptions[0].value]);
   readonly enabled = signal(false);
@@ -151,10 +151,7 @@ class DisabledFieldsHost {
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
   ];
-  readonly multiOptions = this.options.map((option) => ({
-    value: { id: option.value, label: option.label },
-    label: option.label,
-  }));
+  readonly multiOptions = this.options;
   private readonly model = signal({
     select: 'one',
     multi: [this.multiOptions[0].value],

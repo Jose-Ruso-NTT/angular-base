@@ -16,11 +16,6 @@ import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-selec
 import { AppTextarea } from '@shared/ui/form-controls/app-textarea/app-textarea';
 import { AppTime } from '@shared/ui/form-controls/app-time/app-time';
 
-interface Team {
-  readonly id: string;
-  readonly name: string;
-}
-
 @Component({
   selector: 'app-demo-page',
   imports: [
@@ -60,13 +55,13 @@ export class DemoPage {
     { value: 'medium', label: 'Media' },
     { value: 'high', label: 'Alta', disabled: true },
   ];
-  protected readonly teams: readonly MultiselectOption<Team>[] = [
-    { value: { id: 'design', name: 'Dise\u00f1o' }, label: 'Dise\u00f1o' },
-    { value: { id: 'development', name: 'Desarrollo' }, label: 'Desarrollo' },
-    { value: { id: 'marketing', name: 'Marketing' }, label: 'Marketing' },
-    { value: { id: 'sales', name: 'Ventas' }, label: 'Ventas', disabled: true },
+  protected readonly teams: readonly MultiselectOption[] = [
+    { value: 'design', label: 'Dise\u00f1o' },
+    { value: 'development', label: 'Desarrollo' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'sales', label: 'Ventas', disabled: true },
   ];
-  protected readonly selectedTeams = signal<Team[]>([this.teams[0].value, this.teams[1].value]);
+  protected readonly selectedTeams = signal(['design', 'development']);
   protected readonly liveValues = computed(() => ({
     nombre: this.name(),
     correo: this.email(),
@@ -75,7 +70,7 @@ export class DemoPage {
     hora: this.deliveryTime(),
     estado: this.status(),
     prioridad: this.priority(),
-    equipos: this.selectedTeams().map((team) => team.name),
+    equipos: this.selectedTeams(),
     novedades: this.newsletter(),
   }));
 
@@ -90,7 +85,7 @@ export class DemoPage {
     );
     this.status.set('in-progress');
     this.priority.set('medium');
-    this.selectedTeams.set([this.teams[0].value, this.teams[1].value]);
+    this.selectedTeams.set(['design', 'development']);
     this.newsletter.set(true);
   }
 }
