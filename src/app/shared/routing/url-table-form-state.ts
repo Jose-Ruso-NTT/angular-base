@@ -247,10 +247,14 @@ export function createUrlTableFormState<
     return config.fromUrlState(urlFilters());
   });
 
+  let lastSyncedUrlFilters: TUrlFilters | undefined;
   effect(() => {
-    const appliedFilters = activeFilters();
+    const currentUrlFilters = urlFilters();
+    if (areEqualUrlFilters(currentUrlFilters, lastSyncedUrlFilters, config.filters)) return;
+
+    lastSyncedUrlFilters = currentUrlFilters;
     untracked(() => {
-      config.form().reset(appliedFilters);
+      config.form().reset(config.fromUrlState(currentUrlFilters));
     });
   });
 
@@ -327,4 +331,17 @@ export function createUrlTableFormState<
 function parsePositiveInteger(value: string | null): number | undefined {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+/** Compares decoded URL filters while ignoring unrelated query parameters such as pagination. */
+function areEqualUrlFilters<TFilters extends object>(
+  current: TFilters,
+  previous: TFilters | undefined,
+  schema: UrlParamSchema<TFilters>,
+): boolean {
+  if (previous === undefined) return false;
+
+  return (Object.keys(schema) as (keyof TFilters)[]).every((filterName) =>
+    Object.is(current[filterName], previous[filterName]),
+  );
 }
