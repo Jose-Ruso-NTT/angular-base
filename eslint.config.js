@@ -96,7 +96,9 @@ module.exports = defineConfig([
     // This is slower than untyped linting; see https://typescript-eslint.io/getting-started/typed-linting
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['orval.config.ts'],
+        },
       },
     },
     extends: [
