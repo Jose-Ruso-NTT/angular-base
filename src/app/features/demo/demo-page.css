@@ -72,6 +72,15 @@ h2 {
 .wide-card {
   grid-column: 1 / -1;
 }
+.demo-form-actions {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+.demo-form-actions__message {
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
 .values-card {
   align-items: start;
   display: grid;

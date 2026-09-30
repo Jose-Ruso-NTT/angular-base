@@ -1,5 +1,6 @@
 import { JsonPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
+import { email, FormField, FormRoot, form, min, required, validate } from '@angular/forms/signals';
 import { AppCheckbox } from '@shared/ui/form-controls/app-checkbox/app-checkbox';
 import { AppDate, type LocalDate } from '@shared/ui/form-controls/app-date/app-date';
 import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
@@ -16,6 +17,19 @@ import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-selec
 import { AppTextarea } from '@shared/ui/form-controls/app-textarea/app-textarea';
 import { AppTime } from '@shared/ui/form-controls/app-time/app-time';
 
+interface DemoFormModel {
+  name: string;
+  email: string;
+  amount: number | null;
+  deliveryDate: LocalDate | null;
+  deliveryTime: string;
+  notes: string;
+  status: string;
+  priority: string;
+  teams: string[];
+  newsletter: boolean;
+}
+
 @Component({
   selector: 'app-demo-page',
   imports: [
@@ -28,23 +42,49 @@ import { AppTime } from '@shared/ui/form-controls/app-time/app-time';
     AppMultiselect,
     AppCheckbox,
     AppRadioGroup,
+    FormField,
+    FormRoot,
     JsonPipe,
   ],
   styleUrl: './demo-page.css',
   templateUrl: './demo-page.html',
 })
 export class DemoPage {
-  protected readonly name = signal('Ana Garc\u00eda');
-  protected readonly email = signal('ana@example.com');
-  protected readonly amount = signal<number | null>(249.95);
-  protected readonly deliveryDate = signal<LocalDate | null>('2026-10-15');
-  protected readonly deliveryTime = signal('10:30');
-  protected readonly notes = signal(
-    'A\u00f1ade aqu\u00ed cualquier observaci\u00f3n para probar el comportamiento.',
+  private readonly model = signal<DemoFormModel>(createDemoFormInitialValue());
+  protected readonly submissionMessage = signal('');
+  protected readonly form = form(
+    this.model,
+    (path) => {
+      required(path.name, { message: 'El nombre es obligatorio.' });
+      required(path.email, { message: 'El correo es obligatorio.' });
+      email(path.email, { message: 'Introduce un correo electr\u00f3nico v\u00e1lido.' });
+      required(path.amount, { message: 'El importe es obligatorio.' });
+      min(path.amount, 0, { message: 'El importe no puede ser negativo.' });
+      required(path.deliveryDate, { message: 'Introduce una fecha v\u00e1lida.' });
+      required(path.deliveryTime, { message: 'La hora de entrega es obligatoria.' });
+      validate(path.deliveryTime, (context) => {
+        const value = context.value();
+        return value !== '' && (value < '08:00' || value > '20:00')
+          ? {
+              kind: 'deliveryTimeRange',
+              message: 'La hora debe estar entre las 08:00 y las 20:00.',
+            }
+          : null;
+      });
+      required(path.status, { message: 'Selecciona un estado.' });
+      required(path.priority, { message: 'Selecciona una prioridad.' });
+    },
+    {
+      submission: {
+        action: () => {
+          this.submissionMessage.set(
+            'Formulario v\u00e1lido. El env\u00edo se ha interceptado en la demo.',
+          );
+          return Promise.resolve();
+        },
+      },
+    },
   );
-  protected readonly status = signal('in-progress');
-  protected readonly priority = signal('medium');
-  protected readonly newsletter = signal(true);
   protected readonly statusOptions: readonly SelectOption[] = [
     { value: 'draft', label: 'Borrador' },
     { value: 'in-progress', label: 'En progreso' },
@@ -61,31 +101,36 @@ export class DemoPage {
     { value: 'marketing', label: 'Marketing' },
     { value: 'sales', label: 'Ventas', disabled: true },
   ];
-  protected readonly selectedTeams = signal(['design', 'development']);
   protected readonly liveValues = computed(() => ({
-    nombre: this.name(),
-    correo: this.email(),
-    importe: this.amount(),
-    fecha: this.deliveryDate(),
-    hora: this.deliveryTime(),
-    estado: this.status(),
-    prioridad: this.priority(),
-    equipos: this.selectedTeams(),
-    novedades: this.newsletter(),
+    nombre: this.form().value().name,
+    correo: this.form().value().email,
+    importe: this.form().value().amount,
+    fecha: this.form().value().deliveryDate,
+    hora: this.form().value().deliveryTime,
+    estado: this.form().value().status,
+    prioridad: this.form().value().priority,
+    equipos: this.form().value().teams,
+    novedades: this.form().value().newsletter,
   }));
 
   protected reset(): void {
-    this.name.set('Ana Garc\u00eda');
-    this.email.set('ana@example.com');
-    this.amount.set(249.95);
-    this.deliveryDate.set('2026-10-15');
-    this.deliveryTime.set('10:30');
-    this.notes.set(
-      'A\u00f1ade aqu\u00ed cualquier observaci\u00f3n para probar el comportamiento.',
-    );
-    this.status.set('in-progress');
-    this.priority.set('medium');
-    this.selectedTeams.set(['design', 'development']);
-    this.newsletter.set(true);
+    this.submissionMessage.set('');
+    this.form().reset(createDemoFormInitialValue());
   }
+}
+
+/** Produces a fresh model so reset does not reuse mutable multi-select selections. */
+function createDemoFormInitialValue(): DemoFormModel {
+  return {
+    name: 'Ana Garc\u00eda',
+    email: 'ana@example.com',
+    amount: 249.95,
+    deliveryDate: '2026-10-15',
+    deliveryTime: '10:30',
+    notes: 'A\u00f1ade aqu\u00ed cualquier observaci\u00f3n para probar el comportamiento.',
+    status: 'in-progress',
+    priority: 'medium',
+    teams: ['design', 'development'],
+    newsletter: true,
+  };
 }

@@ -9,7 +9,7 @@
       Restablecer valores
     </button>
   </header>
-  <section class="demo-grid" aria-label="Controles de formulario">
+  <form class="demo-grid" [formRoot]="form" aria-label="Controles de formulario">
     <article class="demo-card">
       <div class="card-heading">
         <h2>Texto y n&uacute;meros</h2>
@@ -19,7 +19,7 @@
         <app-input
           label="Nombre completo"
           controlId="demo-name"
-          [(value)]="name"
+          [formField]="form.name"
           autocomplete="name"
           hint="Campo de texto con ayuda."
           testId="demo-name"
@@ -27,15 +27,14 @@
           label="Correo electr&oacute;nico"
           controlId="demo-email"
           type="email"
-          [(value)]="email"
+          [formField]="form.email"
           autocomplete="email"
           placeholder="nombre@empresa.com"
           testId="demo-email"
         /><app-number
           label="Importe"
           controlId="demo-amount"
-          [(value)]="amount"
-          [min]="0"
+          [formField]="form.amount"
           [step]="0.01"
           placeholder="0,00"
           hint="Acepta decimales."
@@ -52,14 +51,12 @@
         <app-date
           label="Fecha de entrega"
           controlId="demo-date"
-          [(value)]="deliveryDate"
+          [formField]="form.deliveryDate"
           testId="demo-date"
         /><app-time
           label="Hora de entrega"
           controlId="demo-time"
-          [(value)]="deliveryTime"
-          min="08:00"
-          max="20:00"
+          [formField]="form.deliveryTime"
           [step]="900"
           hint="De 08:00 a 20:00."
           testId="demo-time"
@@ -74,7 +71,7 @@
       <app-textarea
         label="Notas"
         controlId="demo-notes"
-        [(value)]="notes"
+        [formField]="form.notes"
         [rows]="5"
         placeholder="Escribe una nota&hellip;"
         hint="Puedes usar varias l&iacute;neas."
@@ -90,14 +87,14 @@
         <app-select
           label="Estado"
           controlId="demo-status"
-          [(value)]="status"
+          [formField]="form.status"
           [options]="statusOptions"
           hint="Select nativo."
           testId="demo-status"
         /><app-multiselect
           label="Equipos implicados"
           controlId="demo-teams"
-          [(value)]="selectedTeams"
+          [formField]="form.teams"
           [options]="teams"
           hint="Abre el desplegable para seleccionar varios."
           testId="demo-teams"
@@ -113,7 +110,7 @@
         <app-radio-group
           label="Prioridad"
           controlId="demo-priority"
-          [(value)]="priority"
+          [formField]="form.priority"
           [options]="priorityOptions"
           orientation="horizontal"
           hint="Elige una prioridad."
@@ -121,13 +118,21 @@
         /><app-checkbox
           label="Quiero recibir novedades"
           controlId="demo-newsletter"
-          [(checked)]="newsletter"
+          [formField]="form.newsletter"
           hint="Checkbox con texto de ayuda."
           testId="demo-newsletter"
         />
       </div>
     </article>
-  </section>
+    <section class="demo-card wide-card demo-form-actions" aria-label="Env&iacute;o del formulario">
+      <button type="submit" class="app-button app-button--primary" data-testid="demo-form-submit">
+        Enviar
+      </button>
+      @if (submissionMessage()) {
+        <p class="demo-form-actions__message" aria-live="polite">{{ submissionMessage() }}</p>
+      }
+    </section>
+  </form>
   <section class="values-card" aria-labelledby="values-title">
     <div>
       <h2 id="values-title">Valores actuales</h2>
