@@ -3,6 +3,9 @@ import { FormValueControl } from '@angular/forms/signals';
 import { AppFieldShell } from '../app-field-shell/app-field-shell';
 import { injectFieldState } from '../field-state';
 
+/** ISO calendar date represented without a time or timezone (`YYYY-MM-DD`). */
+export type LocalDate = `${number}-${number}-${number}`;
+
 /** Accessible native date input wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-date',
@@ -14,8 +17,8 @@ import { injectFieldState } from '../field-state';
         #input
         [id]="controlId()"
         type="date"
-        [valueAsDate]="value()"
-        (input)="value.set(input.valueAsDate)"
+        [value]="value()"
+        (input)="setNativeValue(input.value)"
         (blur)="touch.emit()"
         [disabled]="fieldDisabled()"
         [readonly]="fieldReadonly()"
@@ -29,7 +32,7 @@ import { injectFieldState } from '../field-state';
     </app-field-shell>
   `,
 })
-export class AppDate implements FormValueControl<Date | null> {
+export class AppDate implements FormValueControl<LocalDate | null> {
   private readonly field = injectFieldState();
 
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
@@ -38,14 +41,14 @@ export class AppDate implements FormValueControl<Date | null> {
   readonly label = input.required<string>();
   /** Identifier shared by label, input and support text. */
   readonly controlId = input.required<string>();
-  /** Date value managed by the parent Signal Form. */
-  readonly value = model.required<Date | null>();
+  /** Calendar date managed by the parent Signal Form without timezone conversion. */
+  readonly value = model.required<LocalDate | null>();
   /** Help text displayed until a validation error is shown. */
   readonly hint = input('');
-  /** Minimum accepted date. */
-  readonly min = input<Date | undefined>(undefined);
-  /** Maximum accepted date. */
-  readonly max = input<Date | undefined>(undefined);
+  /** Minimum accepted calendar date in `YYYY-MM-DD` format. */
+  readonly min = input<LocalDate | undefined>(undefined);
+  /** Maximum accepted calendar date in `YYYY-MM-DD` format. */
+  readonly max = input<LocalDate | undefined>(undefined);
   /** Notifies Signal Forms that the native input lost focus. */
   readonly touch = output();
   /** Stable selector used by automated UI tests. */
@@ -55,13 +58,18 @@ export class AppDate implements FormValueControl<Date | null> {
   protected readonly fieldReadonly = this.field.readonly;
   protected readonly fieldRequired = this.field.required;
   protected readonly showError = this.field.showError;
-  protected readonly nativeMin = computed(() => this.min()?.toISOString().slice(0, 10));
-  protected readonly nativeMax = computed(() => this.max()?.toISOString().slice(0, 10));
+  protected readonly nativeMin = computed(() => this.min());
+  protected readonly nativeMax = computed(() => this.max());
   protected readonly describedBy = computed(() => {
     if (this.showError()) return `${this.controlId()}-error`;
     if (this.hint()) return `${this.controlId()}-hint`;
     return null;
   });
+
+  /** Synchronizes a native date string without creating a timezone-aware Date instance. */
+  protected setNativeValue(value: string): void {
+    this.value.set(value === '' ? null : (value as LocalDate));
+  }
 
   /** Focuses the native date input used by this custom form control. */
   focus(options?: FocusOptions): void {

@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormField, FormRoot, disabled, form, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { AppCheckbox } from './app-checkbox/app-checkbox';
-import { AppDate } from './app-date/app-date';
+import { AppDate, type LocalDate } from './app-date/app-date';
 import { AppInput } from './app-input/app-input';
 import { AppMultiselect } from './app-multiselect/app-multiselect';
 import { AppNumber } from './app-number/app-number';
@@ -72,7 +72,7 @@ import { AppTime } from './app-time/app-time';
 class FormControlsHost {
   readonly text = signal('initial');
   readonly number = signal<number | null>(4);
-  readonly date = signal<Date | null>(new Date('2026-09-22T00:00:00.000Z'));
+  readonly date = signal<LocalDate | null>('2026-09-22');
   readonly time = signal('09:30');
   readonly notes = signal('note');
   readonly select = signal('one');
@@ -224,7 +224,7 @@ describe('form controls', () => {
     text.dispatchEvent(new Event('input'));
     number.value = '';
     number.dispatchEvent(new Event('input'));
-    date.valueAsDate = new Date('2026-10-01T00:00:00.000Z');
+    date.value = '2026-10-01';
     date.dispatchEvent(new Event('input'));
     time.value = '14:45';
     time.dispatchEvent(new Event('input'));
@@ -250,7 +250,7 @@ describe('form controls', () => {
 
     expect(host.text()).toBe('changed');
     expect(host.number()).toBeNull();
-    expect(host.date()?.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(host.date()).toBe('2026-10-01');
     expect(host.time()).toBe('14:45');
     expect(host.notes()).toBe('changed note');
     expect(host.select()).toBe('two');

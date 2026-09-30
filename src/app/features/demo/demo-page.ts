@@ -1,7 +1,7 @@
 import { JsonPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { AppCheckbox } from '@shared/ui/form-controls/app-checkbox/app-checkbox';
-import { AppDate } from '@shared/ui/form-controls/app-date/app-date';
+import { AppDate, type LocalDate } from '@shared/ui/form-controls/app-date/app-date';
 import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
 import {
   AppMultiselect,
@@ -42,7 +42,7 @@ export class DemoPage {
   protected readonly name = signal('Ana Garc\u00eda');
   protected readonly email = signal('ana@example.com');
   protected readonly amount = signal<number | null>(249.95);
-  protected readonly deliveryDate = signal<Date | null>(new Date('2026-10-15T00:00:00.000Z'));
+  protected readonly deliveryDate = signal<LocalDate | null>('2026-10-15');
   protected readonly deliveryTime = signal('10:30');
   protected readonly notes = signal(
     'A\u00f1ade aqu\u00ed cualquier observaci\u00f3n para probar el comportamiento.',
@@ -71,7 +71,7 @@ export class DemoPage {
     nombre: this.name(),
     correo: this.email(),
     importe: this.amount(),
-    fecha: this.deliveryDate()?.toLocaleDateString('es-ES') ?? null,
+    fecha: this.deliveryDate(),
     hora: this.deliveryTime(),
     estado: this.status(),
     prioridad: this.priority(),
@@ -83,7 +83,7 @@ export class DemoPage {
     this.name.set('Ana Garc\u00eda');
     this.email.set('ana@example.com');
     this.amount.set(249.95);
-    this.deliveryDate.set(new Date('2026-10-15T00:00:00.000Z'));
+    this.deliveryDate.set('2026-10-15');
     this.deliveryTime.set('10:30');
     this.notes.set(
       'A\u00f1ade aqu\u00ed cualquier observaci\u00f3n para probar el comportamiento.',
