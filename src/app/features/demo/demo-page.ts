@@ -1,6 +1,15 @@
 import { JsonPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
-import { email, FormField, FormRoot, form, min, required, validate } from '@angular/forms/signals';
+import {
+  email,
+  FormField,
+  FormRoot,
+  form,
+  min,
+  required,
+  validate,
+  maxDate,
+} from '@angular/forms/signals';
 import { AppControl } from '@shared/ui/form-controls/app-control/app-control';
 import { AppField } from '@shared/ui/form-controls/app-field/app-field';
 import {
@@ -40,6 +49,7 @@ export class DemoPage {
       min(path.amount, 0, { message: 'El importe no puede ser negativo.' });
       required(path.deliveryDate, { message: 'Introduce una fecha v\u00e1lida.' });
       required(path.deliveryTime, { message: 'La hora de entrega es obligatoria.' });
+      maxDate(path.deliveryDate, new Date(), { message: 'La fecha no puede ser futura' });
       validate(path.deliveryTime, (context) => {
         const value = context.value();
         return value !== '' && (value < '08:00' || value > '20:00')

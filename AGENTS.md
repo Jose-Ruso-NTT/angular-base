@@ -62,6 +62,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - When adding or changing a public API, use the `public-api-docs` skill.
 - Add consumer-facing TSDoc (`/** ... */`) to public `input()`, `output()`, and `model()` members of reusable components, exported types, and public service methods.
+- When a public `input()` or `model()` has an explicit initial value, include its exact value in a `@default` TSDoc tag.
 - Explain behavior, defaults, valid values, emitted payloads, side effects, and units when they matter to consumers.
 - Do not add comments that merely restate code. Document private or internal code only when its intent or trade-off is not obvious.
 

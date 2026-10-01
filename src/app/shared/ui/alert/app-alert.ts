@@ -32,9 +32,15 @@ export type AlertRole = 'status' | 'alert';
 export class AppAlert {
   /** Visual and semantic severity of the message. */
   readonly type = input.required<AlertType>();
-  /** Message announced to assistive technologies. Additional actions can be projected. */
+  /**
+   * Message announced to assistive technologies. Additional actions can be projected.
+   * @default ''
+   */
   readonly message = input('');
-  /** Overrides the default role: status for info, alert for warning and alert. */
+  /**
+   * Overrides the default role: status for info, alert for warning and alert.
+   * @default null
+   */
   readonly role = input<AlertRole | null>(null);
 
   protected readonly effectiveRole = computed<AlertRole>(

@@ -95,7 +95,10 @@ export class AppMultiselect implements FormValueControl<MultiselectValue[]> {
   readonly value = model.required<MultiselectValue[]>();
   /** Options available to select. Object values are intentionally unsupported. */
   readonly options = input.required<readonly MultiselectOption[]>();
-  /** Help text displayed until a validation error is shown. */
+  /**
+   * Help text displayed until a validation error is shown.
+   * @default ''
+   */
   readonly hint = input('');
   /** Notifies Signal Forms that the select lost focus. */
   readonly touch = output();

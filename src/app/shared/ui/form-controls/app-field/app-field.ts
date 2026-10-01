@@ -1,5 +1,4 @@
 import {
-  afterEveryRender,
   afterRenderEffect,
   Component,
   computed,
@@ -66,19 +65,31 @@ export class AppField {
   private readonly renderer = inject(Renderer2);
   /** The visible label for the projected control. */
   readonly label = input.required<string>();
-  /** Help text displayed until validation feedback is shown. */
+  /**
+   * Help text displayed until validation feedback is shown.
+   * @default ''
+   */
   readonly hint = input('');
-  /** Explicit control ID for a composite control whose form binding lives on its host. */
+  /**
+   * Explicit control ID for a composite control whose form binding lives on its host.
+   * @default undefined
+   */
   readonly controlId = input<string | undefined>(undefined);
-  /** Set to null when the projected widget is labelled through aria-labelledby. */
+  /**
+   * Set to null when the projected widget is labelled through aria-labelledby.
+   * @default undefined
+   */
   readonly labelFor = input<string | null | undefined>(undefined);
-  /** Layout needed by native checkbox and radio controls. */
+  /**
+   * Layout needed by native checkbox and radio controls.
+   * @default 'default'
+   */
   readonly layout = input<FieldLayout>('default');
 
   /** The projected native binding, or the binding inherited from a composite-control host. */
   private readonly projectedField = contentChild(FormField);
-  private readonly hostField = inject(FORM_FIELD, { optional: true });
-  protected readonly field = computed(() => this.projectedField() ?? this.hostField);
+  private readonly inheritedField = inject(FORM_FIELD, { optional: true });
+  protected readonly field = computed(() => this.projectedField() ?? this.inheritedField);
   private readonly fieldState = signal<FieldState<unknown> | null>(null);
   protected readonly resolvedControlId = signal<string | null>(null);
   protected readonly labelId = computed(() => {
@@ -107,7 +118,7 @@ export class AppField {
   );
 
   constructor() {
-    afterEveryRender(() => {
+    afterRenderEffect(() => {
       const id = this.controlId() ?? this.field()?.element.id;
       this.resolvedControlId.set(id === undefined || id === '' ? null : id);
     });

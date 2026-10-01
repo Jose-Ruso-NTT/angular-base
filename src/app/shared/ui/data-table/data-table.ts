@@ -109,27 +109,54 @@ export class AppDataTable<T, TSortableId extends DataTablePropertyId<T> = DataTa
   readonly rows = input.required<readonly T[]>();
   /** Ordered definitions for the visible columns. */
   readonly columns = input.required<readonly DataTableColumn<T, TSortableId>[]>();
-  /** Accessible message displayed if rows is empty. */
+  /**
+   * Accessible message displayed if rows is empty.
+   * @default 'No hay resultados.'
+   */
   readonly emptyMessage = input('No hay resultados.');
-  /** Current server-side sort field. */
+  /**
+   * Current server-side sort field.
+   * @default null
+   */
   readonly sortBy = input<TSortableId | null>(null);
-  /** Current sort direction. */
+  /**
+   * Current sort direction.
+   * @default null
+   */
   readonly sortDirection = input<'asc' | 'desc' | null>(null);
   /** Stable key generator for rendering rows. */
   readonly rowTrackBy = input.required<(row: T) => string | number>();
   /** Emits a column id after the user requests a sort change. */
   readonly sortChange = output<TSortableId>();
-  /** Optional pagination state. The owning feature remains responsible for loading data. */
+  /**
+   * Optional pagination state. The owning feature remains responsible for loading data.
+   * @default null
+   */
   readonly pagination = input<DataTablePagination | null>(null);
-  /** Page-size choices available to the user. */
+  /**
+   * Page-size choices available to the user.
+   * @default [10, 25, 50]
+   */
   readonly pageSizeOptions = input<readonly number[]>([10, 25, 50]);
-  /** Current requested page size. Defaults to the value reported by the data source. */
+  /**
+   * Current requested page size. Defaults to the value reported by the data source.
+   * @default null
+   */
   readonly selectedPageSize = input<number | null>(null);
-  /** Accessible navigation label for the pagination controls. */
+  /**
+   * Accessible navigation label for the pagination controls.
+   * @default 'Paginación'
+   */
   readonly paginationLabel = input('Paginación');
-  /** Label displayed next to the page-size selector. */
+  /**
+   * Label displayed next to the page-size selector.
+   * @default 'Resultados por página'
+   */
   readonly pageSizeLabel = input('Resultados por página');
-  /** Prefix used for stable automated-test selectors. */
+  /**
+   * Prefix used for stable automated-test selectors.
+   * @default 'data-table'
+   */
   readonly paginationTestId = input('data-table');
   /** Emits a requested one-based page number. */
   readonly pageChange = output<number>();
