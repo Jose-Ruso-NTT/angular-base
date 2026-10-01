@@ -16,9 +16,8 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { ProductsService } from '@core/api/generated';
 import type { ProductInput, ProductOutput } from '@core/api/generated/schemas';
-import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
-import { AppNumber } from '@shared/ui/form-controls/app-number/app-number';
-import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-select/app-select';
+import { AppControl } from '@shared/ui/form-controls/app-control/app-control';
+import { AppField } from '@shared/ui/form-controls/app-field/app-field';
 import { APP_DIALOG_DATA, AppDialogRef } from '@shared/ui/dialog/app-dialog.service';
 import { focusBoundControl } from '@shared/forms/focus-bound-control';
 import { integer } from '@shared/forms/integer.validator';
@@ -42,7 +41,7 @@ interface ProductFormModel {
 /** Feature-local product creation and editing form displayed through the dialog wrapper. */
 @Component({
   selector: 'app-product-form-dialog',
-  imports: [FormField, FormRoot, AppInput, AppNumber, AppSelect, AppAlert],
+  imports: [FormField, FormRoot, AppControl, AppField, AppAlert],
   styleUrl: './product-form-dialog.css',
   templateUrl: './product-form-dialog.html',
 })
@@ -58,7 +57,7 @@ export class ProductFormDialog {
   protected readonly submitLabel = computed(() =>
     this.data.product ? 'Guardar cambios' : 'Crear producto',
   );
-  protected readonly statusOptions: readonly SelectOption[] = [
+  protected readonly statusOptions = [
     { value: 'ACTIVE', label: 'Activo' },
     { value: 'INACTIVE', label: 'Inactivo' },
     { value: 'DISCONTINUED', label: 'Descatalogado' },

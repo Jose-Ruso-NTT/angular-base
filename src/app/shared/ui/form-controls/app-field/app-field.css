@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+label,
+.field-legend {
+  color: var(--color-text-primary);
+  font-weight: 650;
+}
+
+.field-control {
+  min-inline-size: 0;
+}
+
+.field-checkbox {
+  align-items: center;
+  column-gap: 0.5rem;
+  grid-template-columns: auto 1fr;
+}
+
+.field-checkbox > label {
+  grid-column: 2;
+  grid-row: 1;
+}
+.field-checkbox > .field-control {
+  grid-column: 1;
+  grid-row: 1;
+}
+.field-checkbox > .support {
+  grid-column: 1 / -1;
+}
+
+.support {
+  min-block-size: 1.25rem;
+}
+
+.hint,
+.error {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin: 0;
+}
+.hint {
+  color: var(--color-text-secondary);
+}
+.error {
+  color: var(--color-action-danger);
+}

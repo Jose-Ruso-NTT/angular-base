@@ -3,10 +3,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot, form, maxLength, min, validate } from '@angular/forms/signals';
 import { listProductsResource, ProductsService } from '@core/api/generated';
 import type { ListProductsParams, ProductOutput } from '@core/api/generated/schemas';
-import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
-import { AppNumber } from '@shared/ui/form-controls/app-number/app-number';
-import { AppCheckbox } from '@shared/ui/form-controls/app-checkbox/app-checkbox';
-import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-select/app-select';
+import { AppControl } from '@shared/ui/form-controls/app-control/app-control';
+import { AppField } from '@shared/ui/form-controls/app-field/app-field';
 import {
   AppDataTable,
   DataTableCellDefDirective,
@@ -72,10 +70,8 @@ type ProductSortBy = (typeof PRODUCT_SORT_BY)[number];
   imports: [
     FormField,
     FormRoot,
-    AppCheckbox,
-    AppInput,
-    AppNumber,
-    AppSelect,
+    AppControl,
+    AppField,
     AppDataTable,
     DataTableCellDefDirective,
     LoadingOverlay,
@@ -166,7 +162,7 @@ export class ProductsPage {
     },
   });
 
-  protected readonly filterStatusOptions: readonly SelectOption[] = [
+  protected readonly filterStatusOptions = [
     { value: '', label: 'Todos los estados' },
     { value: 'ACTIVE', label: 'Activo' },
     { value: 'INACTIVE', label: 'Inactivo' },

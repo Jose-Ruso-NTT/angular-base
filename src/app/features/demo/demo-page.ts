@@ -1,27 +1,18 @@
 import { JsonPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { email, FormField, FormRoot, form, min, required, validate } from '@angular/forms/signals';
-import { AppCheckbox } from '@shared/ui/form-controls/app-checkbox/app-checkbox';
-import { AppDate, type LocalDate } from '@shared/ui/form-controls/app-date/app-date';
-import { AppInput } from '@shared/ui/form-controls/app-input/app-input';
+import { AppControl } from '@shared/ui/form-controls/app-control/app-control';
+import { AppField } from '@shared/ui/form-controls/app-field/app-field';
 import {
   AppMultiselect,
   type MultiselectOption,
 } from '@shared/ui/form-controls/app-multiselect/app-multiselect';
-import { AppNumber } from '@shared/ui/form-controls/app-number/app-number';
-import {
-  AppRadioGroup,
-  RadioOption,
-} from '@shared/ui/form-controls/app-radio-group/app-radio-group';
-import { AppSelect, type SelectOption } from '@shared/ui/form-controls/app-select/app-select';
-import { AppTextarea } from '@shared/ui/form-controls/app-textarea/app-textarea';
-import { AppTime } from '@shared/ui/form-controls/app-time/app-time';
 
 interface DemoFormModel {
   name: string;
   email: string;
   amount: number | null;
-  deliveryDate: LocalDate | null;
+  deliveryDate: Date | null;
   deliveryTime: string;
   notes: string;
   status: string;
@@ -32,20 +23,7 @@ interface DemoFormModel {
 
 @Component({
   selector: 'app-demo-page',
-  imports: [
-    AppInput,
-    AppNumber,
-    AppDate,
-    AppTime,
-    AppTextarea,
-    AppSelect,
-    AppMultiselect,
-    AppCheckbox,
-    AppRadioGroup,
-    FormField,
-    FormRoot,
-    JsonPipe,
-  ],
+  imports: [AppControl, AppField, AppMultiselect, FormField, FormRoot, JsonPipe],
   styleUrl: './demo-page.css',
   templateUrl: './demo-page.html',
 })
@@ -85,15 +63,15 @@ export class DemoPage {
       },
     },
   );
-  protected readonly statusOptions: readonly SelectOption[] = [
+  protected readonly statusOptions = [
     { value: 'draft', label: 'Borrador' },
     { value: 'in-progress', label: 'En progreso' },
     { value: 'complete', label: 'Completado', disabled: true },
   ];
-  protected readonly priorityOptions: readonly RadioOption[] = [
+  protected readonly priorityOptions = [
     { value: 'low', label: 'Baja' },
     { value: 'medium', label: 'Media' },
-    { value: 'high', label: 'Alta', disabled: true },
+    { value: 'high', label: 'Alta' },
   ];
   protected readonly teams: readonly MultiselectOption[] = [
     { value: 'design', label: 'Dise\u00f1o' },
@@ -125,7 +103,7 @@ function createDemoFormInitialValue(): DemoFormModel {
     name: 'Ana Garc\u00eda',
     email: 'ana@example.com',
     amount: 249.95,
-    deliveryDate: '2026-10-15',
+    deliveryDate: new Date(2026, 9, 15),
     deliveryTime: '10:30',
     notes: 'A\u00f1ade aqu\u00ed cualquier observaci\u00f3n para probar el comportamiento.',
     status: 'in-progress',

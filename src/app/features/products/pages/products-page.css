@@ -79,7 +79,7 @@
   }
 
   @media (min-width: 65.0625rem) {
-    .products-page__filters app-checkbox {
+    .products-page__filters app-field:has(input[type='checkbox']) {
       align-self: start;
       margin-top: 1.9rem;
     }

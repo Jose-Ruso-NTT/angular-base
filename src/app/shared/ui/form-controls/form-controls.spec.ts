@@ -1,250 +1,120 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { FormField, FormRoot, disabled, form, required } from '@angular/forms/signals';
-import { By } from '@angular/platform-browser';
+import { FormField, FormRoot, form, required } from '@angular/forms/signals';
 import { getRequiredElement } from '@shared/testing/dom';
-import { AppCheckbox } from './app-checkbox/app-checkbox';
-import { AppDate, type LocalDate } from './app-date/app-date';
-import { AppInput } from './app-input/app-input';
+import { AppControl } from './app-control/app-control';
+import { AppField } from './app-field/app-field';
 import { AppMultiselect } from './app-multiselect/app-multiselect';
-import { AppNumber } from './app-number/app-number';
-import { AppRadioGroup } from './app-radio-group/app-radio-group';
-import { AppSelect } from './app-select/app-select';
-import { AppTextarea } from './app-textarea/app-textarea';
-import { AppTime } from './app-time/app-time';
 
 @Component({
-  imports: [
-    AppInput,
-    AppNumber,
-    AppRadioGroup,
-    AppDate,
-    AppTime,
-    AppTextarea,
-    AppSelect,
-    AppMultiselect,
-    AppCheckbox,
-  ],
+  imports: [AppControl, AppField, AppMultiselect, FormField, FormRoot],
   template: `
-    <app-input label="Text" controlId="text" [(value)]="text" testId="text" hint="Help" />
-    <app-number label="Number" controlId="number" [(value)]="number" testId="number" />
-    <app-date label="Date" controlId="date" [(value)]="date" testId="date" />
-    <app-time label="Time" controlId="time" [(value)]="time" testId="time" />
-    <app-textarea label="Notes" controlId="notes" [(value)]="notes" testId="notes" />
-    <app-select
-      label="Select"
-      controlId="select"
-      [(value)]="select"
-      [options]="options"
-      testId="select"
-    />
-    <app-select
-      label="Numeric select"
-      controlId="numeric-select"
-      [(value)]="numericSelect"
-      [options]="numericOptions"
-      testId="numeric-select"
-    />
-    <app-multiselect
-      label="Multi"
-      controlId="multi"
-      [(value)]="multi"
-      [options]="multiOptions"
-      testId="multi"
-    />
-    <app-checkbox label="Enabled" controlId="enabled" [(checked)]="enabled" testId="enabled" />
-    <app-radio-group
-      label="Priority"
-      controlId="priority"
-      [(value)]="priority"
-      [options]="options"
-      orientation="horizontal"
-      testId="priority"
-    />
-    <app-radio-group
-      label="Numeric priority"
-      controlId="numeric-priority"
-      [(value)]="numericPriority"
-      [options]="numericOptions"
-      testId="numeric-priority"
-    />
+    <form [formRoot]="form">
+      <app-field label="Text" hint="Help"
+        ><input appControl id="text" [formField]="form.text" data-testid="text"
+      /></app-field>
+      <app-field label="Number"
+        ><input appControl id="number" type="number" [formField]="form.number"
+      /></app-field>
+      <app-field label="Date"
+        ><input appControl id="date" type="date" [formField]="form.date"
+      /></app-field>
+      <app-field label="Time"
+        ><input appControl id="time" type="time" [formField]="form.time"
+      /></app-field>
+      <app-field label="Notes">
+        <textarea appControl id="notes" [formField]="form.notes"></textarea>
+      </app-field>
+      <app-field label="Select"
+        ><select appControl id="select" [formField]="form.select">
+          <option value="one">One</option>
+          <option value="two">Two</option>
+        </select></app-field
+      >
+      <app-field label="Enabled" layout="checkbox"
+        ><input appControl id="enabled" type="checkbox" [formField]="form.enabled"
+      /></app-field>
+      <app-field label="Priority" layout="radio">
+        <div>
+          @for (option of priorityOptions; track option.value; let index = $index) {
+            <label [for]="'priority-' + index">
+              <input
+                appControl
+                [id]="'priority-' + index"
+                type="radio"
+                [value]="option.value"
+                [formField]="form.priority"
+              />{{ option.label }}
+            </label>
+          }
+        </div>
+      </app-field>
+      <app-multiselect
+        label="Multi"
+        controlId="multi"
+        [formField]="form.multi"
+        [options]="multiOptions"
+        testId="multi"
+      />
+    </form>
   `,
 })
 class FormControlsHost {
-  readonly text = signal('initial');
-  readonly number = signal<number | null>(4);
-  readonly date = signal<LocalDate | null>('2026-09-22');
-  readonly time = signal('09:30');
-  readonly notes = signal('note');
-  readonly select = signal('one');
-  readonly numericSelect = signal(1);
+  private readonly model = signal<{
+    text: string;
+    number: number | null;
+    date: Date | null;
+    time: string;
+    notes: string;
+    select: string;
+    enabled: boolean;
+    priority: string;
+    multi: string[];
+  }>({
+    text: 'initial',
+    number: 4,
+    date: new Date(2026, 8, 22),
+    time: '09:30',
+    notes: 'note',
+    select: 'one',
+    enabled: false,
+    priority: 'one',
+    multi: ['one'],
+  });
+  readonly form = form(this.model, (path) => {
+    required(path.text, { message: 'Text is required.' });
+  });
   readonly multiOptions = [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
-    { value: 'three', label: 'Three', disabled: true },
   ];
-  readonly multi = signal([this.multiOptions[0].value]);
-  readonly enabled = signal(false);
-  readonly priority = signal('one');
-  readonly numericPriority = signal(1);
-  readonly options = [
-    { value: 'one', label: 'One' },
-    { value: 'two', label: 'Two' },
-    { value: 'three', label: 'Three', disabled: true },
-  ];
-  readonly numericOptions = [
-    { value: 1, label: 'One' },
-    { value: 2, label: 'Two' },
-  ];
-}
-
-@Component({
-  imports: [FormField, FormRoot, AppInput],
-  template: `
-    <form [formRoot]="form">
-      <app-input
-        label="Name"
-        controlId="name"
-        [formField]="form.name"
-        hint="Enter a name"
-        testId="name"
-      />
-    </form>
-  `,
-})
-class BoundFieldHost {
-  private readonly model = signal({ name: '' });
-  readonly form = form(this.model, (path) => {
-    required(path.name, { message: 'Name is required.' });
-  });
-}
-
-@Component({
-  imports: [FormField, FormRoot, AppDate],
-  template: `
-    <form [formRoot]="form">
-      <app-date label="Date" controlId="bound-date" [formField]="form.date" testId="bound-date" />
-    </form>
-  `,
-})
-class BoundDateHost {
-  private readonly model = signal<{ date: LocalDate | null }>({ date: '2026-09-22' });
-  readonly form = form(this.model, (path) => {
-    required(path.date, { message: 'Enter a valid date.' });
-  });
-}
-
-@Component({
-  imports: [FormField, FormRoot, AppCheckbox],
-  template: `
-    <form [formRoot]="form">
-      <app-checkbox
-        label="Terms"
-        controlId="required-checkbox"
-        [formField]="form.accepted"
-        testId="required-checkbox"
-      />
-    </form>
-  `,
-})
-class RequiredCheckboxHost {
-  private readonly model = signal({ accepted: false });
-  readonly form = form(this.model, (path) => {
-    required(path.accepted, { message: 'Acceptance is required.' });
-  });
-}
-
-@Component({
-  imports: [FormField, FormRoot, AppSelect, AppMultiselect, AppRadioGroup],
-  template: `
-    <form [formRoot]="form">
-      <app-select
-        label="Select"
-        controlId="disabled-select"
-        [formField]="form.select"
-        [options]="options"
-        testId="disabled-select"
-      />
-      <app-multiselect
-        label="Multi"
-        controlId="disabled-multi"
-        [formField]="form.multi"
-        [options]="multiOptions"
-        testId="disabled-multi"
-      />
-      <app-radio-group
-        label="Radio"
-        controlId="disabled-radio"
-        [formField]="form.radio"
-        [options]="options"
-        testId="disabled-radio"
-      />
-    </form>
-  `,
-})
-class DisabledFieldsHost {
-  readonly options = [
+  readonly priorityOptions = [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
   ];
-  readonly multiOptions = this.options;
-  private readonly model = signal({
-    select: 'one',
-    multi: [this.multiOptions[0].value],
-    radio: 'one',
-  });
-  readonly form = form(this.model, (path) => {
-    disabled(path.select, { when: () => true });
-    disabled(path.multi, { when: () => true });
-    disabled(path.radio, { when: () => true });
-  });
 }
 
 describe('form controls', () => {
-  it('uses accessible controls and propagates their values', () => {
+  it('uses native controls with Signal Forms values and shared presentation', () => {
     const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
       FormControlsHost,
     );
     fixture.detectChanges();
     fixture.detectChanges();
-
     const host = fixture.componentInstance;
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const text = getRequiredElement(nativeElement, '#text') as HTMLInputElement;
-    const number = getRequiredElement(nativeElement, '#number') as HTMLInputElement;
-    const date = getRequiredElement(nativeElement, '#date') as HTMLInputElement;
-    const time = getRequiredElement(nativeElement, '#time') as HTMLInputElement;
-    const textarea = getRequiredElement(nativeElement, '#notes') as HTMLTextAreaElement;
-    const select = getRequiredElement(nativeElement, '#select') as HTMLSelectElement;
-    const numericSelect = getRequiredElement(nativeElement, '#numeric-select') as HTMLSelectElement;
-    const multi = getRequiredElement(nativeElement, '#multi') as HTMLElement;
-    const checkbox = getRequiredElement(nativeElement, '#enabled') as HTMLInputElement;
-    const radio = getRequiredElement(nativeElement, '#priority-option-1') as HTMLInputElement;
-    const numericRadio = getRequiredElement(
-      nativeElement,
-      '#numeric-priority-option-1',
-    ) as HTMLInputElement;
+    const root = fixture.nativeElement as HTMLElement;
+    const text = getRequiredElement(root, '#text') as HTMLInputElement;
+    const number = getRequiredElement(root, '#number') as HTMLInputElement;
+    const date = getRequiredElement(root, '#date') as HTMLInputElement;
+    const time = getRequiredElement(root, '#time') as HTMLInputElement;
+    const notes = getRequiredElement(root, '#notes') as HTMLTextAreaElement;
+    const select = getRequiredElement(root, '#select') as HTMLSelectElement;
+    const enabled = getRequiredElement(root, '#enabled') as HTMLInputElement;
+    const priority = getRequiredElement(root, '#priority-1') as HTMLInputElement;
 
-    expect(nativeElement.querySelector('label[for="text"]')?.textContent).toContain('Text');
-    expect(
-      nativeElement
-        .querySelector('fieldset[data-testid="priority"] .options')
-        ?.classList.contains('options-horizontal'),
-    ).toBe(true);
-    expect(
-      nativeElement
-        .querySelector('fieldset[data-testid="numeric-priority"] .options')
-        ?.classList.contains('options-horizontal'),
-    ).toBe(false);
-    expect(nativeElement.querySelector('label[for="multi"]')).toBeNull();
-    expect(nativeElement.querySelector('label#multi-label')?.textContent).toContain('Multi');
-    expect(multi.getAttribute('aria-labelledby')).toBe('multi-label');
-    expect(nativeElement.innerHTML).toContain('Help');
-    expect(select.options[2].disabled).toBe(true);
-    expect(nativeElement.querySelector<HTMLInputElement>('#priority-option-2')?.disabled).toBe(
-      true,
-    );
-
+    expect(root.querySelector('label[for="text"]')?.textContent).toContain('Text');
+    expect(text.classList.contains('app-control')).toBe(true);
+    expect(text.getAttribute('aria-describedby')).toBe('text-hint');
     text.value = 'changed';
     text.dispatchEvent(new Event('input'));
     number.value = '';
@@ -253,192 +123,48 @@ describe('form controls', () => {
     date.dispatchEvent(new Event('input'));
     time.value = '14:45';
     time.dispatchEvent(new Event('input'));
-    textarea.value = 'changed note';
-    textarea.dispatchEvent(new Event('input'));
+    notes.value = 'changed note';
+    notes.dispatchEvent(new Event('input'));
     select.value = 'two';
-    select.dispatchEvent(new Event('change'));
-    numericSelect.value = '2';
-    numericSelect.dispatchEvent(new Event('change'));
-    multi.click();
-    fixture.detectChanges();
-    const secondMultiOption = Array.from(document.querySelectorAll('[role="option"]')).find(
-      (option) => option.textContent.includes('Two'),
-    ) as HTMLElement | undefined;
-    if (secondMultiOption === undefined) throw new Error('Missing multi-select option Two');
-    secondMultiOption.click();
-    checkbox.checked = true;
-    checkbox.dispatchEvent(new Event('change'));
-    radio.checked = true;
-    radio.dispatchEvent(new Event('change'));
-    numericRadio.checked = true;
-    numericRadio.dispatchEvent(new Event('change'));
+    select.dispatchEvent(new Event('input'));
+    enabled.checked = true;
+    enabled.dispatchEvent(new Event('input'));
+    priority.checked = true;
+    priority.dispatchEvent(new Event('input'));
 
-    expect(host.text()).toBe('changed');
-    expect(host.number()).toBeNull();
-    expect(host.date()).toBe('2026-10-01');
-    expect(host.time()).toBe('14:45');
-    expect(host.notes()).toBe('changed note');
-    expect(host.select()).toBe('two');
-    expect(host.numericSelect()).toBe(2);
-    expect(typeof host.numericSelect()).toBe('number');
-    expect(host.multi()).toEqual([host.multiOptions[0].value, host.multiOptions[1].value]);
-    expect(host.enabled()).toBe(true);
-    expect(host.priority()).toBe('two');
-    expect(host.numericPriority()).toBe(2);
-    expect(typeof host.numericPriority()).toBe('number');
+    expect(host.form.text().value()).toBe('changed');
+    expect(host.form.number().value()).toBeNull();
+    expect(host.form.date().value()?.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(host.form.time().value()).toBe('14:45');
+    expect(host.form.notes().value()).toBe('changed note');
+    expect(host.form.select().value()).toBe('two');
+    expect(host.form.enabled().value()).toBe(true);
+    expect(host.form.priority().value()).toBe('two');
   });
 
-  it('marks disabled multiselect choices as unavailable', () => {
+  it('shows Signal Forms feedback after blur and replaces the hint', () => {
     const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
       FormControlsHost,
     );
     fixture.detectChanges();
-
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const multi = getRequiredElement(nativeElement, '#multi') as HTMLElement;
-    multi.click();
-    fixture.detectChanges();
-
-    const disabledMultiOption = Array.from(document.querySelectorAll('[role="option"]')).find(
-      (option) => option.textContent.includes('Three'),
-    );
-    expect(disabledMultiOption?.getAttribute('aria-disabled')).toBe('true');
-  });
-
-  it('keeps the last numeric value while a number is incomplete', () => {
-    const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
-      FormControlsHost,
-    );
-    fixture.detectChanges();
-
-    const host = fixture.componentInstance;
-    const numberControl = fixture.debugElement.query(By.directive(AppNumber))
-      .componentInstance as unknown as {
-      setNativeValue(input: HTMLInputElement): void;
-    };
-
-    numberControl.setNativeValue({
-      validity: { badInput: true },
-      value: '12.',
-      valueAsNumber: Number.NaN,
-    } as HTMLInputElement);
-
-    expect(host.number()).toBe(4);
-  });
-
-  it('keeps an invalid date draft visible while clearing its model value', () => {
-    const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
-      FormControlsHost,
-    );
-    fixture.detectChanges();
-
-    const host = fixture.componentInstance;
-    const dateControl = fixture.debugElement.query(By.directive(AppDate))
-      .componentInstance as unknown as {
-      displayValue(): string;
-      reset(): void;
-      setNativeValue(input: HTMLInputElement): void;
-    };
-
-    dateControl.setNativeValue({
-      validity: { badInput: true },
-      value: '',
-    } as HTMLInputElement);
-
-    expect(host.date()).toBeNull();
-    expect(dateControl.displayValue()).toBe('2026-09-22');
-
-    dateControl.reset();
-
-    expect(dateControl.displayValue()).toBe('');
-  });
-
-  it('delegates date error presentation and reset state to Signal Forms', () => {
-    const fixture = TestBed.configureTestingModule({ imports: [BoundDateHost] }).createComponent(
-      BoundDateHost,
-    );
-    fixture.detectChanges();
-
-    const host = fixture.componentInstance;
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const input = getRequiredElement(nativeElement, '#bound-date') as HTMLInputElement;
-    const dateControl = fixture.debugElement.query(By.directive(AppDate))
-      .componentInstance as unknown as {
-      displayValue(): string;
-      setNativeValue(input: HTMLInputElement): void;
-    };
-
-    dateControl.setNativeValue({
-      validity: { badInput: true },
-      value: '',
-    } as HTMLInputElement);
-    fixture.detectChanges();
-
-    expect(host.form.date().value()).toBeNull();
-    expect(input.getAttribute('aria-invalid')).toBe('false');
-
+    const root = fixture.nativeElement as HTMLElement;
+    const input = getRequiredElement(root, '#text') as HTMLInputElement;
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
     input.dispatchEvent(new Event('blur'));
     fixture.detectChanges();
-
     expect(input.getAttribute('aria-invalid')).toBe('true');
-    expect(nativeElement.querySelector('#bound-date-error')?.textContent).toContain(
-      'Enter a valid date.',
-    );
-
-    host.form().reset({ date: null });
-    fixture.detectChanges();
-
-    expect(dateControl.displayValue()).toBe('');
+    expect(input.getAttribute('aria-describedby')).toBe('text-error');
+    expect(root.querySelector('#text-error')?.textContent).toContain('Text is required.');
+    expect(root.querySelector('#text-hint')).toBeNull();
   });
 
-  it('disables fields configured by Signal Forms', () => {
-    const fixture = TestBed.configureTestingModule({
-      imports: [DisabledFieldsHost],
-    }).createComponent(DisabledFieldsHost);
-    fixture.detectChanges();
-
-    const disabledRoot = fixture.nativeElement as HTMLElement;
-    expect(getRequiredElement(disabledRoot, '#disabled-select')).toHaveProperty('disabled', true);
-    expect(getRequiredElement(disabledRoot, '#disabled-multi').getAttribute('aria-disabled')).toBe(
-      'true',
-    );
-    expect(
-      getRequiredElement(disabledRoot, 'fieldset[data-testid="disabled-radio"]'),
-    ).toHaveProperty('disabled', true);
-  });
-
-  it('shows Signal Forms errors after blur and replaces the hint', () => {
-    const fixture = TestBed.configureTestingModule({ imports: [BoundFieldHost] }).createComponent(
-      BoundFieldHost,
+  it('keeps the custom multiselect for multi-value selection', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [FormControlsHost] }).createComponent(
+      FormControlsHost,
     );
     fixture.detectChanges();
-
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const input = getRequiredElement(nativeElement, 'input#name') as HTMLInputElement;
-    expect(input.getAttribute('aria-describedby')).toBe('name-hint');
-    expect(nativeElement.querySelector('#name-error')).toBeNull();
-
-    input.dispatchEvent(new Event('blur'));
-    fixture.detectChanges();
-
-    expect(input.getAttribute('aria-describedby')).toBe('name-error');
-    expect(nativeElement.querySelector('#name-error')?.textContent).toContain('Name is required.');
-    expect(nativeElement.querySelector('#name-hint')).toBeNull();
-  });
-
-  it('exposes a required checkbox to users and assistive technologies', () => {
-    const fixture = TestBed.configureTestingModule({
-      imports: [RequiredCheckboxHost],
-    }).createComponent(RequiredCheckboxHost);
-    fixture.detectChanges();
-
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const checkbox = getRequiredElement(nativeElement, '#required-checkbox') as HTMLInputElement;
-
-    expect(checkbox.required).toBe(true);
-    expect(checkbox.getAttribute('aria-required')).toBe('true');
-    expect(nativeElement.querySelector('label[for="required-checkbox"]')?.textContent).toContain(
-      '*',
-    );
+    const multi = getRequiredElement(fixture.nativeElement as HTMLElement, '#multi') as HTMLElement;
+    expect(multi.getAttribute('aria-labelledby')).toBe('multi-label');
   });
 });

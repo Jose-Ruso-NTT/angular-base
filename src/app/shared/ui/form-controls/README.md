@@ -1,40 +1,14 @@
 # Controles de formulario
 
-Esta guía define cómo consumir los controles de formulario de `shared/ui`. Los wrappers de etiqueta, ayuda y error (`AppFieldShell`, `AppFieldMessages`) son infraestructura interna: consume los controles de esta lista, no los compongas manualmente.
-
-## Contrato común
-
-- En formularios nuevos usa Signal Forms y `[formField]="form.campo"`. Para estado local aislado usa `[(value)]`; en checkbox, `[(checked)]`.
-- Todos los controles requieren `label`, `controlId` y `testId`. `controlId` es único por pantalla y `testId` es estable y prefijado por funcionalidad.
-- `hint` se muestra hasta que el campo se toca y tiene un error; después se muestra el mensaje de validación. `required` y `disabled` del Signal Form se propagan a todos los controles. `readonly` se propaga a input, número, fecha, hora y textarea; los controles nativos de selección no admiten ese estado, así que usa `disabled` cuando deban quedar bloqueados.
-- No uses `ngModel`. Los controles implementan el contrato de Signal Forms y exponen `focus()` para enfocar el control asociado cuando falla el envío.
-
-## Elegir el control
-
-| Componente       | Valor                  | Uso                                                                                                              |
-| ---------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `AppInput`       | `string`               | Texto, email, búsqueda, teléfono, URL y contraseña. `type`: `text`, `email`, `password`, `search`, `tel`, `url`. |
-| `AppNumber`      | `number \| null`       | Valores numéricos. Vacío equivale a `null`; admite `min`, `max`, `step`.                                         |
-| `AppDate`        | `YYYY-MM-DD \| null`   | Fecha civil nativa sin zona horaria. `min` y `max` usan el mismo formato.                                        |
-| `AppTime`        | `string` (`HH:mm`)     | Hora nativa. `min`/`max` usan `HH:mm`; `step` va en segundos.                                                    |
-| `AppTextarea`    | `string`               | Texto en varias líneas. `rows` predeterminado: 3.                                                                |
-| `AppSelect`      | `string \| number`     | Una opción de lista corta: `{ value, label, disabled? }`.                                                        |
-| `AppMultiselect` | `(string \| number)[]` | Varias opciones con valores primitivos: `{ value, label, disabled? }`.                                           |
-| `AppCheckbox`    | `boolean`              | Decisión independiente sí/no; usa `[(checked)]` si no hay Signal Form.                                           |
-| `AppRadioGroup`  | `string \| number`     | Una opción de un grupo pequeño visible. `orientation`: `vertical` u `horizontal`.                                |
+Los formularios usan elementos HTML nativos con Signal Forms. `AppField` aporta etiqueta, ayuda y errores; `appControl` aplica el estilo visual compartido. Solo `AppMultiselect` es un control compuesto, porque no hay un equivalente nativo para selección múltiple con combobox.
 
 ```html
-<app-input
-  label="Buscar"
-  controlId="order-search"
-  [formField]="form.search"
-  testId="order-search"
-/>
-<app-number
-  label="Importe mínimo"
-  controlId="order-min-price"
-  [formField]="form.price"
-  [min]="0"
-  testId="order-min-price"
-/>
+<app-field label="Importe" hint="Acepta decimales.">
+  <input appControl id="order-amount" type="number" [formField]="form.amount" step="0.01" />
+</app-field>
 ```
+
+- El elemento proyectado debe tener `[formField]` e `id`; el `id` conecta la etiqueta y los mensajes accesibles.
+- Usa los tipos nativos que espera Signal Forms: `number | null` para `number`, `Date | null` para `date`, `string` para texto, `time` y `select`, y `boolean` para checkbox.
+- Las reglas viven en el esquema Signal Forms. No declares atributos `min`, `max`, `required` o `disabled` manualmente junto a `[formField]`.
+- Para opciones de radio usa `layout="radio"` y enlaza cada `input[type=radio]` al mismo campo. Para checkbox usa `layout="checkbox"`.

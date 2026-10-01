@@ -16,30 +16,39 @@
         <p>Entradas nativas de una l&iacute;nea.</p>
       </div>
       <div class="fields two-columns">
-        <app-input
-          label="Nombre completo"
-          controlId="demo-name"
-          [formField]="form.name"
-          autocomplete="name"
-          hint="Campo de texto con ayuda."
-          testId="demo-name"
-        /><app-input
-          label="Correo electr&oacute;nico"
-          controlId="demo-email"
-          type="email"
-          [formField]="form.email"
-          autocomplete="email"
-          placeholder="nombre@empresa.com"
-          testId="demo-email"
-        /><app-number
-          label="Importe"
-          controlId="demo-amount"
-          [formField]="form.amount"
-          [step]="0.01"
-          placeholder="0,00"
-          hint="Acepta decimales."
-          testId="demo-amount"
-        />
+        <app-field label="Nombre completo" hint="Campo de texto con ayuda.">
+          <input
+            appControl
+            id="demo-name"
+            [formField]="form.name"
+            autocomplete="name"
+            data-testid="demo-name"
+          />
+        </app-field>
+
+        <app-field label="Correo electr&oacute;nico">
+          <input
+            appControl
+            id="demo-email"
+            type="email"
+            [formField]="form.email"
+            autocomplete="email"
+            placeholder="nombre@empresa.com"
+            data-testid="demo-email"
+          />
+        </app-field>
+
+        <app-field label="Importe" hint="Acepta decimales.">
+          <input
+            appControl
+            id="demo-amount"
+            type="number"
+            [formField]="form.amount"
+            step="0.01"
+            placeholder="0,00"
+            data-testid="demo-amount"
+          />
+        </app-field>
       </div>
     </article>
     <article class="demo-card">
@@ -48,19 +57,26 @@
         <p>Con l&iacute;mites y selector del navegador.</p>
       </div>
       <div class="fields two-columns">
-        <app-date
-          label="Fecha de entrega"
-          controlId="demo-date"
-          [formField]="form.deliveryDate"
-          testId="demo-date"
-        /><app-time
-          label="Hora de entrega"
-          controlId="demo-time"
-          [formField]="form.deliveryTime"
-          [step]="900"
-          hint="De 08:00 a 20:00."
-          testId="demo-time"
-        />
+        <app-field label="Fecha de entrega">
+          <input
+            appControl
+            id="demo-date"
+            type="date"
+            [formField]="form.deliveryDate"
+            data-testid="demo-date"
+          />
+        </app-field>
+
+        <app-field label="Hora de entrega" hint="De 08:00 a 20:00.">
+          <input
+            appControl
+            id="demo-time"
+            type="time"
+            [formField]="form.deliveryTime"
+            step="900"
+            data-testid="demo-time"
+          />
+        </app-field>
       </div>
     </article>
     <article class="demo-card wide-card">
@@ -68,15 +84,17 @@
         <h2>Texto largo</h2>
         <p>El &aacute;rea se adapta al contenido que quieras introducir.</p>
       </div>
-      <app-textarea
-        label="Notas"
-        controlId="demo-notes"
-        [formField]="form.notes"
-        [rows]="5"
-        placeholder="Escribe una nota&hellip;"
-        hint="Puedes usar varias l&iacute;neas."
-        testId="demo-notes"
-      />
+
+      <app-field label="Notas" hint="Puedes usar varias l&iacute;neas.">
+        <textarea
+          appControl
+          id="demo-notes"
+          [formField]="form.notes"
+          rows="5"
+          placeholder="Escribe una nota&hellip;"
+          data-testid="demo-notes"
+        ></textarea>
+      </app-field>
     </article>
     <article class="demo-card">
       <div class="card-heading">
@@ -84,14 +102,17 @@
         <p>Una opci&oacute;n o varias mediante el desplegable.</p>
       </div>
       <div class="fields">
-        <app-select
-          label="Estado"
-          controlId="demo-status"
-          [formField]="form.status"
-          [options]="statusOptions"
-          hint="Select nativo."
-          testId="demo-status"
-        /><app-multiselect
+        <app-field label="Estado" hint="Select nativo.">
+          <select appControl id="demo-status" [formField]="form.status" data-testid="demo-status">
+            @for (option of statusOptions; track option.value) {
+              <option [value]="option.value" [disabled]="option.disabled ?? false">
+                {{ option.label }}
+              </option>
+            }
+          </select>
+        </app-field>
+
+        <app-multiselect
           label="Equipos implicados"
           controlId="demo-teams"
           [formField]="form.teams"
@@ -107,27 +128,46 @@
         <p>Controles de selecci&oacute;n directa.</p>
       </div>
       <div class="fields">
-        <app-radio-group
-          label="Prioridad"
-          controlId="demo-priority"
-          [formField]="form.priority"
-          [options]="priorityOptions"
-          orientation="horizontal"
-          hint="Elige una prioridad."
-          testId="demo-priority"
-        /><app-checkbox
+        <app-field label="Prioridad" layout="radio" hint="Elige una prioridad.">
+          <div
+            class="native-radio-options native-radio-options--horizontal"
+            data-testid="demo-priority"
+          >
+            @for (option of priorityOptions; track option.value; let index = $index) {
+              <label [for]="'demo-priority-option-' + index">
+                <input
+                  appControl
+                  type="radio"
+                  [id]="'demo-priority-option-' + index"
+                  [value]="option.value"
+                  [formField]="form.priority"
+                />
+                <span>{{ option.label }}</span>
+              </label>
+            }
+          </div>
+        </app-field>
+
+        <app-field
           label="Quiero recibir novedades"
-          controlId="demo-newsletter"
-          [formField]="form.newsletter"
+          layout="checkbox"
           hint="Checkbox con texto de ayuda."
-          testId="demo-newsletter"
-        />
+        >
+          <input
+            appControl
+            id="demo-newsletter"
+            type="checkbox"
+            [formField]="form.newsletter"
+            data-testid="demo-newsletter"
+          />
+        </app-field>
       </div>
     </article>
     <section class="demo-card wide-card demo-form-actions" aria-label="Env&iacute;o del formulario">
       <button type="submit" class="app-button app-button--primary" data-testid="demo-form-submit">
         Enviar
       </button>
+
       @if (submissionMessage()) {
         <p class="demo-form-actions__message" aria-live="polite">{{ submissionMessage() }}</p>
       }

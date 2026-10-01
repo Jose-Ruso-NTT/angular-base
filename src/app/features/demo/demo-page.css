@@ -69,6 +69,24 @@ h2 {
 .two-columns > :last-child {
   grid-column: 1 / -1;
 }
+.native-radio-options {
+  display: grid;
+  gap: 0.5rem;
+  margin-block-start: 0.4rem;
+}
+.native-radio-options--horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+}
+.native-radio-options label {
+  align-items: center;
+  color: var(--color-text-primary);
+  display: flex;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+}
 .wide-card {
   grid-column: 1 / -1;
 }

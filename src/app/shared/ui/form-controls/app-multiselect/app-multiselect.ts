@@ -3,7 +3,7 @@ import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox'
 import { Listbox, Option } from '@angular/aria/listbox';
 import { Component, computed, input, model, output, signal, viewChild } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
-import { AppFieldShell } from '../app-field-shell/app-field-shell';
+import { AppField } from '../app-field/app-field';
 import { injectFieldState } from '../field-state';
 
 /** Primitive value supported by AppMultiselect. */
@@ -22,10 +22,10 @@ export interface MultiselectOption {
 /** Accessible ARIA multiselect wrapper for Signal Forms controls. */
 @Component({
   selector: 'app-multiselect',
-  imports: [AppFieldShell, Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule],
+  imports: [AppField, Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule],
   styleUrl: './app-multiselect.css',
   template: `
-    <app-field-shell [label]="label()" [controlId]="controlId()" [labelFor]="null" [hint]="hint()">
+    <app-field [label]="label()" [controlId]="controlId()" [labelFor]="null" [hint]="hint()">
       <div
         #combobox="ngCombobox"
         ngCombobox
@@ -79,7 +79,7 @@ export interface MultiselectOption {
           </div>
         </ng-template>
       </ng-template>
-    </app-field-shell>
+    </app-field>
   `,
 })
 export class AppMultiselect implements FormValueControl<MultiselectValue[]> {

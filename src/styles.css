@@ -2,6 +2,7 @@
 @import '@angular/cdk/overlay-prebuilt.css';
 @import './styles/components/button.css';
 @import './styles/components/dialog.css';
+@import './styles/components/form-control.css';
 
 *,
 *::before,

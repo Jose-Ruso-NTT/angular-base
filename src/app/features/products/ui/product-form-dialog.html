@@ -9,52 +9,78 @@
       Los campos marcados con <span aria-hidden="true">*</span> son obligatorios.
     </p>
   </header>
+
   @if (submitError()) {
     <app-alert type="alert" [message]="submitError()" />
   }
+
   <form [formRoot]="form">
-    <app-input
-      label="Nombre"
-      controlId="product-name"
-      [formField]="form.name"
-      testId="product-name-input"
-    />
-    <app-input
-      label="SKU"
-      controlId="product-sku"
-      [formField]="form.sku"
-      hint="De 3 a 32 caracteres: mayúsculas, números y guiones."
-      testId="product-sku-input"
-    />
-    <app-input
-      label="Descripción"
-      controlId="product-description"
-      [formField]="form.description"
-      testId="product-description-input"
-    />
+    <app-field label="Nombre">
+      <input
+        type="text"
+        appControl
+        id="product-name"
+        [formField]="form.name"
+        data-testid="product-name-input"
+      />
+    </app-field>
+
+    <app-field label="SKU" hint="De 3 a 32 caracteres: mayúsculas, números y guiones.">
+      <input
+        type="text"
+        appControl
+        id="product-sku"
+        [formField]="form.sku"
+        data-testid="product-sku-input"
+      />
+    </app-field>
+
+    <app-field label="Descripción">
+      <input
+        appControl
+        id="product-description"
+        [formField]="form.description"
+        data-testid="product-description-input"
+      />
+    </app-field>
+
     <div class="two-columns">
-      <app-number
-        label="Precio (€)"
-        controlId="product-price"
-        [formField]="form.price"
-        [step]="0.01"
-        testId="product-price-input"
-      />
-      <app-number
-        label="Stock"
-        controlId="product-stock"
-        [formField]="form.stock"
-        [step]="1"
-        testId="product-stock-input"
-      />
+      <app-field label="Precio (€)">
+        <input
+          appControl
+          id="product-price"
+          type="number"
+          [formField]="form.price"
+          step="0.01"
+          data-testid="product-price-input"
+        />
+      </app-field>
+
+      <app-field label="Stock">
+        <input
+          appControl
+          id="product-stock"
+          type="number"
+          [formField]="form.stock"
+          step="1"
+          data-testid="product-stock-input"
+        />
+      </app-field>
     </div>
-    <app-select
-      label="Estado"
-      controlId="product-status"
-      [formField]="form.status"
-      [options]="statusOptions"
-      testId="product-status-select"
-    />
+
+    <app-field label="Estado">
+      <select
+        appControl
+        id="product-status"
+        [formField]="form.status"
+        data-testid="product-status-select"
+      >
+        @for (option of statusOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </app-field>
+
     <div class="app-dialog__actions">
       <button
         type="button"
@@ -65,6 +91,7 @@
       >
         Cancelar
       </button>
+
       <button
         type="submit"
         class="app-button app-button--primary"

@@ -13,45 +13,65 @@
       Añadir producto
     </button>
   </header>
-
   <section class="products-page__filters" aria-labelledby="products-filters-title">
     <h2 id="products-filters-title">Filtrar productos</h2>
+
     <form [formRoot]="filtersForm">
-      <app-input
-        label="Buscar"
-        controlId="product-search"
-        type="search"
-        [formField]="filtersForm.search"
-        hint="Busca por nombre, SKU o descripción."
-        testId="product-search-input"
-      />
-      <app-select
-        label="Estado"
-        controlId="filter-status"
-        [formField]="filtersForm.status"
-        [options]="filterStatusOptions"
-        testId="product-status-filter"
-      />
-      <app-number
-        label="Precio mínimo"
-        controlId="min-price"
-        [formField]="filtersForm.minPrice"
-        [step]="0.01"
-        testId="product-min-price-input"
-      />
-      <app-number
-        label="Precio máximo"
-        controlId="max-price"
-        [formField]="filtersForm.maxPrice"
-        [step]="0.01"
-        testId="product-max-price-input"
-      />
-      <app-checkbox
-        label="Solo con stock"
-        controlId="product-in-stock"
-        [formField]="filtersForm.inStock"
-        testId="product-in-stock-filter"
-      />
+      <app-field label="Buscar" hint="Busca por nombre, SKU o descripción.">
+        <input
+          appControl
+          id="product-search"
+          type="search"
+          [formField]="filtersForm.search"
+          data-testid="product-search-input"
+        />
+      </app-field>
+
+      <app-field label="Estado">
+        <select
+          appControl
+          id="filter-status"
+          [formField]="filtersForm.status"
+          data-testid="product-status-filter"
+        >
+          @for (option of filterStatusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </app-field>
+
+      <app-field label="Precio mínimo">
+        <input
+          appControl
+          id="min-price"
+          type="number"
+          [formField]="filtersForm.minPrice"
+          step="0.01"
+          data-testid="product-min-price-input"
+        />
+      </app-field>
+
+      <app-field label="Precio máximo"
+        ><input
+          appControl
+          id="max-price"
+          type="number"
+          [formField]="filtersForm.maxPrice"
+          step="0.01"
+          data-testid="product-max-price-input"
+        />
+      </app-field>
+
+      <app-field label="Solo con stock" layout="checkbox">
+        <input
+          appControl
+          id="product-in-stock"
+          type="checkbox"
+          [formField]="filtersForm.inStock"
+          data-testid="product-in-stock-filter"
+        />
+      </app-field>
+
       <div class="products-page__filter-actions">
         <button
           type="submit"
@@ -100,7 +120,6 @@
         </button>
       </app-alert>
     }
-
     <app-loading-overlay [loading]="products.isLoading()" message="Cargando productos…">
       @if (products.hasValue()) {
         <app-data-table
